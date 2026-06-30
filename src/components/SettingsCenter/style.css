@@ -48,9 +48,8 @@
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: linear-gradient(145deg, var(--primary), #0f2a78);
-  color: #fff;
-  box-shadow: var(--shadow-sm);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
 }
 
 .sh-ico svg {
@@ -965,14 +964,15 @@
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: linear-gradient(145deg, var(--primary), #0f2a78);
-  color: #fff;
+  overflow: hidden;
   box-shadow: var(--shadow);
 }
 
-.about-mark svg {
-  width: 32px;
-  height: 32px;
+.about-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .about-name {

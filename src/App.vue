@@ -285,7 +285,7 @@ onUnmounted(() => {
       <!-- 主内容列：TabsBar + 面板（位于 Sidebar 右侧，不跨到集合列表上方） -->
       <div class="main-column">
         <TabsBar
-          v-if="showRequestResponse || showCollectionSettings"
+          v-if="(showRequestResponse || showCollectionSettings) && !showSavedResponseDoc"
           :tabs="displayTabs"
           :active-tab="activeTab"
           :workspace="currentWorkspace"

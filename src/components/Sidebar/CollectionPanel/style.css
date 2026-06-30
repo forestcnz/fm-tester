@@ -329,11 +329,19 @@
 .item-name {
   font-size: 12.5px;
   color: var(--fg);
-  flex: 1;
+  flex: 0 1 auto;
+  max-width: 65%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+}
+
+.item-expand-area {
+  flex: 1;
+  min-width: 16px;
+  align-self: stretch;
+  cursor: pointer;
 }
 
 /* ---------- 空状态 ---------- */
@@ -601,7 +609,7 @@
 
 /* ---------- 保存响应子列表 ---------- */
 .saved-responses-list {
-  margin-left: 16px;
+  margin-left: 40px;
   padding: 2px 6px;
 }
 

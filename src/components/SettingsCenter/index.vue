@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSettingsCenter } from "./index.js";
+import appIcon from "../../assets/app-icon.png";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -18,35 +19,7 @@ const categories = computed(() => [
   { key: "ai", label: t("settings.ai") },
   { key: "git", label: t("settings.git") },
   { key: "appearance", label: t("settings.appearance") },
-  { key: "shortcuts", label: t("settings.shortcuts") },
   { key: "about", label: t("settings.about") },
-]);
-
-// 快捷键参考数据
-const shortcutGroups = computed(() => [
-  {
-    title: t("settings.scGlobal"),
-    items: [
-      { k: ["Ctrl", "K"], d: t("settings.scCmdPalette") },
-      { k: ["Ctrl", "S"], d: t("settings.scSave") },
-      { k: ["Ctrl", ","], d: t("settings.scOpenSettings") },
-    ],
-  },
-  {
-    title: t("settings.scRequest"),
-    items: [
-      { k: ["Ctrl", "Enter"], d: t("settings.scSend") },
-      { k: ["Ctrl", "E"], d: t("settings.scFocusUrl") },
-    ],
-  },
-  {
-    title: t("settings.scNav"),
-    items: [
-      { k: ["Ctrl", "1"], d: t("settings.scCol") },
-      { k: ["Ctrl", "2"], d: t("settings.scWs") },
-      { k: ["Ctrl", "."], d: t("settings.scConsole") },
-    ],
-  },
 ]);
 
 const monoFontOptions = ["IBM Plex Mono", "JetBrains Mono", "Fira Code", "SFMono-Regular", "Consolas"];
@@ -457,35 +430,11 @@ const version = "v0.1.0";
               </div>
             </section>
 
-            <!-- ============ 快捷键 ============ -->
-            <section v-show="c.activeCategory.value === 'shortcuts'" class="sc-page">
-              <div
-                v-for="g in shortcutGroups"
-                :key="g.title"
-                class="s-grp"
-              >
-                <h3 class="s-grp-title">{{ g.title }}</h3>
-                <div class="kbd-list">
-                  <div v-for="item in g.items" :key="item.d" class="kbd-row">
-                    <span class="kbd-keys">
-                      <kbd v-for="(k, i) in item.k" :key="i">{{ k }}</kbd>
-                    </span>
-                    <span class="kbd-desc">{{ item.d }}</span>
-                  </div>
-                </div>
-              </div>
-              <p class="sc-note">{{ t("settings.shortcutsNote") }}</p>
-            </section>
-
             <!-- ============ 关于 ============ -->
             <section v-show="c.activeCategory.value === 'about'" class="sc-page">
               <div class="about-hero">
                 <span class="about-mark">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg>
+                  <img :src="appIcon" alt="FM Tester" />
                 </span>
                 <div>
                   <h2 class="about-name">FM <em>Tester</em></h2>

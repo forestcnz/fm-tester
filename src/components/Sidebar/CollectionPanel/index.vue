@@ -294,6 +294,11 @@ defineExpose({
             <span class="item-name" @click="selectApiItem(row.item)">{{
               row.item.name
             }}</span>
+            <span
+              v-if="!row.isCollection"
+              class="item-expand-area"
+              @click.stop="toggleResponses(row.item.id)"
+            ></span>
             <!-- 默认显示展开箭头（展开时查询保存响应） -->
             <span
               v-if="!row.isCollection"
