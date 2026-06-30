@@ -1,0 +1,269 @@
+/* App scoped styles - 使用主题 CSS 变量 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--background-app);
+}
+
+.top-area {
+  flex-shrink: 0;
+  background: var(--background-panel);
+}
+
+.main-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 主内容列：TabsBar + 各面板，位于 Sidebar 右侧（tabbar 不跨到集合列表上方） */
+.main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar-resizer {
+  width: 4px;
+  background: var(--border-color);
+  cursor: col-resize;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.sidebar-resizer:hover {
+  background: var(--primary);
+}
+
+.sidebar-resizer.dragging {
+  background: var(--primary);
+}
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: var(--background-panel);
+}
+
+.request-area {
+  flex-shrink: 0;
+  min-height: 150px;
+  overflow: hidden;
+}
+
+.response-area {
+  flex-shrink: 0;
+  min-height: 150px;
+  overflow: hidden;
+}
+
+.panel-resizer {
+  height: 4px;
+  background: var(--border-color);
+  cursor: row-resize;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.panel-resizer:hover {
+  background: var(--primary);
+}
+
+.panel-resizer.resizing {
+  background: var(--primary);
+}
+
+.empty-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-panel);
+}
+
+.empty-message {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* 工作区信息面板 */
+.workspace-info-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-panel);
+}
+
+/* 环境详情 */
+.env-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.env-detail-header h2 {
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.env-variables-list {
+  width: 400px;
+}
+
+.var-item {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.var-key {
+  width: 120px;
+  font-size: 13px;
+  color: var(--primary);
+}
+
+.var-value {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.empty-vars {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* 环境信息面板额外样式 */
+.info-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.current-env {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+}
+
+.current-env.empty {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+.env-name-large {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.env-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 2px;
+}
+
+.env-list-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.env-card {
+  padding: 12px 16px;
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.env-card:hover {
+  background: var(--background-input);
+}
+
+.env-card.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.env-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.env-name {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.env-var-count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.env-vars-preview {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.var-preview {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: var(--background-card);
+  color: var(--text-secondary);
+  border-radius: 2px;
+}
+
+.var-preview.more {
+  background: var(--background-input);
+  color: var(--text-muted);
+}
+
+.empty-env {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 24px;
+  text-align: center;
+  background: var(--background-card);
+  border-radius: 4px;
+}
+
+.orchestration-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--background-panel);
+}
+
+.placeholder-title {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.placeholder-hint {
+  font-size: 14px;
+  color: var(--text-muted);
+}

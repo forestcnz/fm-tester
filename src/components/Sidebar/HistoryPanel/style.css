@@ -1,0 +1,286 @@
+/* ============================================================
+   FM Tester · Inkwell 墨砚 · HistoryPanel 历史面板
+   对齐 src/styles/inkwell.css 与 preview/inkwell.css 侧边面板设计
+   ============================================================ */
+
+.history-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-panel);
+}
+
+/* 面板头部 → 墨砚风格 */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 12px 9px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 2px;
+}
+
+/* 图标按钮 → 墨砚 token */
+.action-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.action-btn:hover {
+  color: var(--primary);
+  background: var(--bg-sunk);
+}
+
+/* 空状态 / 加载 → 居中 var(--fg-3) 文案 */
+.empty-panel,
+.loading-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  font-size: 12.5px;
+  padding: 30px;
+  text-align: center;
+}
+
+/* 日期分组列表 */
+.date-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.date-list::-webkit-scrollbar {
+  width: 8px;
+}
+.date-list::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 4px;
+  border: 2px solid var(--bg-panel);
+}
+
+.date-group {
+  margin-bottom: 2px;
+}
+
+/* 组标题（日期头）→ var(--fg-3) 小字大写，墨砚行风格 */
+.date-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 9px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.date-header:hover {
+  background: var(--bg-sunk);
+}
+
+.date-header:hover .clear-btn {
+  color: var(--fg-2);
+}
+
+.expand-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
+/* 日期标签：组标题，var(--fg-2) 小字大写 */
+.date-label {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.date-count {
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-right: 8px;
+  font-family: var(--font-mono);
+}
+
+/* 清除按钮 → 墨砚图标按钮 */
+.clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-3);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.clear-btn:hover,
+.date-header:hover .clear-btn:hover {
+  color: var(--err) !important;
+  background: var(--bg-sunk);
+}
+
+.clear-btn:focus,
+.clear-btn:active {
+  color: var(--err) !important;
+  outline: none !important;
+}
+
+.clear-btn svg {
+  pointer-events: none;
+}
+
+/* 历史记录列表 */
+.history-list {
+  padding: 4px 6px 6px;
+}
+
+/* 会话项 → 墨砚列表行风格（.lrow 语言） */
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 9px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: var(--dur-fast) var(--ease);
+  position: relative;
+}
+
+.history-item:hover {
+  background: var(--bg-sunk);
+}
+
+/* 请求方法标签 → 墨砚 method-tag（等宽） */
+.method-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  margin-right: 4px;
+  min-width: 34px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.method-tag.post {
+  background: rgba(234, 88, 12, 0.12);
+  color: var(--m-post);
+}
+.method-tag.get {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--m-get);
+}
+.method-tag.put {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--m-put);
+}
+.method-tag.delete {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--m-del);
+}
+.method-tag.patch {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--m-patch);
+}
+.method-tag.websocket {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* URL 文本 → 墨砚列表行文字 */
+.item-url {
+  flex: 1;
+  font-size: 11.5px;
+  color: var(--fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 删除按钮（行内）→ 墨砚图标按钮 */
+.delete-btn {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--fg-3);
+  opacity: 0;
+  transition: var(--dur-fast) var(--ease);
+  flex-shrink: 0;
+}
+
+.history-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  color: var(--err);
+  background: var(--bg-sunk);
+}
+
+/* 加载更多 */
+.load-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  margin: 2px 6px 4px;
+  padding: 0 9px;
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.load-more-btn:hover {
+  background: var(--bg-sunk);
+  color: var(--primary);
+}

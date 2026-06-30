@@ -1,0 +1,470 @@
+/* 环境面板样式 · 墨砚 Inkwell */
+
+.environment-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel);
+  color: var(--fg);
+}
+
+/* ---------- 面板头部 ---------- */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 12px 9px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.action-btn {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--fg-2);
+  font-size: 16px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.action-btn:hover {
+  background: var(--bg-sunk);
+  color: var(--primary);
+}
+
+/* ---------- 空状态 ---------- */
+.empty-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+  text-align: center;
+  color: var(--fg-3);
+  font-size: 13px;
+}
+
+/* ---------- 环境列表 ---------- */
+.env-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+/* 环境列表项 · 墨砚风格（带变量计数位预留） */
+.env-item {
+  position: relative;
+  padding: 8px 9px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: grab;
+  user-select: none;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.env-item:hover {
+  background: var(--bg-sunk);
+}
+
+.env-item.active {
+  background: var(--primary-soft);
+  border-color: var(--primary-line);
+}
+
+.env-item.active::before {
+  display: none;
+}
+
+/* 拖拽状态 */
+.env-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.env-item.drag-over-before {
+  border-top: 2px solid var(--primary);
+  margin-top: -2px;
+}
+
+.env-item.drag-over-after {
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: -2px;
+}
+
+/* 环境行内布局 */
+.env-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.env-icon {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--fg-2);
+  flex-shrink: 0;
+}
+
+.env-item.active .env-icon {
+  color: var(--primary);
+}
+
+.env-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.env-name {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg);
+}
+
+.env-item.active .env-name {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.env-active-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: var(--primary);
+  color: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  margin-left: 8px;
+}
+
+.env-action {
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.env-action:hover {
+  color: var(--primary-hover);
+}
+
+.env-delete {
+  color: var(--err);
+}
+
+.env-delete:hover {
+  color: var(--err);
+}
+
+.env-variables {
+  margin-top: 8px;
+}
+
+.env-var-item {
+  display: flex;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.env-var-key {
+  color: var(--primary);
+  min-width: 80px;
+  font-family: var(--font-mono);
+}
+
+.env-var-value {
+  color: var(--fg-2);
+  flex: 1;
+  font-family: var(--font-mono);
+}
+
+/* ---------- 对话框 ---------- */
+.create-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.create-dialog {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  width: 360px;
+  box-shadow: var(--shadow-lg);
+  animation: rise var(--dur-slow) var(--ease);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.dialog-close {
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fg-3);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.dialog-close:hover {
+  color: var(--err);
+}
+
+.dialog-body {
+  padding: 16px;
+}
+
+.dialog-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dialog-row label {
+  width: 60px;
+  font-size: 13px;
+  color: var(--fg-2);
+}
+
+.dialog-row input,
+.dialog-row select {
+  flex: 1;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--bg-panel);
+  color: var(--fg);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.dialog-row input:focus,
+.dialog-row select:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.parent-name {
+  font-size: 13px;
+  color: var(--primary);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.btn-cancel,
+.btn-confirm {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.btn-cancel {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  color: var(--fg-2);
+}
+
+.btn-cancel:hover {
+  border-color: var(--line-strong);
+  color: var(--fg);
+}
+
+.btn-confirm {
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: var(--bg-panel);
+}
+
+.btn-confirm:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* 环境对话框样式 */
+.env-dialog {
+  width: 400px;
+}
+
+.variables-section {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.variables-section label {
+  width: auto;
+  margin-bottom: 8px;
+}
+
+.variables-list {
+  width: 100%;
+}
+
+.var-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.var-key-input,
+.var-value-input {
+  flex: 1;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--bg-panel);
+  color: var(--fg);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.var-key-input {
+  font-family: var(--font-mono);
+}
+
+.var-value-input {
+  font-family: var(--font-mono);
+}
+
+.var-key-input:focus,
+.var-value-input:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.var-remove {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--fg-3);
+  font-size: 14px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.var-remove:hover {
+  color: var(--err);
+  background: var(--bg-sunk);
+}
+
+.var-add-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.var-add-btn:hover {
+  color: var(--primary-hover);
+}
+
+/* ---------- 右键菜单 ---------- */
+.context-menu {
+  position: fixed;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  min-width: 160px;
+  z-index: 2000;
+  animation: pop var(--dur-base) var(--ease);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--fg);
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.menu-item:hover {
+  background: var(--bg-sunk);
+}
+
+.menu-item.delete {
+  color: var(--err);
+}
+
+.menu-item.delete:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.menu-icon {
+  width: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--fg-2);
+  flex-shrink: 0;
+}
+
+.menu-item.delete .menu-icon {
+  color: var(--err);
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 2px;
+}

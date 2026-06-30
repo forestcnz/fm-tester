@@ -1,0 +1,667 @@
+/* ============================================================
+   WebSocketDetailPanel · 墨砚 Inkwell 化
+   仅重写样式声明，保留全部选择器名；颜色/圆角/动效一律使用 token
+   ============================================================ */
+
+.ws-detail-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel);
+}
+
+/* ---------- 空状态 ---------- */
+.ws-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-hint {
+  color: var(--fg-3);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+/* ---------- URL 输入栏（页头风格） ---------- */
+.ws-url-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* WS 标签 → 对齐 preview .ws-tag：实心 m-patch 胶囊 + 白字 */
+.ws-method-tag {
+  height: 34px;
+  padding: 0 13px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--m-patch);
+  border: none;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.ws-url-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 11px;
+  height: 34px;
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  color: var(--fg);
+  outline: none;
+  transition: var(--dur-base) var(--ease);
+}
+
+.ws-url-input::placeholder {
+  color: var(--fg-3);
+  font-family: var(--font-ui);
+}
+
+.ws-url-input:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ghost / 次级按钮 */
+.ws-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.ws-save-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 连接按钮 → 对齐 preview .ws-btn.connect：绿色实心（--ok） */
+.ws-connect-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ok);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+.ws-connect-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 已连接 → 断开按钮 → 对齐 preview .ws-btn.disconnect：红色 ghost */
+.ws-connect-btn.connected {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: var(--err);
+  box-shadow: none;
+}
+
+.ws-connect-btn.connected:hover {
+  background: var(--err);
+  color: #fff;
+  filter: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- 状态栏（对齐 preview .ws-status-bar：sunk 底） ---------- */
+.ws-status-bar {
+  display: flex;
+  align-items: center;
+  padding: 9px 18px;
+  gap: 14px;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.ws-status-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 状态点：语义色 */
+.ws-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fg-3);
+  flex-shrink: 0;
+  transition: background var(--dur-base) var(--ease);
+}
+
+.ws-status-indicator.ws-connecting {
+  background: var(--warn);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+  animation: ws-pulse 1s infinite;
+}
+
+.ws-status-indicator.ws-connected {
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+
+.ws-status-indicator.ws-disconnected {
+  background: var(--fg-3);
+}
+
+.ws-status-indicator.ws-error {
+  background: var(--err);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
+}
+
+@keyframes ws-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.ws-status-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.ws-connected-time {
+  font-size: 11px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+}
+
+.ws-error-detail {
+  font-size: 11px;
+  color: var(--err);
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+}
+
+/* ---------- 消息区 ---------- */
+.ws-messages-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ws-messages-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg);
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-2);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-clear-btn:hover {
+  color: var(--err);
+  background: var(--bg-sunk);
+}
+
+.ws-messages-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 18px;
+  background: var(--bg-app);
+}
+
+.ws-messages-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 120px;
+  font-size: 13px;
+  color: var(--fg-3);
+  text-align: center;
+}
+
+/* 消息项 → 卡片风格 + 方向左边框（对齐 preview .msg-item） */
+.ws-message-item {
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-message-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 发送方向 → 左边框 primary */
+.ws-message-item.sent {
+  border-left: 3px solid var(--primary);
+}
+
+/* 接收方向 → 左边框 m-get */
+.ws-message-item.received {
+  border-left: 3px solid var(--m-get);
+}
+
+.ws-message-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.ws-message-time {
+  font-size: 11px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+}
+
+/* 方向标签 → 对齐 preview .msg-meta .dir：彩色文本（无底色） */
+.ws-message-direction {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ws-message-item.sent .ws-message-direction {
+  color: var(--primary);
+}
+
+.ws-message-item.received .ws-message-direction {
+  color: var(--m-get);
+}
+
+/* 类型标签 → 对齐 preview .msg-meta .type：边框小 pill */
+.ws-message-type {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  height: auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fg-3);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.ws-message-content {
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--fg);
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: var(--font-mono);
+  line-height: 1.55;
+}
+
+/* ---------- 发送区 ---------- */
+.ws-send-area {
+  display: flex;
+  gap: 8px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+/* 输入/选择 → 墨砚 field 风格 */
+.ws-type-select {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  color: var(--fg);
+  cursor: pointer;
+  outline: none;
+  transition: var(--dur-base) var(--ease);
+}
+
+.ws-type-select:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.ws-send-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 11px;
+  height: 34px;
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  color: var(--fg);
+  outline: none;
+  box-sizing: border-box;
+  transition: var(--dur-base) var(--ease);
+}
+
+.ws-send-input::placeholder {
+  color: var(--fg-3);
+}
+
+.ws-send-input:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.ws-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.ws-send-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.ws-send-btn:disabled {
+  background: var(--bg-sunk);
+  border-color: var(--line);
+  color: var(--fg-3);
+  cursor: not-allowed;
+}
+
+/* ---------- 参数/请求头配置区 ---------- */
+.ws-config-area {
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+.ws-config-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-config-tab {
+  position: relative;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg-2);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-config-tab:hover {
+  color: var(--fg);
+}
+
+.ws-config-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* tab 数量徽标（参数 / 请求头） */
+.ws-tab-cnt {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--fg-3);
+  background: var(--bg-sunk);
+  padding: 1px 6px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+.ws-config-tab.active .ws-tab-cnt {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.ws-config-content {
+  padding: 14px 18px 0;
+}
+
+.ws-config-toolbar {
+  margin-bottom: 12px;
+}
+
+/* 添加按钮 → 虚线 ghost（对齐 preview .kv-add） */
+.ws-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-2);
+  background: none;
+  border: 1px dashed var(--line-strong);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-add-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.ws-add-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* kv-table 风格 */
+.ws-config-list {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+/* 表头 → sunk 底 + 大写小字 */
+.ws-config-table-header {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 32px;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ws-config-empty {
+  padding: 24px;
+  font-size: 13px;
+  color: var(--fg-3);
+  text-align: center;
+}
+
+/* kv-row 风格 + hover */
+.ws-config-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-config-row:last-child {
+  border-bottom: none;
+}
+
+.ws-config-row:hover {
+  background: var(--bg-sunk);
+}
+
+.ws-col-check {
+  width: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ws-col-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.ws-col-key,
+.ws-col-value {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+/* kv 行内输入 → 无框，focus 时 primary-line 内描边 */
+.ws-col-key input,
+.ws-col-value input {
+  width: 100%;
+  padding: 5px 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  border: none;
+  background: none;
+  outline: none;
+  color: var(--fg);
+  border-radius: 5px;
+  transition: var(--dur-fast) var(--ease);
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.ws-col-key input:focus,
+.ws-col-value input:focus {
+  background: var(--bg-panel);
+  box-shadow: inset 0 0 0 1.5px var(--primary-line);
+}
+
+.ws-col-key input::placeholder,
+.ws-col-value input::placeholder {
+  color: var(--fg-3);
+}
+
+.ws-col-action {
+  width: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 删除按钮 → danger ghost */
+.ws-remove-btn {
+  width: 26px;
+  height: 26px;
+  font-size: 16px;
+  color: var(--fg-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-remove-btn:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--err);
+}

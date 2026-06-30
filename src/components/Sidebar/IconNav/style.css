@@ -1,0 +1,107 @@
+/* 导航 Rail · 墨砚 Inkwell（56px 富交互：分组/tooltip/激活指示条） */
+.rail {
+  width: 56px;
+  flex-shrink: 0;
+  background: var(--bg-rail);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0 10px;
+  gap: 4px;
+}
+
+.rail-grp {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  align-items: center;
+}
+
+.rail-sep {
+  width: 26px;
+  height: 1px;
+  background: var(--fg-rail-muted);
+  opacity: 0.3;
+  margin: 8px 0;
+}
+
+.rail-item {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--fg-rail-muted);
+  position: relative;
+  border: none;
+  background: none;
+  transition:
+    color var(--dur-base) var(--ease),
+    background var(--dur-base) var(--ease);
+}
+
+.rail-item:hover {
+  color: var(--fg-rail);
+  background: var(--bg-rail-hover);
+}
+
+.rail-item.on {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+/* 激活态左侧指示条（已移除，改用柔和底色） */
+.rail-item.on::before {
+  display: none;
+}
+
+.rail-ico {
+  display: grid;
+  place-items: center;
+}
+
+.rail-ico svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* tooltip */
+.rail-item .tip {
+  position: absolute;
+  left: 54px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  background: var(--bg-rail-hover);
+  color: var(--fg-rail);
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+
+.rail-item .tip::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--bg-rail-hover);
+}
+
+.rail-item:hover .tip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}

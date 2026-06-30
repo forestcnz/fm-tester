@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FM Tester - 主题设计展示 V2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ========== 主题定义 ========== */
+
+    /* Theme 1: VS Code Dark+ 风格 - 经典深蓝 */
+    .theme-vscode-dark {
+      --primary: #0078d4;
+      --primary-hover: #1a8cff;
+      --primary-light: #1e1e1e;
+      --primary-border: #0078d4;
+
+      --background-app: #1e1e1e;
+      --background-panel: #252526;
+      --background-card: #2d2d2d;
+      --background-input: #3c3c3c;
+
+      --text-primary: #cccccc;
+      --text-secondary: #9cdcfe;
+      --text-muted: #808080;
+
+      --border-color: #3c3c3c;
+      --border-light: #454545;
+
+      --method-get: #4ec9b0;
+      --method-post: #dcdcaa;
+      --method-put: #569cd6;
+      --method-delete: #f14c4c;
+
+      --scrollbar-track: #1e1e1e;
+      --scrollbar-thumb: #424242;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 2: Nord 风格 - 北欧冷色调 */
+    .theme-nord {
+      --primary: #88c0d0;
+      --primary-hover: #8fbcbb;
+      --primary-light: #3b4252;
+      --primary-border: #88c0d0;
+
+      --background-app: #2e3440;
+      --background-panel: #3b4252;
+      --background-card: #434c5e;
+      --background-input: #4c566a;
+
+      --text-primary: #eceff4;
+      --text-secondary: #e5e9f0;
+      --text-muted: #d8dee9;
+
+      --border-color: #4c566a;
+      --border-light: #5e6687;
+
+      --method-get: #a3be8c;
+      --method-post: #ebcb8b;
+      --method-put: #81a1c1;
+      --method-delete: #bf616a;
+
+      --scrollbar-track: #3b4252;
+      --scrollbar-thumb: #4c566a;
+
+      --shadow-color: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Theme 3: Dracula 风格 - 紫色高对比 */
+    .theme-dracula {
+      --primary: #bd93f9;
+      --primary-hover: #ff79c6;
+      --primary-light: #282a36;
+      --primary-border: #bd93f9;
+
+      --background-app: #282a36;
+      --background-panel: #21222c;
+      --background-card: #2d303e;
+      --background-input: #343746;
+
+      --text-primary: #f8f8f2;
+      --text-secondary: #f8f8f2;
+      --text-muted: #6272a4;
+
+      --border-color: #44475a;
+      --border-light: #6272a4;
+
+      --method-get: #50fa7b;
+      --method-post: #ffb86c;
+      --method-put: #8be9fd;
+      --method-delete: #ff5555;
+
+      --scrollbar-track: #282a36;
+      --scrollbar-thumb: #44475a;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 4: One Dark Pro 风格 - Atom经典 */
+    .theme-one-dark {
+      --primary: #61afef;
+      --primary-hover: #528bff;
+      --primary-light: #282c34;
+      --primary-border: #61afef;
+
+      --background-app: #282c34;
+      --background-panel: #21252b;
+      --background-card: #2c313a;
+      --background-input: #343a47;
+
+      --text-primary: #abb2bf;
+      --text-secondary: #e5c07b;
+      --text-muted: #5c6370;
+
+      --border-color: #3e4451;
+      --border-light: #4e5666;
+
+      --method-get: #98c379;
+      --method-post: #d19a66;
+      --method-put: #61afef;
+      --method-delete: #e06c75;
+
+      --scrollbar-track: #21252b;
+      --scrollbar-thumb: #4e5666;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 5: Material Darker 风格 */
+    .theme-material-darker {
+      --primary: #82aaff;
+      --primary-hover: #89ddff;
+      --primary-light: #121212;
+      --primary-border: #82aaff;
+
+      --background-app: #121212;
+      --background-panel: #1e1e1e;
+      --background-card: #252525;
+      --background-input: #2a2a2a;
+
+      --text-primary: #eeffff;
+      --text-secondary: #b2ccd6;
+      --text-muted: #464646;
+
+      --border-color: #3a3a3a;
+      --border-light: #4a4a4a;
+
+      --method-get: #c3e88d;
+      --method-post: #ffcb6b;
+      --method-put: #82aaff;
+      --method-delete: #f07178;
+
+      --scrollbar-track: #1e1e1e;
+      --scrollbar-thumb: #3a3a3a;
+
+      --shadow-color: rgba(0, 0, 0, 0.25);
+    }
+
+    /* Theme 6: Monokai Pro 风格 */
+    .theme-monokai-pro {
+      --primary: #ffd866;
+      --primary-hover: #ffcc00;
+      --primary-light: #2d2a2e;
+      --primary-border: #ffd866;
+
+      --background-app: #2d2a2e;
+      --background-panel: #36332f;
+      --background-card: #403e3a;
+      --background-input: #4a4844;
+
+      --text-primary: #fcfcfa;
+      --text-secondary: #fcfcfa;
+      --text-muted: #939293;
+
+      --border-color: #5b5956;
+      --border-light: #6b6966;
+
+      --method-get: #a9dc76;
+      --method-post: #ffd866;
+      --method-put: #78dce8;
+      --method-delete: #ff6188;
+
+      --scrollbar-track: #36332f;
+      --scrollbar-thumb: #5b5956;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 7: GitHub Dark 风格 */
+    .theme-github-dark {
+      --primary: #58a6ff;
+      --primary-hover: #79c0ff;
+      --primary-light: #0d1117;
+      --primary-border: #58a6ff;
+
+      --background-app: #0d1117;
+      --background-panel: #161b22;
+      --background-card: #21262d;
+      --background-input: #30363d;
+
+      --text-primary: #c9d1d9;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+
+      --border-color: #30363d;
+      --border-light: #484f58;
+
+      --method-get: #3fb950;
+      --method-post: #d29922;
+      --method-put: #58a6ff;
+      --method-delete: #f85149;
+
+      --scrollbar-track: #0d1117;
+      --scrollbar-thumb: #30363d;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 8: Tokyo Night 风格 */
+    .theme-tokyo-night {
+      --primary: #7aa2f7;
+      --primary-hover: #9eceff;
+      --primary-light: #1a1b26;
+      --primary-border: #7aa2f7;
+
+      --background-app: #1a1b26;
+      --background-panel: #16161e;
+      --background-card: #24283b;
+      --background-input: #292e42;
+
+      --text-primary: #c0caf5;
+      --text-secondary: #a9b1d6;
+      --text-muted: #565f89;
+
+      --border-color: #3b4261;
+      --border-light: #4f5579;
+
+      --method-get: #9ece6a;
+      --method-post: #e0af68;
+      --method-put: #7aa2f7;
+      --method-delete: #f7768e;
+
+      --scrollbar-track: #16161e;
+      --scrollbar-thumb: #3b4261;
+
+      --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Theme 9: Arctic Ice（浅色保留） */
+    .theme-arctic-ice {
+      --primary: #2196f3;
+      --primary-hover: #1976d2;
+      --primary-light: #e3f2fd;
+      --primary-border: #64b5f6;
+
+      --background-app: #f8fafc;
+      --background-panel: #ffffff;
+      --background-card: #f1f5f9;
+      --background-input: #ffffff;
+
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+
+      --border-color: #e2e8f0;
+      --border-light: #cbd5e1;
+
+      --method-get: #22c55e;
+      --method-post: #f59e0b;
+      --method-put: #3b82f6;
+      --method-delete: #ef4444;
+
+      --scrollbar-track: #f1f5f9;
+      --scrollbar-thumb: #cbd5e1;
+
+      --shadow-color: rgba(100, 116, 139, 0.1);
+    }
+
+    /* Theme 10: Storm Gray（浅色保留） */
+    .theme-storm-gray {
+      --primary: #546e7a;
+      --primary-hover: #455a64;
+      --primary-light: #eceff1;
+      --primary-border: #90a4ae;
+
+      --background-app: #f5f7f9;
+      --background-panel: #ffffff;
+      --background-card: #eceff1;
+      --background-input: #ffffff;
+
+      --text-primary: #263238;
+      --text-secondary: #546e7a;
+      --text-muted: #90a4ae;
+
+      --border-color: #cfd8dc;
+      --border-light: #b0bec5;
+
+      --method-get: #4caf50;
+      --method-post: #ff9800;
+      --method-put: #2196f3;
+      --method-delete: #f44336;
+
+      --scrollbar-track: #eceff1;
+      --scrollbar-thumb: #b0bec5;
+
+      --shadow-color: rgba(84, 110, 122, 0.1);
+    }
+
+    /* ========== 基础样式 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      background: var(--background-app);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ========== 页面布局 ========== */
+    .showcase-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* 主题选择器 */
+    .theme-selector {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    .theme-selector-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .theme-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      padding: 8px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--background-card);
+      color: var(--text-secondary);
+    }
+
+    .theme-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .theme-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* 浅色/深色分组提示 */
+    .theme-group-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-right: 8px;
+      padding: 4px 8px;
+      background: var(--background-card);
+      border-radius: 4px;
+    }
+
+    /* ========== 组件展示区 ========== */
+    .showcase-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    /* 菜单栏展示 */
+    .menu-bar-demo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 40px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0 12px;
+    }
+
+    .menu-left {
+      display: flex;
+      gap: 8px;
+    }
+
+    .menu-item {
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .menu-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    .selector-demo {
+      padding: 4px 10px;
+      font-size: 12px;
+      background: var(--background-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    /* 标签栏展示 */
+    .tabs-bar-demo {
+      display: flex;
+      gap: 4px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .tab-demo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--background-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+    }
+
+    .tab-demo.active {
+      background: var(--primary-light);
+      border-bottom-color: var(--primary-light);
+    }
+
+    .tab-method {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .tab-method.get { background: rgba(78, 201, 176, 0.15); color: var(--method-get); }
+    .tab-method.post { background: rgba(255, 184, 108, 0.15); color: var(--method-post); }
+    .tab-method.put { background: rgba(139, 233, 253, 0.15); color: var(--method-put); }
+    .tab-method.delete { background: rgba(255, 85, 85, 0.15); color: var(--method-delete); }
+
+    .tab-name {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .tab-close {
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* URL栏展示 */
+    .url-bar-demo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .method-select-demo {
+      height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--background-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--method-get);
+      cursor: pointer;
+    }
+
+    .url-input-demo {
+      flex: 1;
+      height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
+      background: var(--background-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .url-input-demo:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .send-btn-demo {
+      height: 36px;
+      padding: 0 24px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--primary);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .send-btn-demo:hover {
+      background: var(--primary-hover);
+    }
+
+    /* 参数表格展示 */
+    .params-table-demo {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--background-panel);
+    }
+
+    .params-header-demo {
+      display: flex;
+      padding: 10px 16px;
+      background: var(--background-card);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .params-row-demo {
+      display: flex;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .params-row-demo:last-child {
+      border-bottom: none;
+    }
+
+    .params-row-demo:hover {
+      background: var(--background-card);
+    }
+
+    .col-check-demo { width: 32px; }
+    .col-key-demo, .col-value-demo { flex: 1; }
+    .col-desc-demo { flex: 1; color: var(--text-muted); font-size: 12px; }
+    .col-action-demo { width: 32px; }
+
+    .param-input-demo {
+      width: 100%;
+      height: 28px;
+      padding: 0 8px;
+      font-size: 13px;
+      background: var(--background-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+    }
+
+    .param-input-demo:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* 侧边栏展示 */
+    .sidebar-demo {
+      width: 260px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .sidebar-header-demo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-title-demo {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .sidebar-action-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      border-radius: 4px;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .sidebar-tree-demo {
+      padding: 12px;
+    }
+
+    .tree-item-demo {
+      padding: 6px 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 2px;
+    }
+
+    .tree-item-demo:hover {
+      background: var(--background-card);
+    }
+
+    .tree-item-demo.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .tree-item-demo.folder {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .tree-method-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 2px;
+      margin-right: 6px;
+    }
+
+    /* 响应面板展示 */
+    .response-demo {
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .response-tabs-demo {
+      display: flex;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--background-card);
+    }
+
+    .response-tab-demo {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .response-tab-demo:hover {
+      color: var(--primary);
+    }
+
+    .response-tab-demo.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .response-content-demo {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      min-height: 200px;
+    }
+
+    .response-status-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      background: rgba(78, 201, 176, 0.15);
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .status-badge-demo {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--method-get);
+    }
+
+    .status-time-demo {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 按钮展示 */
+    .buttons-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .btn-primary {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--primary);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--background-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      border-radius: 4px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* 输入框展示 */
+    .inputs-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .input-group-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-label-demo {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .input-field-demo {
+      height: 32px;
+      padding: 0 12px;
+      font-size: 13px;
+      background: var(--background-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+    }
+
+    .input-field-demo:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .input-field-demo.error {
+      border-color: var(--method-delete);
+    }
+
+    /* 消息/提示展示 */
+    .messages-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .message-demo {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .message-demo.success {
+      background: rgba(78, 201, 176, 0.15);
+      border: 1px solid rgba(78, 201, 176, 0.3);
+      color: var(--method-get);
+    }
+
+    .message-demo.error {
+      background: rgba(255, 85, 85, 0.15);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      color: var(--method-delete);
+    }
+
+    .message-demo.warning {
+      background: rgba(255, 184, 108, 0.15);
+      border: 1px solid rgba(255, 184, 108, 0.3);
+      color: var(--method-post);
+    }
+
+    .message-demo.info {
+      background: rgba(139, 233, 253, 0.15);
+      border: 1px solid rgba(139, 233, 253, 0.3);
+      color: var(--method-put);
+    }
+
+    /* 色板展示 */
+    .color-palette-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .color-block {
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .color-block.primary { background: var(--primary); }
+    .color-block.primary-hover { background: var(--primary-hover); }
+    .color-block.primary-light { background: var(--primary-light); }
+    .color-block.primary-border { background: var(--primary-border); }
+    .color-block.bg-app { background: var(--background-app); border: 1px solid var(--border-color); }
+    .color-block.bg-panel { background: var(--background-panel); }
+    .color-block.bg-card { background: var(--background-card); }
+    .color-block.bg-input { background: var(--background-input); }
+    .color-block.text-primary { background: var(--text-primary); }
+    .color-block.text-secondary { background: var(--text-secondary); }
+    .color-block.text-muted { background: var(--text-muted); }
+    .color-block.method-get { background: var(--method-get); }
+    .color-block.method-post { background: var(--method-post); }
+    .color-block.method-put { background: var(--method-put); }
+    .color-block.method-delete { background: var(--method-delete); }
+
+    .color-name {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* 代码编辑器展示 */
+    .editor-demo {
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .editor-content-demo {
+      display: flex;
+      min-height: 150px;
+    }
+
+    .editor-line-numbers {
+      width: 40px;
+      padding: 12px 8px;
+      background: var(--background-card);
+      border-right: 1px solid var(--border-color);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      text-align: right;
+      user-select: none;
+    }
+
+    .editor-code-demo {
+      flex: 1;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      white-space: pre;
+    }
+
+    .code-keyword { color: var(--method-put); }
+    .code-string { color: var(--method-get); }
+    .code-number { color: var(--method-post); }
+    .code-comment { color: var(--text-muted); }
+    .code-function { color: var(--method-post); }
+
+    /* 主题描述卡片 */
+    .theme-info-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--background-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .theme-preview-strip {
+      display: flex;
+      gap: 4px;
+    }
+
+    .theme-preview-strip .strip {
+      width: 24px;
+      height: 48px;
+      border-radius: 4px;
+    }
+
+    .theme-info-text {
+      flex: 1;
+    }
+
+    .theme-info-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .theme-info-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body class="theme-arctic-ice">
+  <div class="showcase-container">
+    <!-- 主题选择器 -->
+    <div class="theme-selector">
+      <div class="theme-selector-title">🎨 选择主题预览（10款精选主题）</div>
+      <div class="theme-buttons">
+        <span class="theme-group-label">深色主题</span>
+        <button class="theme-btn" data-theme="theme-vscode-dark">VS Code Dark+</button>
+        <button class="theme-btn" data-theme="theme-nord">Nord</button>
+        <button class="theme-btn" data-theme="theme-dracula">Dracula</button>
+        <button class="theme-btn" data-theme="theme-one-dark">One Dark Pro</button>
+        <button class="theme-btn" data-theme="theme-material-darker">Material Darker</button>
+        <button class="theme-btn" data-theme="theme-monokai-pro">Monokai Pro</button>
+        <button class="theme-btn" data-theme="theme-github-dark">GitHub Dark</button>
+        <button class="theme-btn" data-theme="theme-tokyo-night">Tokyo Night</button>
+        <span class="theme-group-label">浅色主题</span>
+        <button class="theme-btn active" data-theme="theme-arctic-ice">Arctic Ice</button>
+        <button class="theme-btn" data-theme="theme-storm-gray">Storm Gray</button>
+      </div>
+    </div>
+
+    <!-- 当前主题信息 -->
+    <div class="theme-info-card">
+      <div class="theme-preview-strip">
+        <div class="strip" style="background: var(--primary)"></div>
+        <div class="strip" style="background: var(--background-panel)"></div>
+        <div class="strip" style="background: var(--background-card)"></div>
+        <div class="strip" style="background: var(--text-primary)"></div>
+      </div>
+      <div class="theme-info-text">
+        <div class="theme-info-name">Arctic Ice</div>
+        <div class="theme-info-desc">冰雪白色系 - 冷峻简约的浅色主题，清爽专业的视觉体验，适合长时间工作</div>
+      </div>
+    </div>
+
+    <!-- 色板展示 -->
+    <div class="showcase-section">
+      <div class="section-title">📋 主题色板</div>
+      <div class="color-palette-demo">
+        <div class="color-item">
+          <div class="color-block primary"></div>
+          <div class="color-name">Primary</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block primary-hover"></div>
+          <div class="color-name">Primary Hover</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block primary-light"></div>
+          <div class="color-name">Primary Light</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block primary-border"></div>
+          <div class="color-name">Primary Border</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block bg-app"></div>
+          <div class="color-name">Bg App</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block bg-panel"></div>
+          <div class="color-name">Bg Panel</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block bg-card"></div>
+          <div class="color-name">Bg Card</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block bg-input"></div>
+          <div class="color-name">Bg Input</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block text-primary"></div>
+          <div class="color-name">Text Primary</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block text-secondary"></div>
+          <div class="color-name">Text Secondary</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block text-muted"></div>
+          <div class="color-name">Text Muted</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block method-get"></div>
+          <div class="color-name">GET</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block method-post"></div>
+          <div class="color-name">POST</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block method-put"></div>
+          <div class="color-name">PUT</div>
+        </div>
+        <div class="color-item">
+          <div class="color-block method-delete"></div>
+          <div class="color-name">DELETE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 菜单栏 -->
+    <div class="showcase-section">
+      <div class="section-title">📦 菜单栏 MenuBar</div>
+      <div class="menu-bar-demo">
+        <div class="menu-left">
+          <div class="menu-item">文件</div>
+          <div class="menu-item">编辑</div>
+          <div class="menu-item">视图</div>
+          <div class="menu-item">工具</div>
+          <div class="menu-item">帮助</div>
+        </div>
+        <div class="menu-right">
+          <div class="selector-demo">工作区: 测试项目 ▼</div>
+          <div class="selector-demo">环境: 开发 ▼</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 标签栏 -->
+    <div class="showcase-section">
+      <div class="section-title">📑 标签栏 TabsBar</div>
+      <div class="tabs-bar-demo">
+        <div class="tab-demo active">
+          <span class="tab-method get">GET</span>
+          <span class="tab-name">获取用户列表</span>
+          <span class="tab-close">×</span>
+        </div>
+        <div class="tab-demo">
+          <span class="tab-method post">POST</span>
+          <span class="tab-name">创建用户</span>
+          <span class="tab-close">×</span>
+        </div>
+        <div class="tab-demo">
+          <span class="tab-method put">PUT</span>
+          <span class="tab-name">更新用户信息</span>
+          <span class="tab-close">×</span>
+        </div>
+        <div class="tab-demo">
+          <span class="tab-method delete">DEL</span>
+          <span class="tab-name">删除用户</span>
+          <span class="tab-close">×</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- URL栏 -->
+    <div class="showcase-section">
+      <div class="section-title">🔗 URL栏 URLBar</div>
+      <div class="url-bar-demo">
+        <select class="method-select-demo">
+          <option style="color: var(--method-get)">GET</option>
+          <option style="color: var(--method-post)">POST</option>
+          <option style="color: var(--method-put)">PUT</option>
+          <option style="color: var(--method-delete)">DELETE</option>
+        </select>
+        <input class="url-input-demo" type="text" value="https://api.example.com/v1/users?page=1&limit=10" placeholder="输入请求URL">
+        <button class="send-btn-demo">发送</button>
+      </div>
+    </div>
+
+    <!-- 侧边栏 -->
+    <div class="showcase-section">
+      <div class="section-title">📁 侧边栏 Sidebar</div>
+      <div class="sidebar-demo">
+        <div class="sidebar-header-demo">
+          <span class="sidebar-title-demo">Collections</span>
+          <span class="sidebar-action-btn">+</span>
+        </div>
+        <div class="sidebar-tree-demo">
+          <div class="tree-item-demo folder">📂 用户管理</div>
+          <div class="tree-item-demo active">
+            <span class="tree-method-tag" style="background: rgba(78, 201, 176, 0.15); color: var(--method-get)">GET</span>
+            获取用户列表
+          </div>
+          <div class="tree-item-demo">
+            <span class="tree-method-tag" style="background: rgba(255, 184, 108, 0.15); color: var(--method-post)">POST</span>
+            创建用户
+          </div>
+          <div class="tree-item-demo folder">📂 产品API</div>
+          <div class="tree-item-demo">
+            <span class="tree-method-tag" style="background: rgba(78, 201, 176, 0.15); color: var(--method-get)">GET</span>
+            获取产品列表
+          </div>
+          <div class="tree-item-demo">
+            <span class="tree-method-tag" style="background: rgba(255, 85, 85, 0.15); color: var(--method-delete)">DEL</span>
+            删除产品
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 参数表格 -->
+    <div class="showcase-section">
+      <div class="section-title">📊 参数表格 ParamsTable</div>
+      <div class="params-table-demo">
+        <div class="params-header-demo">
+          <div class="col-check-demo">✓</div>
+          <div class="col-key-demo">参数名</div>
+          <div class="col-value-demo">参数值</div>
+          <div class="col-desc-demo">描述</div>
+          <div class="col-action-demo"></div>
+        </div>
+        <div class="params-row-demo">
+          <div class="col-check-demo"><input type="checkbox" checked></div>
+          <div class="col-key-demo"><input class="param-input-demo" type="text" value="page"></div>
+          <div class="col-value-demo"><input class="param-input-demo" type="text" value="1"></div>
+          <div class="col-desc-demo">页码</div>
+          <div class="col-action-demo">×</div>
+        </div>
+        <div class="params-row-demo">
+          <div class="col-check-demo"><input type="checkbox" checked></div>
+          <div class="col-key-demo"><input class="param-input-demo" type="text" value="limit"></div>
+          <div class="col-value-demo"><input class="param-input-demo" type="text" value="10"></div>
+          <div class="col-desc-demo">每页数量</div>
+          <div class="col-action-demo">×</div>
+        </div>
+        <div class="params-row-demo">
+          <div class="col-check-demo"><input type="checkbox"></div>
+          <div class="col-key-demo"><input class="param-input-demo" type="text" value="sort"></div>
+          <div class="col-value-demo"><input class="param-input-demo" type="text" value="createdAt"></div>
+          <div class="col-desc-demo">排序字段</div>
+          <div class="col-action-demo">×</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 响应面板 -->
+    <div class="showcase-section">
+      <div class="section-title">📤 响应面板 ResponsePanel</div>
+      <div class="response-demo">
+        <div class="response-tabs-demo">
+          <div class="response-tab-demo active">Body</div>
+          <div class="response-tab-demo">Headers</div>
+          <div class="response-tab-demo">Cookies</div>
+        </div>
+        <div class="response-content-demo">
+          <div class="response-status-demo">
+            <span class="status-badge-demo">200 OK</span>
+            <span class="status-time-demo">耗时: 128ms | 大小: 2.4KB</span>
+          </div>
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "users": [
+      { "id": 1, "name": "张三", "email": "zhang@example.com" },
+      { "id": 2, "name": "李四", "email": "li@example.com" }
+    ],
+    "total": 42,
+    "page": 1,
+    "limit": 10
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- 代码编辑器 -->
+    <div class="showcase-section">
+      <div class="section-title">💻 代码编辑器 CodeEditor</div>
+      <div class="editor-demo">
+        <div class="editor-content-demo">
+          <div class="editor-line-numbers">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8
+          </div>
+          <div class="editor-code-demo"><span class="code-comment">// Pre-request Script</span>
+<span class="code-keyword">const</span> token = fm.<span class="code-function">env</span>.<span class="code-function">get</span>(<span class="code-string">'authToken'</span>);
+fm.<span class="code-function">request</span>.<span class="code-function">headers</span>.<span class="code-function">add</span>(<span class="code-string">'Authorization'</span>, <span class="code-string">`Bearer ${token}`</span>);
+
+<span class="code-comment">// 设置请求超时</span>
+fm.<span class="code-function">request</span>.timeout = <span class="code-number">5000</span>;
+
+<span class="code-comment">// 输出日志</span>
+fm.<span class="code-function">log</span>(<span class="code-string">'Request prepared'</span>, { url: fm.<span class="code-function">request</span>.url });</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 按钮样式 -->
+    <div class="showcase-section">
+      <div class="section-title">🔘 按钮样式 Buttons</div>
+      <div class="buttons-demo">
+        <button class="btn-primary">主要按钮</button>
+        <button class="btn-secondary">次要按钮</button>
+        <button class="btn-outline">轮廓按钮</button>
+        <button class="btn-ghost">幽灵按钮</button>
+      </div>
+    </div>
+
+    <!-- 输入框样式 -->
+    <div class="showcase-section">
+      <div class="section-title">📝 输入框样式 Inputs</div>
+      <div class="inputs-demo">
+        <div class="input-group-demo">
+          <label class="input-label-demo">普通输入框</label>
+          <input class="input-field-demo" type="text" placeholder="请输入内容">
+        </div>
+        <div class="input-group-demo">
+          <label class="input-label-demo">带值输入框</label>
+          <input class="input-field-demo" type="text" value="已输入的内容">
+        </div>
+        <div class="input-group-demo">
+          <label class="input-label-demo">错误状态</label>
+          <input class="input-field-demo error" type="text" value="错误的输入">
+        </div>
+      </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div class="showcase-section">
+      <div class="section-title">💬 消息提示 Messages</div>
+      <div class="messages-demo">
+        <div class="message-demo success">✓ 操作成功！数据已保存。</div>
+        <div class="message-demo error">✕ 操作失败！网络连接超时。</div>
+        <div class="message-demo warning">⚠ 注意！请检查输入格式。</div>
+        <div class="message-demo info">ℹ 提示：按 Ctrl+S 快速保存。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 主题信息数据
+    const themeInfo = {
+      'theme-vscode-dark': {
+        name: 'VS Code Dark+',
+        desc: '经典深蓝风格 - VS Code 默认深色主题，专业稳重的编程体验'
+      },
+      'theme-nord': {
+        name: 'Nord',
+        desc: '北欧冷色调 - 来自北欧的设计灵感，清新优雅的配色方案'
+      },
+      'theme-dracula': {
+        name: 'Dracula',
+        desc: '紫色高对比 - 经典紫色主题，高对比度设计，夜猫子最爱'
+      },
+      'theme-one-dark': {
+        name: 'One Dark Pro',
+        desc: 'Atom 经典风格 - Atom 编辑器的经典配色，柔和舒适的视觉体验'
+      },
+      'theme-material-darker': {
+        name: 'Material Darker',
+        desc: 'Material Design 深色版 - Google 设计规范的极致深色演绎'
+      },
+      'theme-monokai-pro': {
+        name: 'Monokai Pro',
+        desc: '经典 Monokai 升级版 - Sublime Text 经典配色的专业升级'
+      },
+      'theme-github-dark': {
+        name: 'GitHub Dark',
+        desc: 'GitHub 官方深色 - GitHub 网站深色模式，简洁专业的开发者风格'
+      },
+      'theme-tokyo-night': {
+        name: 'Tokyo Night',
+        desc: '东京夜色 - NeoVim 流行主题，神秘深邃的日系美学'
+      },
+      'theme-arctic-ice': {
+        name: 'Arctic Ice',
+        desc: '冰雪白色系 - 冷峻简约的浅色主题，清爽专业的视觉体验，适合长时间工作'
+      },
+      'theme-storm-gray': {
+        name: 'Storm Gray',
+        desc: '风暴灰色系 - 专业沉稳的浅色主题，中性百搭，适合各种工作场景'
+      }
+    };
+
+    // 主题切换逻辑
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const themeInfoCard = document.querySelector('.theme-info-card');
+
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 移除所有 active 状态
+        themeButtons.forEach(b => b.classList.remove('active'));
+        // 添加当前 active
+        btn.classList.add('active');
+        // 切换 body 的主题类
+        const theme = btn.dataset.theme;
+        document.body.className = theme;
+
+        // 更新主题信息卡片
+        const info = themeInfo[theme];
+        if (info) {
+          const nameEl = themeInfoCard.querySelector('.theme-info-name');
+          const descEl = themeInfoCard.querySelector('.theme-info-desc');
+          nameEl.textContent = info.name;
+          descEl.textContent = info.desc;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

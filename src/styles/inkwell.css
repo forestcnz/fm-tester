@@ -1,0 +1,429 @@
+/* ============================================================
+   FM Tester · Inkwell 墨砚 · 通用原语（全局共享）
+   各组件可复用：.btn / .field / .card / .chip / .kv-table / .lrow / .empty / .method-tag
+   依赖 themes.css 的墨砚 token（--bg-* / --fg-* / --line / --primary 等）
+   ============================================================ */
+
+/* 页头 */
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.page-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.page-title h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.page-title p {
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+.page-head .spacer {
+  flex: 1;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  color: var(--fg);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+.btn:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.btn svg {
+  width: 14px;
+  height: 14px;
+}
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.btn.primary:hover {
+  background: var(--primary-hover);
+}
+.btn.ghost {
+  background: none;
+  border-color: transparent;
+  color: var(--fg-2);
+}
+.btn.ghost:hover {
+  background: var(--bg-sunk);
+  transform: none;
+  box-shadow: none;
+}
+.btn.danger {
+  color: var(--err);
+  border-color: var(--line);
+}
+.btn.danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+.btn.sm {
+  height: 28px;
+  padding: 0 11px;
+  font-size: 12px;
+}
+
+/* 输入 */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 11px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  transition: var(--dur-base) var(--ease);
+}
+.field:focus-within {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.field input,
+.field select,
+.field textarea {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--fg);
+  min-width: 0;
+}
+.field svg {
+  width: 14px;
+  height: 14px;
+  color: var(--fg-3);
+  flex-shrink: 0;
+}
+
+/* 卡片 */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card-pad {
+  padding: 16px;
+}
+
+/* 徽标 / 标签 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.chip.ok {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--ok);
+}
+.chip.warn {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--warn);
+}
+.chip.err {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--err);
+}
+.chip.info {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.chip.neutral {
+  background: var(--bg-sunk);
+  color: var(--fg-2);
+}
+
+/* 键值表 */
+.kv-table {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.kv-head,
+.kv-row {
+  display: grid;
+  align-items: center;
+}
+.kv-head {
+  background: var(--bg-sunk);
+  height: 32px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.kv-head span,
+.kv-row span {
+  padding: 0 8px;
+}
+.kv-row {
+  border-bottom: 1px solid var(--line);
+  transition: var(--dur-fast) var(--ease);
+}
+.kv-row:last-child {
+  border-bottom: none;
+}
+.kv-row:hover {
+  background: var(--bg-sunk);
+}
+.kv-row input {
+  width: 100%;
+  border: none;
+  background: none;
+  outline: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--fg);
+  padding: 5px 6px;
+  border-radius: 5px;
+}
+.kv-row input:focus {
+  background: var(--bg-panel);
+  box-shadow: inset 0 0 0 1.5px var(--primary-line);
+}
+.kv-cb {
+  display: grid;
+  place-items: center;
+}
+.kv-cb input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* method tag */
+.method-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.m-get {
+  color: var(--m-get);
+}
+.m-post {
+  color: var(--m-post);
+}
+.m-put {
+  color: var(--m-put);
+}
+.m-del {
+  color: var(--m-del);
+}
+.m-patch {
+  color: var(--m-patch);
+}
+.m-head {
+  color: var(--m-head);
+}
+
+/* 通用列表行 */
+.lrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 9px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+  position: relative;
+}
+.lrow:hover {
+  background: var(--bg-sunk);
+}
+.lrow.sel {
+  background: var(--primary-soft);
+}
+.lrow.sel .lrow-t {
+  color: var(--primary);
+  font-weight: 600;
+}
+.lrow.sel::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--primary);
+}
+.lrow-ico {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--fg-2);
+  flex-shrink: 0;
+}
+.lrow-ico svg {
+  width: 15px;
+  height: 15px;
+}
+.lrow-t {
+  flex: 1;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lrow-meta {
+  font-size: 10.5px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+}
+.ldot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ldot.on {
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+.ldot.off {
+  background: var(--fg-3);
+}
+.ldot.err {
+  background: var(--err);
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--fg-3);
+  height: 100%;
+  text-align: center;
+  padding: 30px;
+}
+.empty svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.4;
+}
+.empty h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--fg-2);
+}
+
+/* 动画工具类 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes flowDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes slidein {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 动画开关：SettingsCenter 外观页 .no-anim 应用到 <html> */
+.no-anim *,
+.no-anim *::before,
+.no-anim *::after {
+  animation-duration: 0.001s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0.001s !important;
+  transition-delay: 0s !important;
+}

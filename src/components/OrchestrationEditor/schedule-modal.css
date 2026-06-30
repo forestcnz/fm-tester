@@ -1,0 +1,397 @@
+/* 定时配置弹窗样式 */
+.schedule-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(28, 25, 23, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.schedule-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+  animation: rise var(--dur-slow) var(--ease);
+}
+
+.schedule-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.schedule-modal-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.schedule-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  color: var(--fg-3);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--dur-base) var(--ease);
+}
+
+.schedule-modal-close:hover {
+  background: var(--bg-sunk);
+  color: var(--fg);
+}
+
+.schedule-modal-body {
+  padding: 20px;
+}
+
+.schedule-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.schedule-modal-footer .cancel-btn,
+.schedule-modal-footer .save-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.schedule-modal-footer .cancel-btn {
+  background: var(--bg-panel);
+  color: var(--fg-2);
+}
+
+.schedule-modal-footer .cancel-btn:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-sunk);
+  color: var(--fg);
+}
+
+.schedule-modal-footer .save-btn {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.schedule-modal-footer .save-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.schedule-modal-footer .save-btn:disabled {
+  background: var(--bg-sunk);
+  border-color: var(--line);
+  color: var(--fg-3);
+  cursor: not-allowed;
+}
+
+/* 定时配置字段样式 */
+.schedule-field {
+  margin-bottom: 20px;
+}
+
+.schedule-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.toggle-track {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: var(--line-2);
+  border-radius: 13px;
+  transition: background var(--dur-slow) var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-track.enabled {
+  background: var(--primary);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--bg-panel);
+  border-radius: 10px;
+  transition:
+    left var(--dur-slow) var(--ease),
+    box-shadow var(--dur-slow) var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-track.enabled .toggle-thumb {
+  left: 25px;
+}
+
+.toggle-text {
+  font-size: 14px;
+  color: var(--fg-2);
+  user-select: none;
+}
+
+/* 旧样式保留兼容 - 已废弃 */
+.segment-control {
+  display: flex;
+  gap: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.segment-btn {
+  padding: 8px 20px;
+  border: none;
+  background: var(--bg-panel);
+  color: var(--fg-2);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+  border-right: 1px solid var(--line);
+}
+
+.segment-btn:last-child {
+  border-right: none;
+}
+
+.segment-btn:hover:not(.active) {
+  background: var(--bg-sunk);
+}
+
+.segment-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.cron-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  transition: var(--dur-base) var(--ease);
+  background: var(--bg-panel);
+  color: var(--fg);
+}
+
+.cron-input:focus {
+  border-color: var(--primary-line);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.cron-input::placeholder {
+  color: var(--fg-3);
+}
+
+.cron-field-wrapper {
+  position: relative;
+}
+
+.cron-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid var(--err);
+  border-radius: var(--radius-sm);
+  color: var(--err);
+  font-size: 13px;
+}
+
+.cron-description {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid var(--ok);
+  border-radius: var(--radius-sm);
+  color: var(--ok);
+  font-size: 13px;
+}
+
+.schedule-info {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--bg-sunk);
+  border-radius: var(--radius-md);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+.info-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* 预测执行时间样式 */
+.next-run-times {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--primary-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-line);
+}
+
+.next-run-title {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.next-run-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.next-run-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+
+.run-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.run-time {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.schedule-examples {
+  margin-bottom: 20px;
+}
+
+.examples-title {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+.examples-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.example-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.example-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* 定时按钮样式 */
+.schedule-btn {
+  background: var(--bg-card);
+  color: var(--fg-2);
+}
+
+.schedule-btn:hover {
+  background: var(--bg-input);
+}
+
+.schedule-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.schedule-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 4px;
+}

@@ -1,0 +1,62 @@
+/* 状态栏 · 墨砚 Inkwell */
+.status-bar {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px 0 12px;
+  background: var(--bg-rail);
+  border-top: 1px solid var(--line);
+  color: var(--fg-rail);
+  font-size: 11.5px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.version {
+  font-family: var(--font-mono);
+  color: var(--fg-rail-muted);
+}
+
+.status-center {
+  margin: 0 auto;
+  color: var(--fg-rail-muted);
+}
+
+.workspace-name {
+  color: var(--fg-rail);
+  font-weight: 600;
+}
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.status-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--fg-rail-muted);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.status-icon:hover {
+  background: var(--bg-rail-hover);
+  color: var(--fg-rail);
+}
+
+.status-icon svg {
+  width: 13px;
+  height: 13px;
+}

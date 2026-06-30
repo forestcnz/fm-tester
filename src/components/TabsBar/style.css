@@ -1,0 +1,131 @@
+/* 标签栏 · 墨砚 Inkwell（分隔条式 + 顶部激活线） */
+.tabs-wrapper {
+  width: 100%;
+}
+
+.tabs-bar {
+  height: 38px;
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.tabs-container {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 14px;
+  min-width: 0;
+  max-width: 200px;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--dur-base) var(--ease);
+}
+
+.tab:hover {
+  background: var(--bg-panel);
+}
+
+.tab.active {
+  background: var(--bg-panel);
+}
+
+/* 顶部激活指示线 */
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--primary);
+}
+
+.tab-method {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.tab-method.get {
+  color: var(--m-get);
+}
+.tab-method.post {
+  color: var(--m-post);
+}
+.tab-method.put {
+  color: var(--m-put);
+}
+.tab-method.delete {
+  color: var(--m-del);
+}
+.tab-method.patch {
+  color: var(--m-patch);
+}
+.tab-method.head {
+  color: var(--m-head);
+}
+.tab-method.websocket {
+  color: var(--m-head);
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+  color: var(--fg-2);
+  flex-shrink: 0;
+}
+
+.tab-name {
+  font-size: 12px;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab.active .tab-name {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.tab-close {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--fg-3);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.tab:hover .tab-close,
+.tab.active .tab-close {
+  opacity: 1;
+}
+
+.tab-close:hover {
+  background: var(--line);
+  color: var(--err);
+}

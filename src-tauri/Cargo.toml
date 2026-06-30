@@ -1,0 +1,66 @@
+[package]
+name = "fm-tester"
+version = "0.1.0"
+description = "FM Tester - A Tauri-based API testing tool"
+authors = ["forestcnz"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/forestcnz/fm-tester"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "fm_tester_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml_ng = "0.10"
+tempfile = "3"
+chrono = "0.4"
+reqwest = { version = "0.11", features = ["blocking", "multipart", "json", "stream", "rustls-tls-native-roots"], default-features = false }
+hyper = { version = "0.14", features = ["client", "http1", "http2"] }
+tokio-rustls = "0.24"
+rustls = "0.21"
+rustls-native-certs = "0.6"
+url = "2"
+regex = "1"
+aes-gcm = "0.10"
+base64 = "0.22"
+sha2 = "0.10"
+hostname = "0.4"
+rand = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "time"] }
+futures-util = "0.3"
+lazy_static = "1.4"
+rfd = "0.15"
+urlencoding = "2.1"
+croner = "2"
+rusqlite = { version = "0.31", features = ["bundled"] }
+rquickjs = "0.7"
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-native-roots"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.24"
+git2 = { version = "0.18", default-features = false, features = ["https", "vendored-openssl"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tracing-appender = "0.2"
+
+# libgit2 从源码编译（vendored）：Windows 无系统 libgit2，用 cc 构建不依赖 perl。
+# git2 的 vendored-openssl 特性让 openssl-sys 从源码编译，CI（macOS/Linux）无需预装 OpenSSL。
+# libgit2 的 HTTPS：Windows 走原生 WinHTTP/Schannel，macOS 走 Secure Transport，Linux 走 OpenSSL。
+# reqwest 与 tokio-tungstenite 均走 rustls，不依赖 OpenSSL。
+[dependencies.libgit2-sys]
+version = "0.16"
+features = ["vendored"]

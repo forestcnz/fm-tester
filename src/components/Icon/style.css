@@ -1,0 +1,18 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  position: relative;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  display: block;
+}
+
+.icon.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

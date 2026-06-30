@@ -1,0 +1,95 @@
+/* Sidebar 容器样式 · 墨砚 Inkwell */
+.sidebar {
+  display: flex;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--line);
+  overflow: hidden;
+}
+
+/* 面板容器 */
+.panel-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 其他面板（功能、性能、工具箱、历史） */
+.other-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 面板头部（共用样式） */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* 空面板提示（共用样式） */
+.empty-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  font-size: 13px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* Chat 提示面板 */
+.chat-hint-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.hint-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  font-size: 13px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ========== Paper Stack 主题支持（已收敛到墨砚 token，保留类名兼容） ========== */
+.sidebar:has(.paper-theme) {
+  background: var(--bg-panel);
+}
+
+.panel-header.paper-style {
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-title.paper-style {
+  color: var(--fg);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.paper-divider {
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    var(--line) 20px,
+    var(--line) 21px
+  );
+}

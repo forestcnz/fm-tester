@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester · 设置中心 · 重新设计</title>
+<link rel="stylesheet" href="inkwell.css">
+<style>
+/* ===================== 设置中心 ===================== */
+.settings-body{flex:1;display:flex;min-height:0}
+
+/* 左侧分类导航 */
+.settings-nav{width:226px;flex-shrink:0;background:var(--bg-sunk);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:18px 11px 12px;overflow-y:auto}
+.sn-title{font-family:"Fraunces",serif;font-weight:600;font-size:17px;letter-spacing:-.01em;
+  padding:0 11px 4px;margin-bottom:6px}
+.sn-sub{font-size:10.5px;color:var(--fg-3);letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;padding:0 11px;margin-bottom:14px}
+.nav-item{display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;border-radius:9px;
+  cursor:pointer;color:var(--fg-2);font-size:13px;font-weight:600;transition:.13s;position:relative;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg-panel);color:var(--fg)}
+.nav-item.on{background:var(--bg-panel);color:var(--primary);box-shadow:var(--shadow-sm)}
+.nav-item.on::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;border-radius:0 3px 3px 0;background:var(--primary)}
+.nav-item svg{width:17px;height:17px;color:var(--fg-3);flex-shrink:0;transition:.13s}
+.nav-item:hover svg{color:var(--fg-2)}
+.nav-item.on svg{color:var(--primary)}
+.nav-item .nm{flex:1}
+.nav-foot{margin-top:auto;padding:10px 11px 2px;font-size:10.5px;color:var(--fg-3);line-height:1.5}
+
+/* 右侧主区 */
+.settings-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.settings-header{display:flex;align-items:flex-start;gap:14px;padding:20px 30px 18px;
+  border-bottom:1px solid var(--line);flex-shrink:0;background:var(--bg-panel)}
+.sh-ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--primary),#1e3a8a);color:#fff;box-shadow:var(--shadow-sm);flex-shrink:0}
+.sh-ico svg{width:17px;height:17px}
+.sh-text h1{font-family:"Fraunces",serif;font-weight:600;font-size:22px;letter-spacing:-.01em;line-height:1.1}
+.sh-text p{font-size:12px;color:var(--fg-3);margin-top:3px}
+.settings-header .spacer{flex:1}
+.settings-content{flex:1;overflow-y:auto;padding:24px 30px 60px}
+.settings-content::-webkit-scrollbar{width:9px}
+.settings-content::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--bg-panel)}
+.sc-inner{max-width:720px}
+.spanel{display:none}.spanel.on{display:block;animation:fade .18s ease}
+
+/* 分组标题 */
+.s-grp{margin-bottom:30px}
+.s-grp-h{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--fg-3);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.s-grp-h svg{width:13px;height:13px;color:var(--fg-3)}
+
+/* 设置行：左标签 + 右控件 */
+.s-row{display:flex;align-items:center;gap:20px;padding:15px 2px;border-bottom:1px solid var(--line)}
+.s-row:last-child{border-bottom:none}
+.s-row.top{align-items:flex-start}
+.s-lab{flex:0 0 215px;display:flex;flex-direction:column;gap:3px}
+.s-lab .t{font-size:13px;font-weight:600;color:var(--fg)}
+.s-lab .d{font-size:11.5px;color:var(--fg-3);line-height:1.55}
+.s-lab code{font-family:"IBM Plex Mono",monospace;color:var(--accent);background:var(--accent-soft);
+  padding:0 5px;border-radius:4px;font-size:11px}
+.s-ctrl{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+
+/* 数字+单位 */
+.num-wrap{display:flex;align-items:center;gap:8px}
+.num-wrap input{width:90px;height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line);
+  background:var(--bg-panel);font:inherit;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--fg);
+  outline:none;transition:.15s;text-align:center}
+.num-wrap input:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft)}
+.num-wrap .u{font-size:12px;color:var(--fg-3);font-weight:600}
+.num-wrap .hint{font-size:11.5px;color:var(--fg-3);margin-left:4px}
+
+/* select */
+.sel{height:34px;padding:0 30px 0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg-panel);
+  font:inherit;font-size:12.5px;color:var(--fg);outline:none;cursor:pointer;transition:.15s;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center}
+.sel:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft)}
+
+/* 文本输入（复用 .field 视觉） */
+.s-input{flex:1;height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg-panel);
+  font:inherit;font-size:12.5px;color:var(--fg);outline:none;transition:.15s;min-width:0}
+.s-input.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+.s-input:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft)}
+.input-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+
+/* 开关 */
+.switch{width:38px;height:22px;border-radius:11px;background:var(--line-2);position:relative;cursor:pointer;
+  transition:.18s;flex-shrink:0;border:none;padding:0}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(28,25,23,.25);transition:.18s}
+.switch.on{background:var(--primary)}
+.switch.on::after{left:18px}
+
+/* 模型组合框 */
+.model-combo{display:flex;align-items:center;gap:8px;flex:1;min-width:0;flex-wrap:wrap}
+.model-in{position:relative;flex:1;min-width:180px}
+.model-in input{width:100%;height:34px;padding:0 34px 0 12px;border-radius:8px;border:1px solid var(--line);
+  background:var(--bg-panel);font:inherit;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--fg);outline:none;transition:.15s}
+.model-in input:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft)}
+.model-dd-btn{position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:6px;border:none;
+  background:var(--bg-sunk);color:var(--fg-2);cursor:pointer;display:grid;place-items:center;transition:.13s}
+.model-dd-btn:hover{background:var(--line);color:var(--fg)}
+.model-dd-btn svg{width:13px;height:13px;transition:.13s}
+.model-dd-btn.open svg{transform:rotate(180deg)}
+.model-menu{position:absolute;top:40px;left:0;right:0;background:var(--bg-panel);border:1px solid var(--line);
+  border-radius:9px;box-shadow:var(--shadow-lg);padding:5px;z-index:40;display:none;max-height:240px;overflow-y:auto}
+.model-menu.open{display:block;animation:pop .14s ease}
+.model-menu div{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--fg-2);transition:.1s}
+.model-menu div:hover{background:var(--bg-sunk);color:var(--fg)}
+.model-menu div .ck{margin-left:auto;color:var(--primary);opacity:0}
+.model-menu div.on .ck{opacity:1}
+
+/* API key 状态 */
+.key-status{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:7px;
+  font-size:11.5px;font-weight:600}
+.key-status.set{background:rgba(22,163,74,.12);color:var(--ok)}
+.key-status.unset{background:var(--bg-sunk);color:var(--fg-3)}
+.key-status .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+.eye-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg-panel);
+  color:var(--fg-2);cursor:pointer;display:grid;place-items:center;transition:.15s;flex-shrink:0}
+.eye-btn:hover{border-color:var(--line-strong);color:var(--fg)}
+.eye-btn svg{width:15px;height:15px}
+
+/* AI 自定义请求头表 */
+.ahd-add{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:7px;
+  border:1px dashed var(--line-strong);background:none;color:var(--fg-2);font-size:12px;font-weight:600;cursor:pointer;transition:.14s}
+.ahd-add:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.ahd-add svg{width:13px;height:13px}
+.ahd-table{margin-top:11px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.ahd-h,.ahd-r{display:grid;grid-template-columns:34px 1fr 1.3fr 34px;align-items:center}
+.ahd-h{background:var(--bg-sunk);height:32px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;
+  color:var(--fg-3);text-transform:uppercase;letter-spacing:.05em}
+.ahd-h span,.ahd-r span{padding:0 9px}
+.ahd-r{border-bottom:1px solid var(--line);min-height:38px;transition:.12s}
+.ahd-r:last-child{border-bottom:none}.ahd-r:hover{background:var(--bg-sunk)}
+.ahd-r input{width:100%;border:none;background:none;outline:none;font:inherit;font-size:12px;color:var(--fg);padding:5px 7px;border-radius:5px}
+.ahd-r input.mono{font-family:"IBM Plex Mono",monospace}
+.ahd-r input:focus{background:var(--bg-panel);box-shadow:inset 0 0 0 1.5px var(--primary-line)}
+.ahd-cb{display:grid;place-items:center}.ahd-cb input{width:14px;height:14px;accent-color:var(--primary);cursor:pointer}
+.ahd-del{display:grid;place-items:center;color:var(--fg-3);cursor:pointer;border:none;background:none;opacity:0;transition:.12s}
+.ahd-r:hover .ahd-del{opacity:1}.ahd-del:hover{color:var(--err)}.ahd-del svg{width:14px;height:14px}
+.ahd-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--fg-3);font-size:12.5px}
+
+/* 测试连接结果 */
+.conn-test{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:0 4px}
+.conn-test.ok{color:var(--ok)}.conn-test.err{color:var(--err)}
+.conn-test.spin{color:var(--fg-3)}
+
+/* 外观：主题卡片 */
+.theme-cards{display:flex;gap:14px;flex-wrap:wrap}
+.theme-card{width:148px;border:2px solid var(--line);border-radius:12px;cursor:pointer;overflow:hidden;
+  transition:.16s;background:var(--bg-panel)}
+.theme-card:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.theme-card.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.tc-preview{height:78px;position:relative;padding:10px;display:flex;flex-direction:column;gap:6px}
+.tc-paper{background:#faf9f6}.tc-paper .tc-bar{background:#fff;border:1px solid #e7e5e4}
+.tc-paper .tc-dot{background:#2563eb}.tc-paper .tc-line{background:#e7e5e4}
+.tc-dark{background:#21252b}.tc-dark .tc-bar{background:#282c34;border:1px solid #3e4451}
+.tc-dark .tc-dot{background:#61afef}.tc-dark .tc-line{background:#3e4451}
+.tc-bar{height:14px;border-radius:4px;display:flex;align-items:center;padding:0 4px;gap:3px}
+.tc-bar i{width:5px;height:5px;border-radius:50%;background:#bbb}
+.tc-line{height:7px;border-radius:3px;flex:1}.tc-line.s{flex:.5}
+.tc-foot{padding:9px 11px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--fg)}
+.tc-foot .tick{margin-left:auto;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;color:#fff;opacity:0;transition:.13s}
+.theme-card.on .tc-foot .tick{opacity:1;background:var(--primary)}
+.tc-name{flex:1}
+.tc-sub{font-size:10.5px;color:var(--fg-3);font-weight:500}
+
+/* 快捷键列表 */
+.kbd-list{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--bg-panel)}
+.kbd-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);transition:.12s}
+.kbd-row:last-child{border-bottom:none}.kbd-row:hover{background:var(--bg-sunk)}
+.kbd-row .k-ico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:var(--bg-sunk);color:var(--fg-2);flex-shrink:0}
+.kbd-row .k-ico svg{width:14px;height:14px}
+.kbd-row .k-name{flex:1;font-size:13px;font-weight:600;color:var(--fg)}
+.kbd-row .k-desc{font-size:11.5px;color:var(--fg-3);margin-top:1px;font-weight:500}
+.kbd-row .k-keys{display:flex;gap:4px;flex-shrink:0}
+.kbd-row .k-keys kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;padding:3px 8px;
+  border-radius:6px;background:var(--bg-sunk);border:1px solid var(--line);color:var(--fg-2);min-width:22px;text-align:center}
+
+/* 关于 */
+.about-hero{display:flex;align-items:center;gap:18px;padding:8px 2px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.about-mark{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--primary),#0f2a78);color:#fff;box-shadow:var(--shadow)}
+.about-mark svg{width:32px;height:32px}
+.about-name{font-family:"Fraunces",serif;font-weight:600;font-size:24px;letter-spacing:-.01em}
+.about-name em{font-style:italic;color:var(--primary);font-weight:500}
+.about-ver{display:flex;align-items:center;gap:9px;margin-top:4px;font-size:12.5px;color:var(--fg-3)}
+.about-ver .vtag{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--primary);
+  background:var(--primary-soft);padding:2px 8px;border-radius:6px;border:1px solid var(--primary-line)}
+.info-row{display:flex;align-items:center;gap:14px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.info-row:last-child{border-bottom:none}
+.info-row .i-lab{flex:0 0 130px;font-size:12px;color:var(--fg-3);font-weight:600}
+.info-row .i-val{flex:1;font-size:13px;color:var(--fg);display:flex;align-items:center;gap:10px;min-width:0}
+.info-row .i-val.mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--fg-2);
+  background:var(--bg-sunk);padding:5px 10px;border-radius:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.license-box{margin-top:18px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.license-head{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--bg-sunk);cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--fg);border:none;width:100%;text-align:left}
+.license-head svg.chev{width:15px;height:15px;margin-left:auto;color:var(--fg-3);transition:.18s}
+.license-head.open svg.chev{transform:rotate(180deg)}
+.license-body{max-height:0;overflow:hidden;transition:max-height .25s ease;font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;line-height:1.7;color:var(--fg-2);white-space:pre-wrap;padding:0 16px}
+.license-body.open{max-height:600px;padding:14px 16px 18px}
+
+/* 危险区 */
+.danger-zone{margin-top:30px;border:1px solid rgba(220,38,38,.25);border-radius:12px;padding:16px 18px;background:rgba(220,38,38,.02)}
+.danger-zone h4{font-size:12px;font-weight:700;color:var(--err);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.danger-zone p{font-size:12px;color:var(--fg-3);margin-bottom:12px;line-height:1.5}
+
+/* 计划中角标 */
+.planned{display:inline-block;font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-soft);
+  padding:1px 6px;border-radius:5px;margin-left:7px;vertical-align:1px;text-transform:uppercase;letter-spacing:.04em;
+  border:1px solid rgba(180,83,9,.22)}
+/* 深色主题适配 */
+.theme-dark .key-status.set{background:rgba(152,195,121,.15)}
+.theme-dark .danger-zone{border-color:rgba(224,108,117,.28);background:rgba(224,108,117,.05)}
+.theme-dark .sel{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c6370' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame theme-paper" id="frame">
+
+  <!-- 标题栏 -->
+  <div class="titlebar">
+    <div class="tlights"><span class="tl-r"></span><span class="tl-y"></span><span class="tl-g"></span></div>
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div>
+      <div class="brand-name">FM <em>Tester</em></div>
+      <div class="brand-sub">设置</div>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-actions">
+      <a class="tb-btn" href="redesign-preview.html" title="返回工作台"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+      <button class="tb-btn" id="themeBtn" title="切换主题 (⌘.)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="settings-body">
+
+      <!-- 左侧分类导航 -->
+      <aside class="settings-nav">
+        <div class="sn-title">设置</div>
+        <div class="sn-sub">Preferences</div>
+        <button class="nav-item on" data-nav="general" data-t="通用" data-d="请求超时、语言与启动行为" data-ico="general">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+          <span class="nm">通用</span>
+        </button>
+        <button class="nav-item" data-nav="ai" data-t="AI 助手" data-d="OpenAI 协议兼容的模型与鉴权配置" data-ico="ai">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>
+          <span class="nm">AI 助手</span>
+        </button>
+        <button class="nav-item" data-nav="git" data-t="Git 备份" data-d="远程仓库、分支与凭据配置" data-ico="git">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 9a9 9 0 0 1-9 9"/></svg>
+          <span class="nm">Git 备份</span>
+        </button>
+        <button class="nav-item" data-nav="appearance" data-t="外观" data-d="主题、字体与界面密度" data-ico="appearance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a10 10 0 1 1 0-20 8 8 0 0 1 0 16h-1.5a1.5 1.5 0 0 0-1 2.5 1.5 1.5 0 0 1-1 2.5z"/></svg>
+          <span class="nm">外观</span>
+        </button>
+        <button class="nav-item" data-nav="shortcuts" data-t="快捷键" data-d="键盘快捷键参考" data-ico="shortcuts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
+          <span class="nm">快捷键</span>
+        </button>
+        <button class="nav-item" data-nav="about" data-t="关于" data-d="版本、作者与开源协议" data-ico="about">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span class="nm">关于</span>
+        </button>
+        <div class="nav-foot">配置存储于本地 <span class="mono" style="font-family:'IBM Plex Mono'">config.json</span>，敏感字段加密保存。</div>
+      </aside>
+
+      <!-- 右侧主区 -->
+      <main class="settings-main">
+        <div class="settings-header">
+          <div class="sh-ico" id="shIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
+          <div class="sh-text">
+            <h1 id="shTitle">通用</h1>
+            <p id="shDesc">请求超时、语言与启动行为</p>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn primary" id="saveBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>保存设置</button>
+        </div>
+
+        <div class="settings-content"><div class="sc-inner">
+
+          <!-- ========== 通用 ========== -->
+          <div class="spanel on" data-spanel="general">
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4z"/></svg>请求</div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">请求超时时间</span><span class="d">HTTP 请求的最大等待时间，超时自动取消。默认 60 秒。</span></div>
+                <div class="s-ctrl">
+                  <div class="num-wrap"><input type="number" id="cfgTimeout" value="60" min="1" max="600"><span class="u">秒</span></div>
+                </div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">默认语言</span><span class="d">界面显示语言，切换后立即生效。</span></div>
+                <div class="s-ctrl">
+                  <select class="sel" id="cfgLang"><option value="zh-CN" selected>简体中文</option><option value="en">English</option></select>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>行为</div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">启动时恢复上次工作区<span class="planned">计划</span></span><span class="d">重新打开应用时自动载入最近使用的工作区。</span></div>
+                <div class="s-ctrl"><button class="switch on" data-key="restoreWs"></button></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">发送后停留在当前标签<span class="planned">计划</span></span><span class="d">发送时不再强制切换到 Body 标签页（当前已为默认行为，未来可配置）。</span></div>
+                <div class="s-ctrl"><button class="switch on" data-key="keepTab"></button></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">发送请求时自动保存<span class="planned">计划</span></span><span class="d">每次发送自动持久化接口改动。</span></div>
+                <div class="s-ctrl"><button class="switch" data-key="autoSave"></button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========== AI ========== -->
+          <div class="spanel" data-spanel="ai">
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.5 7.5L21 2M16 7l5-5M3 12a9 9 0 1 0 9-9"/></svg>服务连接</div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">API 端点</span><span class="d">OpenAI 协议兼容的 API 地址。默认 <code>https://api.openai.com/v1</code>。</span></div>
+                <div class="s-ctrl">
+                  <div class="input-row"><input class="s-input mono" id="aiEndpoint" value="https://api.openai.com/v1" placeholder="https://api.openai.com/v1"></div>
+                </div>
+              </div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">API Key</span><span class="d">密钥本地加密存储，仅用于调用 AI 服务。</span></div>
+                <div class="s-ctrl">
+                  <div class="input-row">
+                    <input class="s-input mono" id="aiKey" type="password" value="sk-proj-9f2a4c8e" placeholder="sk-...">
+                    <button class="eye-btn" id="aiKeyEye" title="显示/隐藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                  <span class="key-status set" id="aiKeyStatus"><span class="d"></span>已设置</span>
+                </div>
+              </div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">模型</span><span class="d">选择或输入模型名称，可从端点拉取可用列表。</span></div>
+                <div class="s-ctrl">
+                  <div class="model-combo">
+                    <div class="model-in">
+                      <input id="aiModel" class="mono" value="gpt-4o-mini" placeholder="输入或选择模型">
+                      <button class="model-dd-btn" id="modelDdBtn" title="可用模型"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+                      <div class="model-menu" id="modelMenu"></div>
+                    </div>
+                    <button class="btn sm" id="fetchModels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.5 2.6L21 3"/><path d="M21 3v6h-6"/></svg>获取模型列表</button>
+                  </div>
+                </div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">超时时间</span><span class="d">AI 请求的最大等待时间。默认 600 秒（10 分钟）。</span></div>
+                <div class="s-ctrl"><div class="num-wrap"><input type="number" id="aiTimeout" value="600" min="1" max="3600"><span class="u">秒</span></div></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">测试连接</span><span class="d">用当前配置发送一次轻量请求以验证可用性。</span></div>
+                <div class="s-ctrl">
+                  <button class="btn sm" id="aiTestBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>测试连接</button>
+                  <span class="conn-test" id="aiTestResult"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7"/></svg>自定义请求头</div>
+              <div class="s-row top" style="border:none;padding-top:0">
+                <div class="s-lab" style="flex:1"><span class="t">附加请求头</span><span class="d">用于需要额外认证或特殊配置的 AI 服务，随每次 AI 请求发送。</span></div>
+              </div>
+              <button class="ahd-add" id="ahdAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>添加请求头</button>
+              <div class="ahd-table"><div class="ahd-h"><span></span><span>键</span><span>值</span><span></span></div><div id="ahdRows"></div></div>
+            </div>
+          </div>
+
+          <!-- ========== Git 备份 ========== -->
+          <div class="spanel" data-spanel="git">
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>远程仓库</div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">仓库地址</span><span class="d">支持 HTTPS 协议的 Git 仓库地址，工作区将备份到此仓库。</span></div>
+                <div class="s-ctrl"><div class="input-row"><input class="s-input mono" id="gitRepo" value="https://github.com/acme/fm-workspace.git" placeholder="https://github.com/user/repo.git"></div></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">分支</span><span class="d">推送与拉取使用的分支名。</span></div>
+                <div class="s-ctrl"><div class="input-row"><input class="s-input mono" id="gitBranch" value="master" style="max-width:200px"></div></div>
+              </div>
+            </div>
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>凭据</div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">用户名</span><span class="d">Git 提交与认证使用的用户名。</span></div>
+                <div class="s-ctrl"><div class="input-row"><input class="s-input" id="gitUser" value="forestcnz" placeholder="输入 Git 用户名"></div></div>
+              </div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">密码 / Token</span><span class="d">本地加密存储，留空表示保持原密码不变。</span></div>
+                <div class="s-ctrl">
+                  <div class="input-row">
+                    <input class="s-input mono" id="gitPass" type="password" value="ghp_••••••••" placeholder="已设置，留空保持不变">
+                    <button class="eye-btn" id="gitPassEye" title="显示/隐藏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                </div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">连接测试</span><span class="d">验证仓库地址与凭据是否可访问。</span></div>
+                <div class="s-ctrl">
+                  <button class="btn sm" id="gitTestBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>测试连接</button>
+                  <span class="conn-test" id="gitTestResult"></span>
+                </div>
+              </div>
+            </div>
+            <div class="danger-zone">
+              <h4>清除凭据</h4>
+              <p>移除本地保存的 Git 用户名与密码。清除后再次备份/恢复时需重新输入。</p>
+              <button class="btn danger sm" id="gitClearCreds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>清除 Git 凭据</button>
+            </div>
+          </div>
+
+          <!-- ========== 外观 ========== -->
+          <div class="spanel" data-spanel="appearance">
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2"/></svg>主题</div>
+              <div class="s-row top">
+                <div class="s-lab"><span class="t">配色主题</span><span class="d">纸张米白（Paper）或墨夜深色（Dark），切换后整页即时预览。</span></div>
+                <div class="s-ctrl">
+                  <div class="theme-cards">
+                    <div class="theme-card on" data-theme="paper">
+                      <div class="tc-preview tc-paper"><div class="tc-bar"><i></i><i></i><i></i></div><div style="display:flex;gap:6px"><div class="tc-line"></div><div class="tc-line s"></div></div><div style="display:flex;align-items:center;gap:6px;margin-top:auto"><span class="tc-dot" style="width:10px;height:10px;border-radius:3px"></span><div class="tc-line s"></div></div></div>
+                      <div class="tc-foot"><span class="tc-name">Paper</span><span class="tc-sub">墨砚纸张</span><span class="tick"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+                    </div>
+                    <div class="theme-card" data-theme="dark">
+                      <div class="tc-preview tc-dark"><div class="tc-bar"><i></i><i></i><i></i></div><div style="display:flex;gap:6px"><div class="tc-line"></div><div class="tc-line s"></div></div><div style="display:flex;align-items:center;gap:6px;margin-top:auto"><span class="tc-dot" style="width:10px;height:10px;border-radius:3px"></span><div class="tc-line s"></div></div></div>
+                      <div class="tc-foot"><span class="tc-name">Dark</span><span class="tc-sub">墨夜深色</span><span class="tick"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="s-grp">
+              <div class="s-grp-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2M9 21h6M12 17v4M6 7h12l-1 9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z"/></svg>字体与密度</div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">界面字号</span><span class="d">UI 正文的基础字号。</span></div>
+                <div class="s-ctrl"><select class="sel" id="cfgFontSize"><option>小 · 12px</option><option selected>标准 · 13px</option><option>大 · 14px</option></select></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">等宽数据字体</span><span class="d">用于 URL、JSON、脚本等数据展示。</span></div>
+                <div class="s-ctrl"><select class="sel" id="cfgMono"><option selected>IBM Plex Mono</option><option>JetBrains Mono</option><option>Fira Code</option><option>SFMono</option></select></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">界面密度</span><span class="d">行高与内边距的紧凑程度。</span></div>
+                <div class="s-ctrl"><select class="sel" id="cfgDensity"><option selected>舒适</option><option>紧凑</option></select></div>
+              </div>
+              <div class="s-row">
+                <div class="s-lab"><span class="t">动画效果</span><span class="d">启用过渡与微交互动画。</span></div>
+                <div class="s-ctrl"><button class="switch on" data-key="anim"></button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========== 快捷键 ========== -->
+          <div class="spanel" data-spanel="shortcuts">
+            <div class="s-grp" style="margin-bottom:8px">
+              <div class="s-grp-h" style="border:none;margin-bottom:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/></svg>全局</div>
+              <div class="kbd-list" id="kbdGlobal"></div>
+            </div>
+            <div class="s-grp" style="margin-bottom:8px">
+              <div class="s-grp-h" style="border:none;margin-bottom:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>请求工作台</div>
+              <div class="kbd-list" id="kbdRequest"></div>
+            </div>
+            <div class="s-grp">
+              <div class="s-grp-h" style="border:none;margin-bottom:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>导航与编辑</div>
+              <div class="kbd-list" id="kbdNav"></div>
+            </div>
+            <div style="font-size:11.5px;color:var(--fg-3);margin-top:8px;display:flex;align-items:center;gap:7px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+              macOS 使用 ⌘，Windows / Linux 使用 Ctrl。自定义快捷键将在后续版本支持。
+            </div>
+          </div>
+
+          <!-- ========== 关于 ========== -->
+          <div class="spanel" data-spanel="about">
+            <div class="about-hero">
+              <div class="about-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div>
+              <div>
+                <div class="about-name">FM <em>Tester</em></div>
+                <div class="about-ver"><span class="vtag">v0.8.2</span>Inkwell · 墨砚重新设计</div>
+              </div>
+              <div style="margin-left:auto"><button class="btn" id="checkUpdate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.5 2.6L21 3"/><path d="M21 3v6h-6"/></svg>检查更新</button></div>
+            </div>
+            <div class="s-grp">
+              <div class="s-grp-h" style="border:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>信息</div>
+              <div class="info-row"><div class="i-lab">版本</div><div class="i-val">0.8.2 <span style="color:var(--fg-3);font-size:12px">· 最新提交 ef71f51</span></div></div>
+              <div class="info-row"><div class="i-lab">作者</div><div class="i-val">forestcnz</div></div>
+              <div class="info-row"><div class="i-lab">技术栈</div><div class="i-val">Tauri · Vue 3 · QuickJS · libgit2</div></div>
+              <div class="info-row"><div class="i-lab">数据目录</div><div class="i-val mono">$APP_DATA/fm-tester</div></div>
+              <div class="info-row"><div class="i-lab">仓库</div><div class="i-val"><a href="https://github.com/forestcnz/fm-tester" target="_blank" style="color:var(--primary);text-decoration:none;font-family:'IBM Plex Mono';font-size:12px">github.com/forestcnz/fm-tester</a> <button class="btn ghost sm" id="reportIssue" style="margin-left:8px;height:26px;padding:0 10px">问题反馈</button></div></div>
+            </div>
+            <div class="license-box">
+              <button class="license-head" id="licenseHead"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>开源协议 · MIT License <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <div class="license-body" id="licenseBody">MIT License
+
+Copyright (c) 2024 forestcnz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</div>
+            </div>
+          </div>
+
+        </div></div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- 状态栏 -->
+  <div class="statusbar">
+    <div class="sb-l"><span class="v">v0.8.2</span><span class="git"><i></i>已同步 · master @ 2a3f1c</span></div>
+    <div class="sb-c">设置 · <b id="sbCat">通用</b></div>
+    <div class="sb-r">
+      <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Cookie</span>
+      <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6"/></svg>控制台</span>
+      <span class="si on" id="sbTheme"><span class="dot"></span>Paper</span>
+    </div>
+  </div>
+</div></div>
+
+<div class="toast-wrap" id="toasts"></div>
+<div class="note"><span class="nd"></span><span><b>设置中心</b> · 左侧切换分类，右侧编辑配置；通用 / AI / Git 备份对齐真实 <span class="tag">AppSettings</span>，外观/快捷键/关于为重新设计补充 · <span class="tag">⌘.</span> 主题</span></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+/* ===== 分类导航 ===== */
+const ICONS={
+  general:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  ai:'<path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>',
+  git:'<circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 9a9 9 0 0 1-9 9"/>',
+  appearance:'<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a10 10 0 1 1 0-20 8 8 0 0 1 0 16h-1.5a1.5 1.5 0 0 0-1 2.5 1.5 1.5 0 0 1-1 2.5z"/>',
+  shortcuts:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>',
+  about:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>'
+};
+function setHeader(nav){
+  $('#shTitle').textContent=nav.dataset.t;
+  $('#shDesc').textContent=nav.dataset.d;
+  $('#shIco').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[nav.dataset.ico]+'</svg>';
+  $('#sbCat').textContent=nav.dataset.t;
+}
+$$('.nav-item').forEach(b=>b.addEventListener('click',()=>{
+  $$('.nav-item').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  const k=b.dataset.nav;$$('.spanel').forEach(p=>p.classList.toggle('on',p.dataset.spanel===k));
+  setHeader(b);
+  $('.settings-content').scrollTop=0;
+}));
+
+/* ===== 主题切换 ===== */
+function setTheme(t){const f=$('#frame');f.classList.toggle('theme-paper',t==='paper');f.classList.toggle('theme-dark',t==='dark');
+  $$('.theme-card').forEach(c=>c.classList.toggle('on',c.dataset.theme===t));
+  const st=$('#sbTheme');if(st)st.innerHTML='<span class="dot"></span>'+(t==='paper'?'Paper':'Dark');}
+$('#themeBtn').addEventListener('click',()=>{const dark=$('#frame').classList.contains('theme-dark');setTheme(dark?'paper':'dark');toast('主题已切换');});
+$$('.theme-card').forEach(c=>c.addEventListener('click',()=>{setTheme(c.dataset.theme);toast('主题：'+(c.dataset.theme==='paper'?'Paper 墨砚纸张':'Dark 墨夜深色'));}));
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();$('#themeBtn').click();}});
+
+/* ===== 开关 ===== */
+$$('.switch').forEach(s=>s.addEventListener('click',()=>s.classList.toggle('on')));
+
+/* ===== API Key 显示/隐藏 ===== */
+function bindEye(btn,inputId){btn.addEventListener('click',()=>{const i=$('#'+inputId);i.type=i.type==='password'?'text':'password';});}
+bindEye($('#aiKeyEye'),'aiKey');
+bindEye($('#gitPassEye'),'gitPass');
+
+/* ===== AI 模型下拉 ===== */
+const MODELS=['gpt-4o-mini','gpt-4o','gpt-4-turbo','gpt-3.5-turbo','o1-mini','o1-preview','deepseek-chat','claude-3-5-sonnet','qwen-max'];
+const modelMenu=$('#modelMenu'),modelInput=$('#aiModel'),modelDdBtn=$('#modelDdBtn');
+function renderModels(){
+  const cur=modelInput.value.trim();
+  modelMenu.innerHTML=MODELS.map(m=>`<div class="${m===cur?'on':''}" data-m="${m}"><span>${m}</span><span class="ck"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>`).join('');
+  $$('#modelMenu div').forEach(d=>d.addEventListener('click',e=>{e.stopPropagation();modelInput.value=d.dataset.m;renderModels();modelMenu.classList.remove('open');modelDdBtn.classList.remove('open');}));
+}
+renderModels();
+modelDdBtn.addEventListener('click',e=>{e.stopPropagation();renderModels();modelMenu.classList.toggle('open');modelDdBtn.classList.toggle('open');});
+modelInput.addEventListener('input',renderModels);
+modelInput.addEventListener('focus',()=>{modelMenu.classList.remove('open');modelDdBtn.classList.remove('open');});
+document.addEventListener('click',()=>{modelMenu.classList.remove('open');modelDdBtn.classList.remove('open');});
+$('#fetchModels').addEventListener('click',function(){const o=this.innerHTML;this.disabled=true;this.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg>获取中';setTimeout(()=>{this.disabled=false;this.innerHTML=o;toast('已获取 '+MODELS.length+' 个模型');},1100);});
+
+/* ===== AI 自定义请求头 ===== */
+let aiHeaders=[{key:'X-Org',value:'acme',enabled:true},{key:'X-Region',value:'cn-hangzhou',enabled:true}];
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderAhd(){
+  const w=$('#ahdRows');
+  if(!aiHeaders.length){w.innerHTML='<div class="ahd-empty">暂无自定义请求头，点击「添加请求头」</div>';return;}
+  w.innerHTML='';aiHeaders.forEach((it,i)=>{
+    const r=document.createElement('div');r.className='ahd-r';
+    r.innerHTML=`<span class="ahd-cb"><input type="checkbox" ${it.enabled?'checked':''} data-i="${i}" data-f="enabled"></span>
+      <span><input class="mono" value="${esc(it.key)}" placeholder="Header 名" data-i="${i}" data-f="key"></span>
+      <span><input class="mono" value="${esc(it.value)}" placeholder="值" data-i="${i}" data-f="value"></span>
+      <span><button class="ahd-del" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></span>`;
+    w.appendChild(r);});
+  $$('#ahdRows [data-f]').forEach(el=>el.addEventListener('input',()=>{const i=+el.dataset.i,f=el.dataset.f;aiHeaders[i][f]=f==='enabled'?el.checked:el.value;}));
+  $$('#ahdRows .ahd-del').forEach(b=>b.addEventListener('click',()=>{aiHeaders.splice(+b.dataset.i,1);renderAhd();}));
+}
+$('#ahdAdd').addEventListener('click',()=>{aiHeaders.push({key:'',value:'',enabled:true});renderAhd();setTimeout(()=>{const ins=$$('#ahdRows input[data-f=key]');ins[ins.length-1].focus();},10);});
+renderAhd();
+
+/* ===== 测试连接（AI / Git） ===== */
+function fakeTest(btnId,resultId,okMsg,errMsg){
+  const b=$('#'+btnId),r=$('#'+resultId),o=b.innerHTML;
+  b.disabled=true;b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg>测试中';
+  r.className='conn-test spin';r.textContent='正在连接…';
+  setTimeout(()=>{const ok=Math.random()>.25;b.disabled=false;b.innerHTML=o;
+    r.className='conn-test '+(ok?'ok':'err');
+    r.innerHTML=ok?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>'+okMsg
+      :'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>'+errMsg;
+  },1200);
+}
+$('#aiTestBtn').addEventListener('click',()=>fakeTest('aiTestBtn','aiTestResult','连接成功 · 142ms','连接失败：401 鉴权失败'));
+$('#gitTestBtn').addEventListener('click',()=>fakeTest('gitTestBtn','gitTestResult','可访问 · 2 个分支','连接失败：仓库不存在'));
+$('#gitClearCreds').addEventListener('click',()=>{toast('Git 凭据已清除');$('#gitUser').value='';$('#gitPass').value='';$('#gitPass').placeholder='已清除，请重新输入';});
+
+/* ===== 快捷键数据 ===== */
+const KBD={
+  global:[
+    {ico:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',name:'命令面板',desc:'搜索接口、切换环境、执行命令',keys:['⌘','K']},
+    {ico:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2"/>',name:'切换主题',desc:'Paper / Dark',keys:['⌘','.']},
+    {ico:'<circle cx="12" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',name:'切换环境',desc:'Local / Staging / Prod',keys:['⌘','E']},
+  ],
+  request:[
+    {ico:'<path d="m22 2-7 20-4-9-9-4z"/>',name:'发送请求',desc:'发送当前接口请求',keys:['⌘','↵']},
+    {ico:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11z"/>',name:'保存接口',desc:'保存当前改动',keys:['⌘','S']},
+    {ico:'<path d="M4 7h16M4 12h10M4 17h7"/>',name:'格式化',desc:'美化 JSON / 文本',keys:['⌘','B']},
+    {ico:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',name:'重新发送',desc:'重发上次请求',keys:['⌘','R']},
+  ],
+  nav:[
+    {ico:'<path d="M12 5v14M5 12h14"/>',name:'新建请求',desc:'在工作台新建接口',keys:['⌘','N']},
+    {ico:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',name:'过滤接口',desc:'聚焦集合树搜索',keys:['/']},
+    {ico:'<rect x="3" y="3" width="18" height="18" rx="2"/>',name:'关闭标签',desc:'关闭当前请求标签',keys:['⌘','W']},
+    {ico:'<path d="M18 6 6 18M6 6l12 12"/>',name:'关闭面板',desc:'关闭弹层 / 命令面板',keys:['esc']},
+  ]
+};
+function renderKbd(id,list){
+  $('#'+id).innerHTML=list.map(k=>`<div class="kbd-row"><span class="k-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${k.ico}</svg></span>
+    <div><div class="k-name">${k.name}</div><div class="k-desc">${k.desc}</div></div>
+    <div class="k-keys">${k.keys.map(x=>`<kbd>${x}</kbd>`).join('')}</div></div>`).join('');
+}
+renderKbd('kbdGlobal',KBD.global);renderKbd('kbdRequest',KBD.request);renderKbd('kbdNav',KBD.nav);
+
+/* ===== MIT 协议展开 ===== */
+$('#licenseHead').addEventListener('click',function(){this.classList.toggle('open');$('#licenseBody').classList.toggle('open');});
+
+/* ===== 关于：检查更新 / 问题反馈 ===== */
+$('#checkUpdate').addEventListener('click',function(){const o=this.innerHTML;this.disabled=true;this.textContent='检查中…';setTimeout(()=>{this.disabled=false;this.innerHTML=o;toast('当前已是最新版本 v0.8.2');},1200);});
+$('#reportIssue').addEventListener('click',()=>toast('打开问题反馈页面'));
+
+/* ===== 保存 ===== */
+$('#saveBtn').addEventListener('click',()=>toast('设置已保存'));
+
+/* ===== toast ===== */
+function toast(msg){const w=$('#toasts');const t=document.createElement('div');t.className='toast';
+  t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+msg;
+  w.appendChild(t);setTimeout(()=>{t.style.transition='all .25s';t.style.opacity=0;t.style.transform='translateX(20px)';setTimeout(()=>t.remove(),250);},2200);}
+</script>
+</body>
+</html>

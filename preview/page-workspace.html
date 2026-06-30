@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester · 工作区 · 重新设计</title>
+<link rel="stylesheet" href="inkwell.css">
+<style>
+.ws-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.ws-set-head{display:flex;align-items:center;gap:13px;padding:15px 18px;border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.ws-set-glyph{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(140deg,var(--accent),#7c3a06);color:#fff;box-shadow:var(--shadow-sm);flex-shrink:0;font-family:"Fraunces",serif;font-weight:700;font-size:17px}
+.ws-set-name{font-family:"Fraunces",serif;font-weight:600;font-size:20px;display:flex;align-items:center;gap:10px}
+.ws-set-meta{font-size:11.5px;color:var(--fg-3);margin-top:3px;display:flex;align-items:center;gap:7px}
+.ws-set-meta .git-on{color:var(--ok);display:flex;align-items:center;gap:5px}
+.ws-set-meta .git-on i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.ws-body{flex:1;overflow-y:auto;padding:18px;background:var(--bg-app)}
+.ws-body::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-app)}
+.ws-intro{font-size:12px;color:var(--fg-3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ws-intro svg{width:14px;height:14px;color:var(--primary)}
+/* 脚本（复用风格） */
+.ssub-wrap{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ssub-pick{display:flex;height:32px;background:var(--bg-sunk);border-radius:8px;padding:3px;gap:2px}
+.ssub{padding:0 15px;border-radius:6px;border:none;font-size:12.5px;font-weight:600;cursor:pointer;background:none;color:var(--fg-2);transition:.13s}
+.ssub.on{background:var(--bg-panel);color:var(--primary);box-shadow:var(--shadow-sm)}
+.ws-btn{display:flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:7px;border:none;font-size:12px;font-weight:600;cursor:pointer}
+.ws-btn.primary{background:var(--primary);color:#fff}
+.ws-btn.ghost{border:1px solid var(--line);background:var(--bg-panel);color:var(--fg-2)}
+.codebox{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg-panel)}
+.codebar{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;background:var(--bg-sunk);border-bottom:1px solid var(--line);font-size:11px;color:var(--fg-3)}
+.codebar .mono{font-family:"IBM Plex Mono",monospace}
+.codearea{padding:13px 15px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.7;color:var(--fg);white-space:pre-wrap;min-height:90px;outline:none}
+.tok-s{color:var(--m-get)}.tok-n{color:var(--m-post)}.tok-k{color:var(--m-put)}
+.sg{margin-bottom:18px}.sg-h{display:flex;align-items:center;gap:9px;margin-bottom:9px}.sg-h .t{font-size:12.5px;font-weight:700;color:var(--fg-2);display:flex;align-items:center;gap:7px}.sg-h .t svg{width:14px;height:14px;color:var(--primary)}.sg-h .d{font-size:11px;color:var(--fg-3)}
+.exec-order{background:var(--bg-sunk);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:11.5px;color:var(--fg-2);display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.exec-order svg{width:14px;height:14px;color:var(--primary);flex-shrink:0}.exec-order b{color:var(--fg)}
+/* 侧边工作区项 */
+.wsitem{display:flex;align-items:center;gap:9px;height:38px;padding:0 11px;border-radius:9px;cursor:pointer;transition:.12s;position:relative;margin-bottom:4px}
+.wsitem:hover{background:var(--bg-sunk)}
+.wsitem.sel{background:var(--primary-soft)}
+.wsitem.sel .wsitem-name{color:var(--primary);font-weight:600}
+.wsitem.sel::before{content:"";position:absolute;left:-6px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--primary)}
+.wsitem.dragging{opacity:.4}
+.wsitem-ico{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:#fff;font-family:"Fraunces",serif;font-weight:700;font-size:12px;flex-shrink:0}
+.wsitem-name{flex:1;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wsitem-meta{font-size:10px;color:var(--fg-3);font-family:"IBM Plex Mono",monospace}
+.ws-rename{flex:1;height:24px;font:inherit;font-size:13px;border:1px solid var(--primary);border-radius:5px;padding:0 6px;outline:none;background:var(--bg-panel)}
+/* 右键菜单 */
+.ctx-overlay{position:fixed;inset:0;z-index:90}
+.ctx-menu{position:fixed;z-index:91;min-width:180px;background:var(--bg-panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-lg);padding:5px;animation:pop .12s ease}
+.ctx-item{display:flex;align-items:center;gap:9px;padding:7px 11px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--fg);cursor:pointer;transition:.1s}
+.ctx-item:hover{background:var(--primary-soft);color:var(--primary)}
+.ctx-item.danger:hover{background:rgba(220,38,38,.08);color:var(--err)}
+.ctx-item svg{width:14px;height:14px;color:var(--fg-2);flex-shrink:0}.ctx-item:hover svg{color:inherit}
+.ctx-divider{height:1px;background:var(--line);margin:4px 6px}
+/* 备份遮罩 */
+.bk-overlay{position:absolute;inset:0;background:rgba(28,25,23,.45);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center}
+.bk-overlay.on{display:flex}
+.bk-card{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;padding:26px 34px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;align-items:center;gap:13px}
+.bk-spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--primary);animation:spin .8s linear infinite}
+.bk-card .bt{font-size:13px;font-weight:600;color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame theme-paper" id="frame">
+
+  <div class="titlebar">
+    <div class="tlights"><span class="tl-r"></span><span class="tl-y"></span><span class="tl-g"></span></div>
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div><div class="brand-name">FM <em>Tester</em></div><div class="brand-sub">Inkwell · 墨砚</div></div>
+    <div class="tb-spacer"></div><div class="tb-actions"><button class="tb-btn" id="themeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="ws-select"><div class="ws-ico">A</div><span class="ws-name" id="topWsName">Acme 电商平台</span><svg class="ws-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="cmdk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">搜索接口、切换环境或执行命令…</span><span class="kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>
+  </div>
+
+  <div class="body">
+    <div class="rail">
+      <div class="rail-grp"><a class="rail-item" href="redesign-preview.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="tip">集合</span></a><a class="rail-item" href="page-websocket.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v4M16 3v4M4 11h16"/></svg><span class="tip">WebSocket</span></a><a class="rail-item" href="page-orchestration.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg><span class="tip">编排</span></a></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><a class="rail-item" href="page-environment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3z"/></svg><span class="tip">环境变量</span></a><a class="rail-item" href="page-history.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/></svg><span class="tip">历史记录</span></a></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><button class="rail-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tip">工作区</span></button><a class="rail-item" href="page-chat.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><span class="tip">AI 对话</span></a></div>
+    </div>
+
+    <!-- 侧边：工作区列表 -->
+    <div class="sidebar">
+      <div class="sb-head"><div class="sb-title"><h2>工作区</h2><div class="acts">
+        <button class="mini-ico" id="importBtn" title="导入工作区"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button>
+        <button class="mini-ico" id="newBtn" title="新建工作区"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div></div></div>
+      <div class="sb-list" id="wsList" style="padding:8px"></div>
+    </div>
+
+    <!-- 主：工作区设置 -->
+    <div class="main"><div class="ws-main" style="position:relative">
+      <div class="ws-set-head">
+        <div class="ws-set-glyph" id="wsGlyph">A</div>
+        <div><div class="ws-set-name" id="wsName">Acme 电商平台</div>
+          <div class="ws-set-meta" id="wsMeta"></div></div>
+        <button class="ws-btn primary" style="margin-left:auto" id="wsSave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>保存</button>
+      </div>
+      <div class="ws-body">
+        <div class="exec-order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>工作区脚本是<b>最高层级</b>，执行顺序：工作区 → 环境 → 集合 → 接口（前置正序，后置逆序）</div>
+        <div class="ssub-wrap">
+          <div class="ssub-pick" id="ssubPick"><button class="ssub on" data-st="pre">前置脚本</button><button class="ssub" data-st="post">后置脚本</button></div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="ws-btn ghost" id="scrAi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>AI 优化</button>
+          </div>
+        </div>
+        <div class="sg" data-sg="pre">
+          <div class="sg-h"><span class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>前置脚本</span><span class="d">工作区级 · 对所有环境/集合生效</span></div>
+          <div class="codebox"><div class="codebar"><span class="mono">JavaScript · QuickJS</span></div><div class="codearea" contenteditable="true"><span style="color:var(--fg-3)">// 工作区级前置：全局请求 ID</span>
+fm.request.setHeader(<span class="tok-s">"X-Trace-Id"</span>, <span class="tok-s">"ws-"</span>+Date.now());</div></div>
+        </div>
+        <div class="sg" data-sg="post" style="display:none">
+          <div class="sg-h"><span class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>后置脚本</span><span class="d">工作区级 · 全局响应日志</span></div>
+          <div class="codebox"><div class="codebar"><span class="mono">JavaScript · QuickJS</span></div><div class="codearea" contenteditable="true"><span style="color:var(--fg-3)">// 工作区级后置：慢请求记录</span>
+<span class="tok-k">if</span>(fm.response.getTime()><span class="tok-n">3000</span>){fm.log(<span class="tok-s">"慢请求"</span>,fm.request.getUrl(),fm.response.getTime()+<span class="tok-s">"ms"</span>);}</div></div>
+        </div>
+      </div>
+      <!-- 备份遮罩 -->
+      <div class="bk-overlay" id="bkOverlay"><div class="bk-card"><div class="bk-spin"></div><div class="bt" id="bkText">正在备份到 Git…</div></div></div>
+    </div></div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sb-l"><span class="v">v0.8.2</span><span class="git"><i></i>已同步 · main @ 2a3f1c</span></div>
+    <div class="sb-c">工作区 · <b id="sbWs">Acme 电商平台</b></div>
+    <div class="sb-r"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Cookie</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>控制台</span><span class="si on"><span class="dot"></span>Staging</span></div>
+  </div>
+</div></div>
+
+<div class="toast-wrap" id="toasts"></div>
+<div class="note"><span class="nd"></span><span><b>工作区</b> · 右键工作区：导出/重命名/Git 备份/恢复/删除；双击重命名；顶部 + 新建、⬇ 导入；主区为工作区级前置/后置脚本 · <span class="tag">⌘.</span> 主题</span></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$('#themeBtn').addEventListener('click',()=>{$('#frame').classList.toggle('theme-paper');$('#frame').classList.toggle('theme-dark');toast('已切换主题');});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();$('#themeBtn').click();}});
+
+const palette=['linear-gradient(140deg,#b45309,#7c3a06)','linear-gradient(140deg,#2563eb,#1e3a8a)','linear-gradient(140deg,#16a34a,#14532d)','linear-gradient(140deg,#7c3aed,#4c1d95)','linear-gradient(140deg,#0891b2,#155e75)'];
+let workspaces=[
+  {id:'w1',name:'Acme 电商平台',lastBackup:'2026-06-25 18:30',color:0},
+  {id:'w2',name:'内部运营后台',color:1},
+  {id:'w3',name:'IoT 设备网关',lastBackup:'2026-06-24 09:12',color:2},
+  {id:'w4',name:'个人沙盒',color:3},
+];
+let curWs='w1',renamingId=null,renameVal='';
+
+function renderList(){
+  const w=$('#wsList');w.innerHTML='';
+  workspaces.forEach(ws=>{
+    const it=document.createElement('div');it.className='wsitem'+(curWs===ws.id?' sel':'')+(renamingId===ws.id?' renaming':'');it.dataset.id=ws.id;
+    const editing=renamingId===ws.id;
+    it.innerHTML=`<div class="wsitem-ico" style="background:${palette[ws.color||0]}">${ws.name[0]}</div>`+
+      (editing?`<input class="ws-rename" value="${esc(renameVal)}">`:`<span class="wsitem-name">${esc(ws.name)}</span>`)+
+      (ws.lastBackup?`<span class="wsitem-meta" title="上次备份">${ws.lastBackup.slice(5)}</span>`:'');
+    w.appendChild(it);
+    if(editing){const inp=it.querySelector('.ws-rename');inp.focus();inp.select();
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();confirmRename();}if(e.key==='Escape'){renamingId=null;renderList();}});
+      inp.addEventListener('blur',confirmRename);inp.addEventListener('mousedown',e=>e.stopPropagation());return;}
+    it.addEventListener('click',()=>{curWs=ws.id;updateHead();renderList();});
+    it.addEventListener('contextmenu',e=>{e.preventDefault();openCtx(e,ws);});
+    it.addEventListener('dblclick',e=>{e.stopPropagation();startRename(ws);});
+    it.addEventListener('mousedown',e=>{if(e.button!==0||e.target.closest('.ws-rename'))return;startDrag(e,ws);});
+  });
+}
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function updateHead(){
+  const ws=workspaces.find(x=>x.id===curWs);if(!ws)return;
+  $('#wsGlyph').textContent=ws.name[0];$('#wsGlyph').style.background=palette[ws.color||0];
+  $('#wsName').textContent=ws.name;$('#topWsName').textContent=ws.name;$('#sbWs').textContent=ws.name;
+  $('#wsMeta').innerHTML=ws.lastBackup?`<span class="git-on"><i></i>已备份 · ${ws.lastBackup}</span>`:'<span style="color:var(--warn)">尚未备份到 Git</span>';
+}
+function startRename(ws){renamingId=ws.id;renameVal=ws.name;renderList();}
+function confirmRename(){if(!renamingId)return;const v=renameVal.trim();const ws=workspaces.find(x=>x.id===renamingId);if(ws&&v){ws.name=v;toast('已重命名为 '+v);}renamingId=null;updateHead();renderList();}
+
+/* 拖拽排序 */
+function startDrag(e,ws){const startY=e.clientY,id=ws.id;let active=false;
+  const move=ev=>{if(!active&&Math.abs(ev.clientY-startY)<4)return;active=true;
+    $$('#wsList .wsitem').forEach(r=>{r.classList.remove('dragging');if(r.dataset.id===id)r.classList.add('dragging');});
+    let over=null;$$('#wsList .wsitem').forEach(r=>{const rc=r.getBoundingClientRect();if(ev.clientY>=rc.top&&ev.clientY<=rc.bottom)over=r.dataset.id;});
+    if(over){const from=workspaces.findIndex(x=>x.id===id),to=workspaces.findIndex(x=>x.id===over);if(from!==to){const[m]=workspaces.splice(from,1);workspaces.splice(to,0,m);renderList();$$('#wsList .wsitem').forEach(r=>{if(r.dataset.id===id)r.classList.add('dragging');});}}
+  };
+  const up=()=>{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);renderList();};
+  document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);}
+
+/* 右键菜单 */
+function openCtx(e,ws){closeCtx();const ov=document.createElement('div');ov.className='ctx-overlay';ov.addEventListener('contextmenu',ev=>{ev.preventDefault();closeCtx();});ov.addEventListener('click',closeCtx);
+  const items=[
+    {act:'export',label:'导出工作区',icon:ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M12 3v12M7 10l5 5 5-5"/>')},
+    {act:'rename',label:'重命名',icon:ic('<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')},
+    {div:1},
+    {act:'backup',label:'备份到 Git',icon:ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M12 3v12M7 10l5 5 5-5"/>')},
+    {act:'restore',label:'从 Git 恢复',icon:ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5"/>')},
+    {div:1},
+    {act:'delete',label:'删除工作区',danger:1,icon:ic('<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>')},
+  ];
+  const m=document.createElement('div');m.className='ctx-menu';m.style.left=Math.min(e.clientX,innerWidth-200)+'px';m.style.top=Math.min(e.clientY,innerHeight-280)+'px';
+  m.innerHTML=items.map(it=>it.div?'<div class="ctx-divider"></div>':'<div class="ctx-item'+(it.danger?' danger':'')+'" data-act="'+it.act+'">'+it.icon+'<span>'+it.label+'</span></div>').join('');
+  ov.appendChild(m);document.body.appendChild(ov);m.querySelectorAll('.ctx-item').forEach(el=>el.addEventListener('click',()=>{closeCtx();handle(el.dataset.act,ws);}));
+  window._wsCtx=ws;}
+function closeCtx(){const o=document.querySelector('.ctx-overlay');if(o)o.remove();}
+function ic(d){return '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">'+d+'</svg>';}
+function handle(act,ws){
+  if(act==='rename'){startRename(ws);return;}
+  if(act==='export'){toast('已导出工作区：'+ws.name);return;}
+  if(act==='delete'){if(!confirm('确认删除工作区「'+ws.name+'」？所有集合/接口/环境将一并删除。'))return;workspaces=workspaces.filter(x=>x.id!==ws.id);if(curWs===ws.id)curWs=workspaces[0]?.id;updateHead();renderList();toast('工作区已删除');return;}
+  if(act==='backup'){const o=$('#bkOverlay');o.classList.add('on');$('#bkText').textContent='正在备份「'+ws.name+'」到 Git…';setTimeout(()=>{o.classList.remove('on');ws.lastBackup=new Date().toLocaleString().slice(5,16);updateHead();renderList();toast('已备份到 Git');},1300);return;}
+  if(act==='restore'){toast('打开 Git 恢复对话框');return;}
+}
+/* 空白处右键：从 Git 恢复 */
+$('#wsList').addEventListener('contextmenu',e=>{if(e.target.closest('.wsitem'))return;e.preventDefault();
+  closeCtx();const ov=document.createElement('div');ov.className='ctx-overlay';ov.addEventListener('contextmenu',ev=>{ev.preventDefault();closeCtx();});ov.addEventListener('click',closeCtx);
+  const m=document.createElement('div');m.className='ctx-menu';m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  m.innerHTML='<div class="ctx-item" data-act="restore">'+ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5"/>')+'<span>从 Git 恢复</span></div>';
+  ov.appendChild(m);document.body.appendChild(ov);m.querySelector('.ctx-item').addEventListener('click',()=>{closeCtx();toast('打开 Git 恢复对话框');});});
+
+$('#newBtn').addEventListener('click',()=>{const ws={id:'w'+Date.now(),name:'新工作区',color:workspaces.length%5};workspaces.push(ws);curWs=ws.id;updateHead();renderList();setTimeout(()=>startRename(ws),30);toast('已新建工作区');});
+$('#importBtn').addEventListener('click',()=>toast('打开工作区导入对话框'));
+$('#wsSave').addEventListener('click',()=>toast('工作区脚本已保存'));
+$('#scrAi').addEventListener('click',()=>toast('AI 正在优化脚本…'));
+/* 脚本子tab */
+$$('#ssubPick .ssub').forEach(b=>b.addEventListener('click',()=>{$$('#ssubPick .ssub').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  $$('.sg').forEach(s=>s.style.display=s.dataset.sg===b.dataset.st?'':'none');}));
+
+updateHead();renderList();
+
+function toast(msg){const w=$('#toasts');const t=document.createElement('div');t.className='toast';t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+msg;w.appendChild(t);setTimeout(()=>{t.style.transition='all .25s';t.style.opacity=0;t.style.transform='translateX(20px)';setTimeout(()=>t.remove(),250);},2200);}
+</script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+/* ============================================================
+   CollectionPanel · 墨砚 Inkwell 化
+   依赖 themes.css 的墨砚 token 与 inkwell.css 的原语语言
+   ============================================================ */
+
+.collection-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-panel);
+}
+
+/* ---------- 面板头部 ---------- */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 12px 9px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.action-btn {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--fg-2);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.action-btn:hover {
+  background: var(--bg-sunk);
+  color: var(--primary);
+}
+
+/* ---------- 搜索框 ---------- */
+.search-box {
+  padding: 9px 12px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  outline: none;
+  background: var(--bg-sunk);
+  color: var(--fg);
+  transition: var(--dur-base) var(--ease);
+}
+
+.search-input::placeholder {
+  color: var(--fg-3);
+}
+
+.search-input:focus {
+  border-color: var(--primary-line);
+  background: var(--bg-panel);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ---------- 树形列表容器 ---------- */
+.tree-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+/* ---------- 集合 / API 通用行 ---------- */
+.tree-folder,
+.tree-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  min-height: 30px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: var(--radius-md);
+  margin: 1px 0;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.tree-folder:hover,
+.tree-item:hover {
+  background: var(--bg-sunk);
+}
+
+/* 编辑态：左侧 3px 主色指示条 + 软底 */
+.tree-folder.editing,
+.tree-item.editing {
+  background: var(--primary-soft);
+  border-left: 3px solid var(--primary);
+  padding-right: 8px;
+}
+
+/* 选中态：软底 + 文字主色 + 左侧 3px 指示条 */
+.tree-item.selected,
+.tree-folder.selected {
+  background: var(--primary-soft);
+}
+
+.tree-item.selected::before,
+.tree-folder.selected::before {
+  display: none;
+}
+
+.tree-item.selected .item-name,
+.tree-folder.selected .folder-name {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.tree-folder.selected .expand-arrow,
+.tree-item.selected .expand-arrow {
+  color: var(--primary);
+}
+
+/* ---------- Inline 编辑输入框 ---------- */
+.inline-edit-input {
+  flex: 1;
+  min-width: 100px;
+  padding: 4px 9px;
+  border: 1px solid var(--primary-line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--bg-panel);
+  color: var(--fg);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.inline-edit-input::placeholder {
+  color: var(--fg-3);
+}
+
+/* ---------- 文件夹图标 / 名称 ---------- */
+.folder-icon {
+  font-size: 14px;
+  margin-right: 7px;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--fg-2);
+  display: inline-flex;
+  align-items: center;
+}
+
+.folder-name {
+  font-size: 12.5px;
+  color: var(--fg);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.folder-name-text {
+  cursor: pointer;
+}
+
+/* ---------- 展开箭头 ---------- */
+.tree-folder .expand-arrow,
+.tree-item .expand-arrow,
+.expand-arrow {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fg-3);
+  transition: transform var(--dur-base) var(--ease),
+    color var(--dur-fast) var(--ease);
+  flex-shrink: 0;
+  margin-left: auto;
+  border-radius: var(--radius-sm);
+}
+
+.expand-arrow:hover {
+  color: var(--primary);
+}
+
+.expand-arrow.expanded,
+.tree-folder .expand-arrow.expanded,
+.tree-item .expand-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+/* ---------- 行内操作图标（悬停显示） ---------- */
+.item-actions {
+  display: none;
+  gap: 4px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.tree-folder:hover .item-actions,
+.tree-item:hover .item-actions {
+  display: flex;
+}
+
+.action-icon {
+  font-size: 12px;
+  color: var(--fg-3);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.action-icon:hover {
+  color: var(--primary);
+  background: var(--bg-sunk);
+}
+
+.action-icon.delete:hover {
+  color: var(--err);
+}
+
+/* ---------- 右键菜单目标高亮 ---------- */
+.tree-item.context-target,
+.tree-folder.context-target {
+  background: var(--primary-soft);
+  box-shadow: inset 0 0 0 1px var(--primary-line);
+}
+
+/* ---------- 拖拽排序 ---------- */
+.tree-folder.dragging,
+.tree-item.dragging {
+  opacity: 0.5;
+  background: var(--bg-card);
+}
+
+.tree-folder.drag-over-before,
+.tree-item.drag-over-before {
+  box-shadow: inset 0 2px 0 0 var(--primary);
+}
+
+.tree-folder.drag-over-after,
+.tree-item.drag-over-after {
+  box-shadow: inset 0 -2px 0 0 var(--primary);
+}
+
+.tree-folder.drag-over-into {
+  background: var(--primary-soft);
+  box-shadow: inset 0 0 0 1.5px dashed var(--primary);
+}
+
+/* ---------- 根级别拖放区域 ---------- */
+.tree-list-footer {
+  height: 40px;
+  min-height: 40px;
+  border-radius: var(--radius-md);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.tree-list-footer.drag-over-root {
+  background: var(--primary-soft);
+  box-shadow: inset 0 0 0 1.5px dashed var(--primary);
+}
+
+/* ---------- Method 标签（等宽 + 墨砚 method 色） ---------- */
+.method-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  width: 34px;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: var(--radius-sm);
+  margin-right: 8px;
+  flex-shrink: 0;
+  background: var(--bg-sunk);
+}
+
+.method-tag.get {
+  color: var(--m-get);
+  background: rgba(22, 163, 74, 0.1);
+}
+.method-tag.post {
+  color: var(--m-post);
+  background: rgba(234, 88, 12, 0.1);
+}
+.method-tag.put {
+  color: var(--m-put);
+  background: var(--primary-soft);
+}
+.method-tag.delete {
+  color: var(--m-del);
+  background: rgba(220, 38, 38, 0.08);
+}
+.method-tag.patch {
+  color: var(--m-patch);
+  background: rgba(124, 58, 237, 0.1);
+}
+.method-tag.websocket {
+  color: var(--m-head);
+  background: rgba(8, 145, 178, 0.1);
+}
+
+/* ---------- API 项名称 ---------- */
+.item-name {
+  font-size: 12.5px;
+  color: var(--fg);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ---------- 空状态 ---------- */
+.empty-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  font-size: 12.5px;
+  padding: 30px 16px;
+  text-align: center;
+}
+
+/* ============================================================
+   以下为保留选择器（template 可能引用，class 名不变）
+   ============================================================ */
+
+/* ---------- 创建对话框（保留） ---------- */
+.create-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.create-dialog {
+  width: 360px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  animation: dialogFadeIn var(--dur-base) var(--ease);
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  font-family: var(--font-serif);
+}
+
+.dialog-close {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--fg-3);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.dialog-close:hover {
+  color: var(--err);
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.dialog-body {
+  padding: 20px;
+}
+
+.dialog-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.dialog-row:last-child {
+  margin-bottom: 0;
+}
+
+.dialog-row label {
+  font-size: 12.5px;
+  color: var(--fg-2);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.dialog-row input,
+.dialog-row select {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  outline: none;
+  background: var(--bg-panel);
+  color: var(--fg);
+  transition: var(--dur-base) var(--ease);
+}
+
+.dialog-row input:focus,
+.dialog-row select:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.dialog-row input::placeholder {
+  color: var(--fg-3);
+}
+
+.parent-row {
+  background: var(--bg-sunk);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 0;
+}
+
+.parent-row label {
+  margin-bottom: 6px;
+  color: var(--fg-3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.parent-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-sunk);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.btn-cancel,
+.btn-confirm {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.btn-cancel {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  color: var(--fg-2);
+}
+
+.btn-cancel:hover {
+  border-color: var(--line-strong);
+  color: var(--fg);
+}
+
+.btn-confirm {
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #fff;
+}
+
+.btn-confirm:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-confirm:disabled {
+  background: var(--bg-sunk);
+  border-color: var(--line);
+  color: var(--fg-3);
+  cursor: not-allowed;
+}
+
+/* ---------- 右键菜单 ---------- */
+.context-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1999;
+}
+
+.context-menu {
+  position: fixed;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 5px;
+  min-width: 168px;
+  z-index: 2000;
+  animation: dialogFadeIn var(--dur-fast) var(--ease);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--fg);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.menu-item:hover {
+  background: var(--bg-sunk);
+}
+
+.menu-item.delete {
+  color: var(--err);
+}
+
+.menu-item.delete:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.menu-icon {
+  margin-right: 9px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--fg-2);
+}
+
+.menu-item.delete .menu-icon {
+  color: var(--err);
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 2px;
+}
+
+/* ---------- 保存响应子列表 ---------- */
+.saved-responses-list {
+  margin-left: 16px;
+  padding: 2px 6px;
+}
+
+.empty-responses {
+  padding: 8px 32px;
+  font-size: 11.5px;
+  color: var(--fg-3);
+  text-align: center;
+}
+
+.saved-response-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px 4px 24px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.saved-response-item:hover {
+  background: var(--bg-sunk);
+  color: var(--fg);
+}
+
+.saved-response-item .doc-icon {
+  color: var(--fg-3);
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.saved-response-item .resp-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-response-item .resp-time {
+  color: var(--fg-3);
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- 状态标签（保留） ---------- */
+.status-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  margin-right: 6px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.status-tag.success {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--ok);
+}
+
+.status-tag.warning {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--warn);
+}
+
+.status-tag.error {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--err);
+}
+
+.resp-name {
+  color: var(--fg);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resp-time {
+  color: var(--fg-3);
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  margin-left: 8px;
+}
+
+/* ---------- 导入按钮 / 下拉（保留） ---------- */
+.import-btn-wrapper {
+  position: relative;
+}
+
+.import-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fg-3);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.import-btn:hover,
+.import-btn.active {
+  color: var(--primary);
+  background: var(--bg-sunk);
+}
+
+.import-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 5px;
+  min-width: 168px;
+  z-index: 100;
+  animation: dialogFadeIn var(--dur-fast) var(--ease);
+}
+
+.import-dropdown .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--fg);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.import-dropdown .menu-item:hover {
+  background: var(--bg-sunk);
+}
+
+.import-dropdown .menu-item .menu-icon {
+  display: flex;
+  align-items: center;
+  color: var(--fg-2);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--fg);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.dropdown-item:hover {
+  background: var(--bg-sunk);
+}

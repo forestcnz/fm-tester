@@ -1,0 +1,10 @@
+# Clippy 配置
+# 参见 https://rust-lang.github.io/rust-clippy/master/index.html
+#
+# 放行策略说明：
+# - too_many_arguments：SQLite 仓储的 insert/update（含 17 列）与 JS 运行时回调
+#   注册（14 参数）天然参数较多，重构为 struct 聚合参数成本高、收益低，故放宽
+#   阈值至 18。
+# - type_complexity / large_enum_variant：不在此处全局放宽，改为在 lib.rs 顶部以
+#   crate 级 `#![allow]` 精确放行并记录原因，便于后续定向清理。
+too-many-arguments-threshold = 18

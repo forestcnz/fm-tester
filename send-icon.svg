@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Main arrow pointing right -->
+  <path d="M5 12h11m0 0l-5-5m5 5l-5 5"/>
+
+  <!-- Signal pulse arc (dynamic motion) -->
+  <path d="M18 8c1.5 1.5 1.5 6.5 0 8" stroke-opacity="0.7"/>
+
+  <!-- Trail dots decreasing in size -->
+  <circle cx="3" cy="12" r="1" fill="currentColor" stroke="none" opacity="0.3"/>
+  <circle cx="6" cy="12" r="0.75" fill="currentColor" stroke="none" opacity="0.5"/>
+  <circle cx="9" cy="12" r="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+</svg>

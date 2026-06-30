@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A2E"/>
+      <stop offset="100%" style="stop-color:#16162A"/>
+    </linearGradient>
+    <linearGradient id="cyanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF"/>
+      <stop offset="100%" style="stop-color:#00B8D4"/>
+    </linearGradient>
+    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35"/>
+      <stop offset="100%" style="stop-color:#E55A2B"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="pulseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="roundedClip">
+      <rect x="0" y="0" width="512" height="512" rx="64"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background with rounded corners -->
+  <rect x="0" y="0" width="512" height="512" rx="64" fill="url(#bgGradient)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.08">
+    <line x1="128" y1="0" x2="128" y2="512" stroke="#00D9FF" stroke-width="0.5"/>
+    <line x1="256" y1="0" x2="256" y2="512" stroke="#00D9FF" stroke-width="0.5"/>
+    <line x1="384" y1="0" x2="384" y2="512" stroke="#00D9FF" stroke-width="0.5"/>
+    <line x1="0" y1="128" x2="512" y2="128" stroke="#00D9FF" stroke-width="0.5"/>
+    <line x1="0" y1="256" x2="512" y2="256" stroke="#00D9FF" stroke-width="0.5"/>
+    <line x1="0" y1="384" x2="512" y2="384" stroke="#00D9FF" stroke-width="0.5"/>
+  </g>
+
+  <!-- Outer technical frame -->
+  <rect x="32" y="32" width="448" height="448" rx="48" fill="none" stroke="#00D9FF" stroke-width="1.5" opacity="0.15"/>
+  <rect x="48" y="48" width="416" height="416" rx="40" fill="none" stroke="#FF6B35" stroke-width="0.75" opacity="0.1"/>
+
+  <!-- Data flow lines - left side (incoming request) -->
+  <g filter="url(#pulseGlow)" opacity="0.6">
+    <polyline points="50,180 90,180 100,160 110,200 120,140 130,220 140,180 200,180"
+              fill="none" stroke="url(#orangeGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="50,220 80,220 90,200 100,240 110,180 120,260 130,220 180,220"
+              fill="none" stroke="url(#orangeGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  </g>
+
+  <!-- FM Letters - monospace technical style -->
+  <g filter="url(#glow)">
+    <!-- F letter -->
+    <g fill="url(#cyanGradient)">
+      <!-- F vertical bar -->
+      <rect x="155" y="120" width="28" height="180" rx="3"/>
+      <!-- F top horizontal -->
+      <rect x="155" y="120" width="95" height="26" rx="3"/>
+      <!-- F middle horizontal -->
+      <rect x="155" y="195" width="75" height="22" rx="2"/>
+      <!-- F accent bars (technical detail) -->
+      <rect x="155" y="290" width="28" height="10" rx="1" opacity="0.5"/>
+    </g>
+
+    <!-- M letter -->
+    <g fill="url(#cyanGradient)">
+      <!-- M left vertical -->
+      <rect x="270" y="120" width="24" height="180" rx="3"/>
+      <!-- M right vertical -->
+      <rect x="362" y="120" width="24" height="180" rx="3"/>
+      <!-- M left diagonal -->
+      <polygon points="270,120 294,120 340,230 340,210"/>
+      <!-- M right diagonal -->
+      <polygon points="386,120 362,120 316,230 316,210"/>
+      <!-- M center peak accent -->
+      <rect x="316" y="120" width="24" height="35" rx="3"/>
+      <!-- M bottom accent bars -->
+      <rect x="270" y="290" width="24" height="10" rx="1" opacity="0.5"/>
+      <rect x="362" y="290" width="24" height="10" rx="1" opacity="0.5"/>
+    </g>
+  </g>
+
+  <!-- Data flow lines - right side (outgoing response) -->
+  <g filter="url(#pulseGlow)" opacity="0.6">
+    <polyline points="310,180 370,180 380,160 390,200 400,140 410,220 420,180 462,180"
+              fill="none" stroke="url(#cyanGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="330,220 380,220 390,200 400,240 410,180 420,260 430,220 462,220"
+              fill="none" stroke="url(#cyanGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  </g>
+
+  <!-- Central pulse wave connecting F and M -->
+  <g filter="url(#pulseGlow)">
+    <path d="M 256 130 L 256 140 Q 256 145 261 145 Q 266 145 266 140 L 266 130"
+          fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 256 150 L 256 160 Q 256 170 266 170 Q 276 170 276 160 L 276 150"
+          fill="none" stroke="#00D9FF" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- TESTER text -->
+  <g fill="#FFFFFF" font-family="'Consolas', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace" font-size="42" font-weight="600" letter-spacing="8">
+    <text x="256" y="380" text-anchor="middle">
+      <tspan fill="#FFFFFF" opacity="0.9">TESTER</tspan>
+    </text>
+  </g>
+
+  <!-- Technical accent lines under TESTER -->
+  <g opacity="0.4">
+    <line x1="130" y1="400" x2="200" y2="400" stroke="#FF6B35" stroke-width="2" stroke-linecap="round"/>
+    <line x1="212" y1="400" x2="300" y2="400" stroke="#00D9FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="312" y1="400" x2="382" y2="400" stroke="#FF6B35" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Corner technical indicators -->
+  <g opacity="0.5" stroke-width="1.5">
+    <!-- Top left -->
+    <path d="M 64 80 L 64 64 L 80 64" fill="none" stroke="#00D9FF"/>
+    <!-- Top right -->
+    <path d="M 448 64 L 464 64 L 464 80" fill="none" stroke="#00D9FF"/>
+    <!-- Bottom left -->
+    <path d="M 64 432 L 64 448 L 80 448" fill="none" stroke="#FF6B35"/>
+    <!-- Bottom right -->
+    <path d="M 448 448 L 464 448 L 464 432" fill="none" stroke="#FF6B35"/>
+  </g>
+
+  <!-- Data packet indicators -->
+  <g filter="url(#pulseGlow)">
+    <circle cx="90" cy="180" r="4" fill="#FF6B35" opacity="0.8"/>
+    <circle cx="420" cy="180" r="4" fill="#00D9FF" opacity="0.8"/>
+    <circle cx="110" cy="220" r="3" fill="#FF6B35" opacity="0.6"/>
+    <circle cx="400" cy="220" r="3" fill="#00D9FF" opacity="0.6"/>
+  </g>
+
+  <!-- Status indicator dots -->
+  <g opacity="0.7">
+    <circle cx="256" cy="430" r="5" fill="#00D9FF"/>
+    <circle cx="236" cy="430" r="3" fill="#FF6B35"/>
+    <circle cx="276" cy="430" r="3" fill="#FF6B35"/>
+  </g>
+
+  <!-- Subtle scan lines -->
+  <g opacity="0.03">
+    <line x1="0" y1="96" x2="512" y2="96" stroke="#00D9FF" stroke-width="1"/>
+    <line x1="0" y1="416" x2="512" y2="416" stroke="#00D9FF" stroke-width="1"/>
+  </g>
+</svg>

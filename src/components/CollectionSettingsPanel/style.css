@@ -1,0 +1,322 @@
+/* ============================================================
+   CollectionSettingsPanel · 墨砚 Inkwell
+   页头 .page-head / 卡片 .card / 键值表 .kv-table / 按钮 .btn / 输入 .field
+   仅改样式声明，保留全部既有 class
+   ============================================================ */
+
+.collection-settings-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel);
+}
+
+/* 页面头部 → .page-head 风格 */
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.folder-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+}
+
+.collection-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 保存按钮（无 save-btn 在 template 使用，仍保留样式） */
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 14px;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-base) var(--ease);
+}
+
+.save-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 标签页 → 分隔条式（顶部 2px 激活线） */
+.settings-tabs {
+  display: flex;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.tab-item {
+  position: relative;
+  padding: 11px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.tab-item:hover {
+  color: var(--fg);
+}
+
+.tab-item.active {
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+
+/* 标签页内容 */
+.tab-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 16px;
+  position: relative;
+  background: var(--bg-panel);
+}
+
+/* 脚本面板 */
+.scripts-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+}
+
+/* 工具条 */
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* 添加按钮 → .btn ghost sm 风格 */
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 11px;
+  background: none;
+  border: 1px dashed var(--line-strong);
+  color: var(--fg-2);
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.add-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.panel-hint {
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+
+/* 参数/键值表 → .kv-table 风格 */
+.params-list {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.params-header {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 34px;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.col-check {
+  width: 32px;
+  text-align: center;
+  display: grid;
+  place-items: center;
+}
+
+.col-key {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.col-value {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.header-value-cell {
+  position: relative;
+}
+
+.col-desc {
+  flex: 1;
+  min-width: 0;
+}
+
+.col-action {
+  width: 40px;
+  text-align: center;
+}
+
+/* 空状态 → 居中 var(--fg-3) */
+.empty-params {
+  padding: 28px 12px;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+/* 参数行 → .kv-row 风格 */
+.param-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  min-height: 40px;
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.param-row:last-child {
+  border-bottom: none;
+}
+
+.param-row:hover {
+  background: var(--bg-sunk);
+}
+
+/* 输入 → .field 风格（var(--bg-panel) + var(--line) + focus primary） */
+.param-row input[type="text"] {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--fg);
+  outline: none;
+  height: 28px;
+  box-sizing: border-box;
+  transition: border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.param-row input[type="text"]:focus {
+  border-color: var(--primary-line);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.param-row input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* 删除按钮 → .btn danger sm 风格 */
+.remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fg-3);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.remove-btn:hover {
+  color: var(--err);
+  border-color: var(--line);
+  background: rgba(220, 38, 38, 0.06);
+}
+
+/* 占位/空状态面板 → .empty 风格 */
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 240px;
+  color: var(--fg-3);
+  text-align: center;
+}
+
+.placeholder-icon {
+  font-size: 44px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.placeholder-content p {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+.placeholder-hint {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--fg-3);
+}

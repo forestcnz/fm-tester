@@ -1,0 +1,220 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog {
+  background: var(--background-panel);
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.curl-import-dialog {
+  width: 420px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dialog-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dialog-close {
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.dialog-close:hover {
+  color: var(--text-primary);
+}
+
+.curl-import-dialog .dialog-body {
+  padding: 16px;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.loading-text {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.curl-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  resize: vertical;
+  background: var(--background-input);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.curl-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.curl-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.parse-result {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background: var(--background-card);
+  border-radius: 4px;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.url-text {
+  color: var(--primary);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.method-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.method-tag.get {
+  background: rgba(78, 201, 176, 0.15);
+  color: var(--method-get);
+}
+.method-tag.post {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--method-post);
+}
+.method-tag.put {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.method-tag.patch {
+  background: rgba(139, 233, 253, 0.15);
+  color: var(--method-put);
+}
+.method-tag.delete {
+  background: var(--method-delete-bg);
+  color: var(--method-delete);
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 13px;
+  background: var(--background-input);
+  color: var(--text-primary);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.error-msg {
+  color: var(--method-delete);
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--method-delete-bg);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-primary {
+  padding: 8px 20px;
+  background: var(--primary);
+  color: var(--background-panel);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+  background: var(--border-color);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 8px 20px;
+  background: var(--background-card);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--border-color);
+}

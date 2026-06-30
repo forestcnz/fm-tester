@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester · AI 对话 · 重新设计</title>
+<link rel="stylesheet" href="inkwell.css">
+<style>
+.c-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.c-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.c-glyph{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(140deg,#7c3aed,#4c1d95);color:#fff;box-shadow:var(--shadow-sm);flex-shrink:0}
+.c-glyph svg{width:18px;height:18px}
+.c-title{font-family:"Fraunces",serif;font-weight:600;font-size:18px;line-height:1.1}
+.c-sub{font-size:11.5px;color:var(--fg-3);margin-top:2px}
+.c-head .clr{margin-left:auto;display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:7px;border:1px solid var(--line);background:var(--bg-panel);color:var(--fg-2);font-size:12px;font-weight:600;cursor:pointer;transition:.13s}
+.c-head .clr:hover{border-color:var(--err);color:var(--err)}
+.c-head .clr svg{width:13px;height:13px}
+.c-msgs{flex:1;overflow-y:auto;padding:18px;background:var(--bg-app);display:flex;flex-direction:column;gap:14px}
+.c-msgs::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-app)}
+.msg{display:flex;gap:11px;max-width:88%;animation:rise .25s ease}
+.msg.user{flex-direction:row-reverse;margin-left:auto}
+.msg-ava{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;flex-shrink:0;font-family:"Fraunces",serif;font-weight:700;font-size:13px}
+.msg.ai .msg-ava{background:linear-gradient(140deg,#7c3aed,#4c1d95)}
+.msg.user .msg-ava{background:linear-gradient(140deg,var(--primary),#1e3a8a)}
+.msg-card{min-width:0;display:flex;flex-direction:column;gap:7px}
+.msg-label{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--fg-3)}
+.msg-label .who{font-weight:700;color:var(--fg-2)}
+.msg.user .msg-label{flex-direction:row-reverse}
+.msg-label .t{font-family:"IBM Plex Mono",monospace}
+.msg-bubble{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.7;color:var(--fg);box-shadow:var(--shadow-sm);max-width:100%}
+.msg.ai .msg-bubble{border-top-left-radius:4px}
+.msg.user .msg-bubble{background:var(--primary);color:#fff;border-color:var(--primary);border-top-right-radius:4px}
+/* 思考过程 */
+.reasoning{background:var(--bg-sunk);border:1px solid var(--line);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--fg-2);margin-bottom:9px}
+.reasoning-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--fg-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.reasoning-head .dots{display:flex;gap:3px}
+.reasoning-head .dots span{width:5px;height:5px;border-radius:50%;background:var(--primary);animation:pulse 1.2s infinite}
+.reasoning-head .dots span:nth-child(2){animation-delay:.2s}.reasoning-head .dots span:nth-child(3){animation-delay:.4s}
+.reasoning-body{line-height:1.6}
+/* 工具调用 */
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+.tool{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--primary);background:var(--primary-soft);border:1px solid var(--primary-line);padding:4px 9px;border-radius:6px}
+.tool svg{width:12px;height:12px}
+/* markdown 渲染 */
+.md h1,.md h2,.md h3{font-family:"Fraunces",serif;font-weight:600;margin:10px 0 6px;line-height:1.3}
+.md h1{font-size:17px}.md h2{font-size:15px}.md h3{font-size:13.5px}
+.md p{margin:6px 0}.md ul,.md ol{margin:6px 0;padding-left:20px}.md li{margin:3px 0}
+.md code{font-family:"IBM Plex Mono",monospace;background:var(--bg-sunk);padding:1px 6px;border-radius:4px;font-size:11.5px}
+.msg.user .md code{background:rgba(255,255,255,.18)}
+.md pre{background:var(--bg-sunk);border:1px solid var(--line);border-radius:8px;padding:11px 13px;overflow-x:auto;margin:8px 0}
+.md pre code{background:none;padding:0;font-size:11.5px;line-height:1.6}
+.md strong{font-weight:700}
+.tok-k{color:var(--m-put)}.tok-s{color:var(--m-get)}.tok-n{color:var(--m-post)}.tok-c{color:var(--fg-3);font-style:italic}
+/* 加载 */
+.loading-lines{display:flex;flex-direction:column;gap:6px}
+.loading-lines span{height:9px;border-radius:4px;background:var(--bg-sunk);animation:shimmer 1.4s infinite}
+.loading-lines span:nth-child(1){width:80%}.loading-lines span:nth-child(2){width:95%}.loading-lines span:nth-child(3){width:60%}
+@keyframes shimmer{0%{opacity:.4}50%{opacity:.9}100%{opacity:.4}}
+.caret::after{content:"▋";color:var(--primary);animation:pulse 1s infinite;margin-left:1px}
+/* 输入 */
+.c-input{padding:13px 18px;border-top:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.c-input-inner{border:1px solid var(--line);border-radius:12px;background:var(--bg-app);padding:11px 13px;transition:.15s}
+.c-input-inner:focus-within{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft);background:var(--bg-panel)}
+.c-fmbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--m-patch);background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);padding:3px 9px;border-radius:6px;margin-bottom:8px;cursor:pointer;user-select:none;transition:.13s}
+.c-fmbadge.on{background:rgba(124,58,237,.16);color:var(--m-patch)}
+.c-fmbadge svg{width:12px;height:12px}
+.c-textarea{width:100%;border:none;background:none;outline:none;font:inherit;font-size:13px;color:var(--fg);resize:none;min-height:42px;max-height:140px;line-height:1.6}
+.c-textarea::placeholder{color:var(--fg-3)}
+.c-input-foot{display:flex;align-items:center;gap:9px;margin-top:9px}
+.c-hint{font-size:11px;color:var(--fg-3);display:flex;align-items:center;gap:5px}
+.c-hint .kbd{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:1px 5px;border:1px solid var(--line);border-radius:4px;background:var(--bg-sunk)}
+.c-send{display:flex;align-items:center;gap:7px;height:32px;padding:0 16px;border-radius:8px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;transition:.15s;margin-left:auto}
+.c-send.go{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm)}
+.c-send.go:hover:not(:disabled){background:var(--primary-hover)}
+.c-send.go:disabled{opacity:.4;cursor:not-allowed}
+.c-send.stop{background:var(--fg-2);color:#fff}
+.c-send svg{width:14px;height:14px}
+.c-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--fg-3);text-align:center;padding:30px}
+.c-empty svg{width:52px;height:52px;opacity:.4}
+.c-empty h3{font-family:"Fraunces",serif;font-weight:500;font-size:18px;color:var(--fg-2)}
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame theme-paper" id="frame">
+
+  <div class="titlebar">
+    <div class="tlights"><span class="tl-r"></span><span class="tl-y"></span><span class="tl-g"></span></div>
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div><div class="brand-name">FM <em>Tester</em></div><div class="brand-sub">Inkwell · 墨砚</div></div>
+    <div class="tb-spacer"></div><div class="tb-actions"><button class="tb-btn" id="themeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="ws-select"><div class="ws-ico">A</div><span class="ws-name">Acme 电商平台</span><svg class="ws-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="cmdk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">搜索接口、切换环境或执行命令…</span><span class="kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>
+  </div>
+
+  <div class="body">
+    <div class="rail">
+      <div class="rail-grp"><a class="rail-item" href="redesign-preview.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="tip">集合</span></a><a class="rail-item" href="page-websocket.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v4M16 3v4M4 11h16"/></svg><span class="tip">WebSocket</span></a><a class="rail-item" href="page-orchestration.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg><span class="tip">编排</span></a></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><a class="rail-item" href="page-environment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3z"/></svg><span class="tip">环境变量</span></a><a class="rail-item" href="page-history.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/></svg><span class="tip">历史记录</span></a></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><a class="rail-item" href="page-workspace.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tip">工作区</span></a><button class="rail-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><span class="tip">AI 对话</span></button></div>
+    </div>
+
+    <!-- 侧边：会话列表 -->
+    <div class="sidebar">
+      <div class="sb-head"><div class="sb-title"><h2>AI 对话</h2><div class="acts"><button class="mini-ico" id="newSess" title="新建会话"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+        <div class="sb-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="过滤会话…"></div></div>
+      <div class="sb-list" id="sessList" style="padding:8px"></div>
+    </div>
+
+    <!-- 主：对话 -->
+    <div class="main"><div class="c-main">
+      <div class="c-head">
+        <div class="c-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg></div>
+        <div><div class="c-title">AI 对话</div><div class="c-sub">API Documentation Assistant · @fm 可带入工作区上下文</div></div>
+        <button class="clr" id="clrBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>清空</button>
+      </div>
+      <div class="c-msgs" id="cMsgs"></div>
+      <div class="c-input">
+        <div class="c-input-inner">
+          <div class="c-fmbadge" id="fmBadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg><span id="fmTxt">@fm 上下文：关闭</span></div>
+          <textarea class="c-textarea" id="cInput" placeholder="输入消息，Enter 发送…"></textarea>
+          <div class="c-input-foot">
+            <span class="c-hint"><span class="kbd">Enter</span> 发送 · <span class="kbd">Shift+Enter</span> 换行</span>
+            <button class="c-send go" id="sendBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>发送</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sb-l"><span class="v">v0.8.2</span><span class="git"><i></i>已同步 · main @ 2a3f1c</span></div>
+    <div class="sb-c">AI 对话 · <b>用户登录接口文档</b></div>
+    <div class="sb-r"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Cookie</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>控制台</span><span class="si on"><span class="dot"></span>Staging</span></div>
+  </div>
+</div></div>
+
+<div class="toast-wrap" id="toasts"></div>
+<div class="note"><span class="nd"></span><span><b>AI 对话</b> · 发送消息观察「思考过程→流式输出」；点亮 @fm 带入工作区上下文（显示工具调用）；发送中按钮变停止；左侧切换/新建会话 · <span class="tag">⌘.</span> 主题</span></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$('#themeBtn').addEventListener('click',()=>{$('#frame').classList.toggle('theme-paper');$('#frame').classList.toggle('theme-dark');toast('已切换主题');});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();$('#themeBtn').click();}});
+
+let sessions=[{id:'s1',title:'用户登录接口文档',time:'10:24'},{id:'s2',title:'压测参数建议',time:'昨天'},{id:'s3',title:'cURL 转 JSON',time:'06-24'}];
+let curSess='s1',fmOn=false,sending=false,streamTimer=null;
+const replyMap={
+  default:{reasoning:'分析用户意图，结合当前工作区上下文组织回答…',tools:[],content:'好的，我来帮你。\n\n## 思路\n\n针对这个问题，建议从以下几点入手：\n\n- 明确**请求方法**与参数\n- 检查响应状态码与耗时\n- 用前置脚本注入签名\n\n## 示例\n\n```js\nfm.request.setHeader("X-Timestamp", Date.now());\n```\n\n需要我进一步细化吗？'},
+  login:{reasoning:'用户询问登录接口。当前工作区有 POST /api/v2/auth/login 接口，参数 username/password/remember。检查现有定义后给出文档与安全建议。',tools:['查询接口 POST /api/v2/auth/login'],content:'基于工作区中的 **用户登录** 接口，这是完整文档：\n\n## 用户登录\n\n`POST /api/v2/auth/login`\n\n### 请求参数\n\n| 字段 | 类型 | 说明 |\n| --- | --- | --- |\n| `username` | string | 登录账号 |\n| `password` | string | 密码 |\n| `remember` | boolean | 记住登录 |\n\n### 安全建议\n\n1. `password` 建议**前端 RSA 加密**传输\n2. 增加 `captcha` 字段防暴力破解\n3. 响应 `access_token` 应配合 **HttpOnly Cookie**\n\n### 前置脚本示例\n\n```js\n// 注入时间戳\nfm.request.setHeader("X-Timestamp", Date.now());\n```\n\n需要我直接写入接口的「文档」tab 吗？'},
+};
+function pickReply(text){
+  if(/登录|login|文档|doc/i.test(text))return replyMap.login;
+  return replyMap.default;
+}
+let messages={
+  s1:[{role:'user',content:'帮我写用户登录接口的文档',time:'10:23'},{role:'assistant',reasoning:replyMap.login.reasoning,tools:replyMap.login.tools,content:replyMap.login.content,time:'10:24',done:true}],
+  s2:[],s3:[],
+};
+
+function renderSess(){
+  $('#sessList').innerHTML=sessions.map(s=>`<div class="lrow ${curSess===s.id?'sel':''}" data-id="${s.id}"><span class="lrow-ico" style="color:${curSess===s.id?'var(--m-patch)':'var(--fg-2)'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></span><span class="lrow-t">${s.title}</span><span class="lrow-meta">${s.time}</span></div>`).join('');
+  $$('#sessList .lrow').forEach(r=>r.addEventListener('click',()=>{curSess=r.dataset.id;renderSess();renderMsgs();}));
+}
+function escH(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function renderMd(md){
+  let h=escH(md);
+  h=h.replace(/```js\n([\s\S]*?)```/g,(m,c)=>'<pre><code>'+colorCode(c)+'</code></pre>');
+  h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  h=h.replace(/^\| (.+) \|\n\|[-| :]+\|\n((?:\|.*\|\n?)+)/gm,(m,head,body)=>'<table style="width:100%;border-collapse:collapse;font-size:12px;margin:8px 0">'+('<tr>'+head.split('|').map(c=>'<th style="border:1px solid var(--line);padding:5px 8px;text-align:left;background:var(--bg-sunk)">'+c.trim()+'</th>').join('')+'</tr>')+body.trim().split('\n').map(r=>'<tr>'+r.split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>'<td style="border:1px solid var(--line);padding:5px 8px">'+c.trim()+'</td>').join('')+'</tr>').join('')+'</table>');
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/^\d+\. (.+)$/gm,'<li>$1</li>').replace(/^- (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li)/g,'<ul>$1</ul>');
+  h=h.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
+  return '<p>'+h+'</p>';
+}
+function colorCode(c){return c.replace(/"([^"]+)":/g,'<span class="tok-k">"$1"</span>:').replace(/"([^"]+)"/g,'<span class="tok-s">"$1"</span>').replace(/\/\/(.+)/g,'<span class="tok-c">//$1</span>');}
+
+function renderMsgs(){
+  const w=$('#cMsgs');const msgs=messages[curSess]||[];
+  if(!msgs.length){w.innerHTML='<div class="c-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><h3>开始一段新对话</h3><p style="font-size:12.5px">问我接口文档、脚本优化、测试建议…</p></div>';return;}
+  w.innerHTML='';msgs.forEach(m=>w.appendChild(buildMsg(m)));
+  w.scrollTop=w.scrollHeight;
+}
+function buildMsg(m){
+  const el=document.createElement('div');el.className='msg '+(m.role==='user'?'user':'ai');
+  let inner='';
+  if(m.role==='assistant'){
+    if(m.reasoning&&m.streaming!==false){
+      inner+=`<div class="reasoning"><div class="reasoning-head"><span>thinking</span>${m.streaming?`<span class="dots"><span></span><span></span><span></span></span>`:''}</div><div class="reasoning-body">${escH(m.reasoning)}</div></div>`;
+    }
+    if(m.tools&&m.tools.length){inner+='<div class="tools">'+m.tools.map(t=>`<span class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 0 1 5.4-5.4z"/></svg>${escH(t)}</span>`).join('')+'</div>';}
+    if(m.streaming&&!m.content){inner+='<div class="loading-lines"><span></span><span></span><span></span></div>';}
+    else if(m.content){inner+=`<div class="msg-bubble"><div class="md ${m.streaming?'caret':''}">${renderMd(m.content)}</div></div>`;}
+  }else{
+    inner=`<div class="msg-bubble"><div>${escH(m.content)}</div></div>`;
+  }
+  el.innerHTML=`<div class="msg-ava">${m.role==='user'?'我':'AI'}</div><div class="msg-card"><div class="msg-label"><span class="who">${m.role==='user'?'你':'AI 助手'}</span><span class="t">${m.time||''}</span></div>${inner}</div>`;
+  return el;
+}
+
+function now(){return new Date().toTimeString().slice(0,5);}
+function send(){
+  const v=$('#cInput').value.trim();if(!v||sending)return;
+  messages[curSess]=messages[curSess]||[];
+  messages[curSess].push({role:'user',content:v,time:now()});
+  $('#cInput').value='';renderMsgs();
+  // assistant 占位
+  const reply=pickReply(v);
+  const tools=fmOn?reply.tools:[];
+  const am={role:'assistant',reasoning:reply.reasoning,tools,content:'',streaming:true,time:now()};
+  messages[curSess].push(am);renderMsgs();
+  setSending(true);
+  // 思考阶段
+  setTimeout(()=>{
+    am.streaming=false;renderMsgs();
+    // 流式输出
+    am.streaming=true;const full=reply.content;let i=0;
+    streamTimer=setInterval(()=>{
+      i+=Math.max(2,Math.round(Math.random()*4));
+      am.content=full.slice(0,i);renderMsgs();
+      if(i>=full.length){clearInterval(streamTimer);streamTimer=null;am.streaming=false;am.done=true;setSending(false);renderMsgs();}
+    },28);
+  },1100);
+}
+function setSending(on){sending=on;const b=$('#sendBtn');
+  if(on){b.className='c-send stop';b.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>停止';}
+  else{b.className='c-send go';b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>发送';}
+}
+$('#sendBtn').addEventListener('click',()=>{if(sending){if(streamTimer){clearInterval(streamTimer);streamTimer=null;}const msgs=messages[curSess];const am=msgs[msgs.length-1];if(am&&am.streaming){am.streaming=false;am.done=true;}setSending(false);renderMsgs();toast('已停止');}else{send();}});
+$('#cInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sending)send();}});
+$('#fmBadge').addEventListener('click',()=>{fmOn=!fmOn;$('#fmBadge').classList.toggle('on',fmOn);$('#fmTxt').textContent='@fm 上下文：'+(fmOn?'开启':'关闭');toast(fmOn?'已带入工作区上下文':'已关闭上下文');});
+$('#clrBtn').addEventListener('click',()=>{if(!messages[curSess]?.length){toast('当前会话已为空');return;}messages[curSess]=[];renderMsgs();toast('已清空当前会话');});
+$('#newSess').addEventListener('click',()=>{const s={id:'s'+Date.now(),title:'新对话',time:now()};sessions.unshift(s);messages[s.id]=[];curSess=s.id;renderSess();renderMsgs();$('#cInput').focus();});
+
+renderSess();renderMsgs();
+
+function toast(msg){const w=$('#toasts');const t=document.createElement('div');t.className='toast';t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+msg;w.appendChild(t);setTimeout(()=>{t.style.transition='all .25s';t.style.opacity=0;t.style.transform='translateX(20px)';setTimeout(()=>t.remove(),250);},2200);}
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester · WebSocket · 重新设计</title>
+<link rel="stylesheet" href="inkwell.css">
+<style>
+.ws-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.ws-url-bar{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.ws-tag{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:12px;color:#fff;background:var(--m-patch);height:34px;padding:0 13px;border-radius:8px;display:flex;align-items:center;flex-shrink:0}
+.ws-url-field{flex:1;display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:8px;background:var(--bg-sunk);border:1px solid var(--line);transition:.15s}
+.ws-url-field:focus-within{border-color:var(--primary-line);background:var(--bg-panel);box-shadow:0 0 0 3px var(--primary-soft)}
+.ws-url-field input{flex:1;border:none;background:none;outline:none;font:inherit;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--fg)}
+.ws-url-field input::placeholder{color:var(--fg-3)}
+.ws-sync-flag{font-size:10.5px;color:var(--primary);font-weight:600;display:flex;align-items:center;gap:4px;opacity:0;transition:.2s}
+.ws-sync-flag.show{opacity:1}
+.ws-sync-flag svg{width:11px;height:11px}
+.ws-btn{display:flex;align-items:center;gap:7px;height:34px;padding:0 16px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:12.5px;transition:.15s;flex-shrink:0}
+.ws-btn.connect{background:var(--ok);color:#fff;box-shadow:var(--shadow-sm)}
+.ws-btn.connect:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.ws-btn.disconnect{background:rgba(220,38,38,.1);color:var(--err);border:1px solid rgba(220,38,38,.3)}
+.ws-btn.disconnect:hover{background:var(--err);color:#fff}
+.ws-btn.connecting{background:var(--warn);color:#fff}
+.ws-btn svg{width:14px;height:14px}
+.ws-btn.save{background:var(--bg-panel);border:1px solid var(--line);color:var(--fg-2)}
+.ws-btn.save:hover{border-color:var(--primary-line);color:var(--primary)}
+
+/* 状态栏 */
+.ws-status-bar{display:flex;align-items:center;gap:14px;padding:9px 18px;border-bottom:1px solid var(--line);background:var(--bg-sunk);flex-shrink:0;flex-wrap:wrap}
+.ws-status{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+.ws-led{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ws-led.disconnected{background:var(--fg-3)}
+.ws-led.connecting{background:var(--warn);animation:pulse 1s infinite}
+.ws-led.connected{background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.ws-led.error{background:var(--err)}
+.ws-status.s-connected{color:var(--ok)}.ws-status.s-connecting{color:var(--warn)}.ws-status.s-error{color:var(--err)}.ws-status.s-disconnected{color:var(--fg-3)}
+.ws-err{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--err);background:rgba(220,38,38,.06);padding:3px 9px;border-radius:6px}
+.ws-conn-time{margin-left:auto;font-size:11.5px;color:var(--fg-3);font-family:"IBM Plex Mono",monospace}
+
+/* 配置区 */
+.ws-config{display:flex;flex-direction:column;min-height:0;flex:1}
+.ws-config-tabs{display:flex;align-items:center;gap:2px;padding:0 12px;height:34px;border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.ctab{display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;font-size:12px;font-weight:600;color:var(--fg-2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.13s}
+.ctab:hover{color:var(--fg)}.ctab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.ctab .c{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--fg-3);background:var(--bg-sunk);padding:1px 5px;border-radius:7px;font-weight:600}
+.ctab.on .c{background:var(--primary-soft);color:var(--primary)}
+.sync-hint{margin-left:auto;font-size:11px;color:var(--fg-3);display:flex;align-items:center;gap:6px}
+.sync-hint svg{width:12px;height:12px;color:var(--primary)}
+
+.kv-wrap{padding:13px 18px;background:var(--bg-app);overflow-y:auto;max-height:38%}
+.kv-wrap::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-app)}
+.kv-add{display:flex;align-items:center;gap:6px;height:28px;padding:0 11px;margin-bottom:10px;border-radius:7px;border:1px dashed var(--line-strong);background:none;color:var(--fg-2);font-size:12px;font-weight:600;cursor:pointer;transition:.14s}
+.kv-add:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.kv-add svg{width:13px;height:13px}
+.kvtable{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--bg-panel)}
+.kvhead,.kvrow{display:grid;grid-template-columns:30px 1fr 1.3fr 30px;align-items:center}
+.kvhead{background:var(--bg-sunk);height:30px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;color:var(--fg-3);text-transform:uppercase;letter-spacing:.05em}
+.kvhead span,.kvrow span{padding:0 8px}
+.kvrow{height:36px;border-bottom:1px solid var(--line)}.kvrow:last-child{border-bottom:none}.kvrow:hover{background:var(--bg-sunk)}
+.kvrow input{width:100%;border:none;background:none;outline:none;font:inherit;font-size:12px;color:var(--fg);padding:4px 6px;border-radius:5px;font-family:"IBM Plex Mono",monospace}
+.kvrow input:focus{background:var(--bg-panel);box-shadow:inset 0 0 0 1.5px var(--primary-line)}
+.kvrow input.plain{font-family:"Manrope"}
+.kvcb input{width:14px;height:14px;accent-color:var(--primary);cursor:pointer}
+.kvdel{color:var(--fg-3);cursor:pointer;border:none;background:none;opacity:0;transition:.12s;display:grid;place-items:center}
+.kvrow:hover .kvdel{opacity:1}.kvdel:hover{color:var(--err)}.kvdel svg{width:13px;height:13px}
+.kv-empty{padding:30px 18px;text-align:center;color:var(--fg-3);font-size:12.5px}
+
+/* 消息区 */
+.ws-msg-area{flex:1;display:flex;flex-direction:column;min-height:0;border-top:1px solid var(--line);background:var(--bg-panel)}
+.ws-msg-head{display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--line);background:var(--bg-sunk);flex-shrink:0}
+.ws-msg-head .t{font-size:12.5px;font-weight:600}.ws-msg-head .c{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--fg-3)}
+.ws-msg-head .clr{margin-left:auto;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:6px;border:1px solid var(--line);background:var(--bg-panel);color:var(--fg-2);font-size:11.5px;font-weight:600;cursor:pointer;transition:.13s}
+.ws-msg-head .clr:hover{border-color:var(--err);color:var(--err)}
+.ws-msg-head .clr svg{width:12px;height:12px}
+.ws-msg-list{flex:1;overflow-y:auto;padding:12px 18px;display:flex;flex-direction:column;gap:8px;background:var(--bg-app)}
+.ws-msg-list::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-app)}
+.msg-item{border:1px solid var(--line);border-radius:9px;background:var(--bg-panel);overflow:hidden;animation:rise .2s}
+.msg-item.sent{border-left:3px solid var(--primary)}
+.msg-item.received{border-left:3px solid var(--m-get)}
+.msg-meta{display:flex;align-items:center;gap:10px;padding:6px 12px;background:var(--bg-sunk);border-bottom:1px solid var(--line);font-size:11px}
+.msg-meta .dir{font-weight:700;display:flex;align-items:center;gap:5px}
+.msg-meta .dir.sent{color:var(--primary)}.msg-meta .dir.received{color:var(--m-get)}
+.msg-meta .dir svg{width:11px;height:11px}
+.msg-meta .time{font-family:"IBM Plex Mono",monospace;color:var(--fg-3)}
+.msg-meta .type{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--fg-3);background:var(--bg-panel);padding:1px 6px;border-radius:4px;border:1px solid var(--line)}
+.msg-content{padding:9px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.55;color:var(--fg);white-space:pre-wrap;word-break:break-all}
+.msg-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--fg-3);font-size:12.5px}
+
+/* 发送区 */
+.ws-send{display:flex;align-items:center;gap:9px;padding:11px 18px;border-top:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.type-sel{height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg-sunk);font:inherit;font-size:12px;color:var(--fg);cursor:pointer;outline:none}
+.ws-send-input{flex:1;height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg-app);font:inherit;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--fg);outline:none;transition:.15s}
+.ws-send-input:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft);background:var(--bg-panel)}
+.ws-send-input::placeholder{color:var(--fg-3)}
+.ws-send-btn{display:flex;align-items:center;gap:7px;height:34px;padding:0 18px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-weight:700;font-size:12.5px;cursor:pointer;transition:.15s;box-shadow:var(--shadow-sm)}
+.ws-send-btn:hover:not(:disabled){background:var(--primary-hover);transform:translateY(-1px)}
+.ws-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.ws-send-btn svg{width:14px;height:14px}
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame theme-paper" id="frame">
+
+  <div class="titlebar">
+    <div class="tlights"><span class="tl-r"></span><span class="tl-y"></span><span class="tl-g"></span></div>
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div><div class="brand-name">FM <em>Tester</em></div><div class="brand-sub">Inkwell · 墨砚</div></div>
+    <div class="tb-spacer"></div>
+    <div class="tb-actions"><button class="tb-btn" id="themeBtn" title="切换主题"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="ws-select"><div class="ws-ico">A</div><span class="ws-name">Acme 电商平台</span><svg class="ws-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="env-switch"><button class="env-chip"><span class="ed"></span>Local</button><button class="env-chip on"><span class="ed"></span>Staging</button><button class="env-chip"><span class="ed"></span>Prod</button></div>
+    <div class="cmdk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">搜索接口、切换环境或执行命令…</span><span class="kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>
+  </div>
+
+  <div class="body">
+    <div class="rail">
+      <div class="rail-grp">
+        <a class="rail-item" href="redesign-preview.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="tip">集合</span></a>
+        <button class="rail-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v4M16 3v4M4 11h16M5 7h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/></svg><span class="tip">WebSocket</span></button>
+        <a class="rail-item" href="page-orchestration.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg><span class="tip">编排</span></a>
+      </div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp">
+        <a class="rail-item" href="page-environment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3z"/></svg><span class="tip">环境变量</span></a>
+        <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/></svg><span class="tip">历史记录<span class="rail-badge">3</span></span></button>
+      </div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tip">工作区</span></button><button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><span class="tip">AI 对话</span></button></div>
+    </div>
+
+    <!-- 侧边：WS 配置列表 -->
+    <div class="sidebar">
+      <div class="sb-head"><div class="sb-title"><h2>WebSocket</h2><div class="acts"><button class="mini-ico" title="新建连接"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+        <div class="sb-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="过滤连接…"></div>
+      </div>
+      <div class="sb-list" id="wsList">
+        <div class="lrow sel"><span class="ldot off"></span><span class="lrow-t">订单通知推送</span><span class="lrow-meta">wss</span></div>
+        <div class="lrow"><span class="ldot off"></span><span class="lrow-t">行情数据流</span><span class="lrow-meta">wss</span></div>
+        <div class="lrow"><span class="ldot off"></span><span class="lrow-t">聊天网关</span><span class="lrow-meta">ws</span></div>
+      </div>
+    </div>
+
+    <!-- 主：WS 详情 -->
+    <div class="main"><div class="ws-main">
+      <!-- URL 栏 -->
+      <div class="ws-url-bar">
+        <div class="ws-tag">WS</div>
+        <div class="ws-url-field">
+          <input id="wsUrl" value="wss://api.acme.com/ws/notify?channel=order&token=abc" placeholder="输入 ws:// 或 wss:// 地址">
+          <span class="ws-sync-flag" id="syncFlag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>已同步至参数</span>
+        </div>
+        <button class="ws-btn connect" id="connBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5 9 16l10-10"/></svg>连接</button>
+        <button class="ws-btn save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>保存</button>
+      </div>
+
+      <!-- 状态栏 -->
+      <div class="ws-status-bar">
+        <div class="ws-status s-disconnected" id="status"><span class="ws-led disconnected" id="led"></span><span id="statusText">未连接</span></div>
+        <div class="ws-err" id="errBox" style="display:none"></div>
+        <span class="ws-conn-time" id="connTime"></span>
+      </div>
+
+      <!-- 配置 tab -->
+      <div class="ws-config">
+        <div class="ws-config-tabs">
+          <button class="ctab on" data-tab="params">Params <span class="c" id="pCnt">2</span></button>
+          <button class="ctab" data-tab="headers">Headers <span class="c" id="hCnt">2</span></button>
+          <span class="sync-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>URL 与 Params 双向同步</span>
+        </div>
+
+        <div class="kv-wrap">
+          <!-- Params -->
+          <div data-pane="params">
+            <button class="kv-add" id="addParam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>添加参数</button>
+            <div class="kvtable"><div class="kvhead"><span></span><span>参数名</span><span>值</span><span></span></div><div id="paramRows"></div></div>
+          </div>
+          <!-- Headers -->
+          <div data-pane="headers" style="display:none">
+            <button class="kv-add" id="addHeader"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>添加请求头</button>
+            <div class="kvtable"><div class="kvhead"><span></span><span>键</span><span>值</span><span></span></div><div id="headerRows"></div></div>
+          </div>
+        </div>
+
+        <!-- 消息区 -->
+        <div class="ws-msg-area">
+          <div class="ws-msg-head"><span class="t">消息</span><span class="c" id="msgCnt">0</span>
+            <button class="clr" id="clrBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>清空</button>
+          </div>
+          <div class="ws-msg-list" id="msgList"><div class="msg-empty">连接后收发的消息将显示在此处</div></div>
+
+          <!-- 发送区 -->
+          <div class="ws-send">
+            <select class="type-sel" id="typeSel"><option value="text">Text</option><option value="binary">Binary (Base64)</option></select>
+            <input class="ws-send-input" id="sendInput" placeholder="输入要发送的消息…" disabled>
+            <button class="ws-send-btn" id="sendBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/></svg>发送</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sb-l"><span class="v">v0.8.2</span><span class="git"><i></i>已同步 · main @ 2a3f1c</span></div>
+    <div class="sb-c">WebSocket · <b>订单通知推送</b></div>
+    <div class="sb-r"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Cookie</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>控制台</span><span class="si on"><span class="dot"></span>Staging</span></div>
+  </div>
+</div></div>
+
+<div class="toast-wrap" id="toasts"></div>
+<div class="note"><span class="nd"></span><span><b>WebSocket</b> · 编辑 URL 会自动解析到 Params，编辑 Params 会反向拼回 URL；切换连接状态，发送 Text/Binary 消息，服务端自动回推 · <span class="tag">⌘.</span> 主题</span></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$('#themeBtn').addEventListener('click',()=>{$('#frame').classList.toggle('theme-paper');$('#frame').classList.toggle('theme-dark');toast('已切换主题');});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();$('#themeBtn').click();}});
+
+/* —— 真实逻辑：URL ↔ Params 双向同步 —— */
+let params=[{key:'channel',value:'order',enabled:true},{key:'token',value:'abc',enabled:true}];
+let headers=[{key:'Authorization',value:'Bearer {{token}}',enabled:true},{key:'X-Client',value:'fm-tester',enabled:true}];
+let fromUrl=false,fromParams=false;
+
+function buildUrl(baseUrl,ps){
+  const qi=baseUrl.indexOf('?');const clean=qi<0?baseUrl:baseUrl.slice(0,qi);
+  const en=ps.filter(p=>p.enabled&&p.key);
+  if(!en.length)return clean;
+  return clean+'?'+en.map(p=>encodeURIComponent(p.key)+'='+encodeURIComponent(p.value||'')).join('&');
+}
+function parseParams(url){
+  const qi=url.indexOf('?');if(qi<0)return[];
+  const q=url.slice(qi+1);if(!q)return[];
+  return q.split('&').map(pair=>{const [k,v='']=pair.split('=');return k?{key:decodeURIComponent(k),value:decodeURIComponent(v),enabled:true}:null;}).filter(Boolean);
+}
+
+function renderParams(){
+  const w=$('#paramRows');
+  if(!params.length){w.innerHTML='<div style="grid-column:1/-1" class="kv-empty">暂无参数</div>';}
+  else{w.innerHTML='';params.forEach((p,i)=>{
+    const r=document.createElement('div');r.className='kvrow';
+    r.innerHTML=`<span class="kvcb"><input type="checkbox" ${p.enabled?'checked':''} data-i="${i}" data-f="en"></span>
+      <span><input value="${esc(p.key)}" placeholder="参数名" data-i="${i}" data-f="key"></span>
+      <span><input value="${esc(p.value)}" placeholder="参数值" data-i="${i}" data-f="value"></span>
+      <span><button class="kvdel" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></span>`;
+    w.appendChild(r);});}
+  $('#pCnt').textContent=params.length;bindRows('paramRows',params,()=>{if(!fromUrl){fromParams=true;$('#wsUrl').value=buildUrl($('#wsUrl').value,params);flashSync();setTimeout(()=>fromParams=false,50);}});
+}
+function renderHeaders(){
+  const w=$('#headerRows');
+  if(!headers.length){w.innerHTML='<div style="grid-column:1/-1" class="kv-empty">暂无请求头</div>';}
+  else{w.innerHTML='';headers.forEach((h,i)=>{
+    const r=document.createElement('div');r.className='kvrow';
+    r.innerHTML=`<span class="kvcb"><input type="checkbox" ${h.enabled?'checked':''} data-i="${i}" data-f="en"></span>
+      <span><input value="${esc(h.key)}" placeholder="键" data-i="${i}" data-f="key"></span>
+      <span><input value="${esc(h.value)}" placeholder="值" data-i="${i}" data-f="value"></span>
+      <span><button class="kvdel" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></span>`;
+    w.appendChild(r);});}
+  $('#hCnt').textContent=headers.length;bindRows('headerRows',headers,null);
+}
+function bindRows(id,arr,onChg){
+  $('#'+id).querySelectorAll('[data-f]').forEach(el=>{
+    const ev='input';
+    el.addEventListener(ev,()=>{const i=+el.dataset.i,f=el.dataset.f;arr[i][f]=f==='en'?el.checked:el.value;onChg&&onChg();});});
+  $('#'+id).querySelectorAll('.kvdel').forEach(b=>b.addEventListener('click',()=>{arr.splice(+b.dataset.i,1);id==='paramRows'?renderParams():renderHeaders();}));
+}
+function esc(s){return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+/* URL 输入 → 解析 params */
+$('#wsUrl').addEventListener('input',()=>{
+  if(fromParams)return;
+  fromUrl=true;params=parseParams($('#wsUrl').value);renderParams();setTimeout(()=>fromUrl=false,50);
+});
+function flashSync(){const f=$('#syncFlag');f.classList.add('show');clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),1200);}
+
+$('#addParam').addEventListener('click',()=>{params.push({key:'',value:'',enabled:true});renderParams();});
+$('#addHeader').addEventListener('click',()=>{headers.push({key:'',value:'',enabled:true});renderHeaders();});
+
+/* tab 切换 */
+$$('.ctab').forEach(t=>t.addEventListener('click',()=>{$$('.ctab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  $$('.kv-wrap [data-pane]').forEach(p=>p.style.display=p.dataset.pane===t.dataset.tab?'':'none');}));
+$$('#wsList .lrow').forEach(r=>r.addEventListener('click',()=>{$$$('#wsList .lrow').forEach(x=>x.classList.remove('sel'));r.classList.add('sel');}));
+
+/* —— 连接状态机 —— */
+let status='disconnected'; // connecting/connected/disconnected/error
+const connBtn=$('#connBtn');
+function setStatus(s,err){
+  status=s;const led=$('#led'),st=$('#status'),txt=$('#statusText'),eb=$('#errBox'),ct=$('#connTime');
+  led.className='ws-led '+s;st.className='ws-status s-'+s;
+  const map={disconnected:'未连接',connecting:'连接中…',connected:'已连接',error:'连接错误'};
+  txt.textContent=map[s];
+  if(s==='error'&&err){eb.style.display='';eb.textContent='⚠ '+err;}else eb.style.display='none';
+  ct.textContent=s==='connected'?'连接于 '+new Date().toLocaleString():'';
+  // 按钮
+  if(s==='connected'){connBtn.className='ws-btn disconnect';connBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>断开';}
+  else if(s==='connecting'){connBtn.className='ws-btn connecting';connBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg>连接中';}
+  else{connBtn.className='ws-btn connect';connBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5 9 16l10-10"/></svg>连接';}
+  // 发送可用性
+  $('#sendInput').disabled=s!=='connected';$('#sendBtn').disabled=s!=='connected';
+}
+
+connBtn.addEventListener('click',()=>{
+  if(status==='connected'){setStatus('disconnected');stopSim();addMsg('received','text','✕ 连接已关闭');toast('已断开');return;}
+  const u=$('#wsUrl').value.trim();
+  if(!u.startsWith('ws://')&&!u.startsWith('wss://')){setStatus('error','地址必须以 ws:// 或 wss:// 开头');toast('地址格式错误','err');return;}
+  setStatus('connecting');$('#msgList').innerHTML='';
+  setTimeout(()=>{setStatus('connected');addMsg('received','text','✓ 连接已建立');startSim();toast('已连接');},900);
+});
+
+/* —— 消息 —— */
+let msgs=[];
+function addMsg(dir,type,content){
+  const m={id:Date.now()+Math.random(),direction:dir,type,content,timestamp:new Date().toISOString()};
+  msgs.push(m);$('#msgCnt').textContent=msgs.length;renderMsg(m);
+}
+function renderMsg(m){
+  const list=$('#msgList');if(list.querySelector('.msg-empty'))list.innerHTML='';
+  const el=document.createElement('div');el.className='msg-item '+(m.direction==='sent'?'sent':'received');
+  const t=new Date(m.timestamp).toLocaleTimeString();
+  el.innerHTML=`<div class="msg-meta"><span class="dir ${m.direction}">${m.direction==='sent'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 19l7-7-7-7"/></svg>已发送':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>已接收'}</span><span class="time">${t}</span><span class="type">${m.type}</span></div><div class="msg-content">${esc(m.content)}</div>`;
+  list.appendChild(el);list.scrollTop=list.scrollHeight;
+}
+$('#sendBtn').addEventListener('click',sendMsg);
+$('#sendInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+function sendMsg(){const v=$('#sendInput').value.trim();if(!v||status!=='connected')return;addMsg('sent',$('#typeSel').value,v);$('#sendInput').value='';}
+$('#clrBtn').addEventListener('click',()=>{msgs=[];$('#msgCnt').textContent=0;$('#msgList').innerHTML='<div class="msg-empty">连接后收发的消息将显示在此处</div>';});
+
+/* 模拟服务端推送 */
+const incoming=['{"event":"order.created","order_id":"ORD-9921","amount":158.00}','{"event":"order.paid","order_id":"ORD-9921","method":"wechat"}','{"event":"order.shipped","order_id":"ORD-9921","tracking":"SF1284992"}','{"event":"inventory.low","sku":"SKU-2231","stock":3}'];
+let simT=null,ei=0;
+function startSim(){stopSim();simT=setInterval(()=>{addMsg('received','text',incoming[ei%incoming.length]);ei++;},3800);}
+function stopSim(){if(simT){clearInterval(simT);simT=null;}}
+
+renderParams();renderHeaders();
+
+function toast(msg){const w=$('#toasts');const t=document.createElement('div');t.className='toast';if(msg==='err')t.querySelector;const ic=msg==='err'?'<svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  t.innerHTML=ic+'<span>'+(msg==='err'?'操作失败':msg)+'</span>';if(msg==='err')t.querySelector('svg').style.color='var(--err)';w.appendChild(t);setTimeout(()=>{t.style.transition='all .25s';t.style.opacity=0;t.style.transform='translateX(20px)';setTimeout(()=>t.remove(),250);},2200);}
+</script>
+</body>
+</html>

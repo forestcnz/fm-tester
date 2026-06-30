@@ -1,0 +1,280 @@
+.ws-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 面板头部 */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 12px 9px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.action-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fg-2);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  transition: var(--dur-base) var(--ease);
+}
+
+.action-btn:hover {
+  color: var(--primary);
+  background: var(--bg-sunk);
+}
+
+/* 搜索框 */
+.search-box {
+  padding: 9px 12px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  outline: none;
+  background: var(--bg-sunk);
+  color: var(--fg);
+  transition: var(--dur-base) var(--ease);
+}
+
+.search-input:focus {
+  border-color: var(--primary-line);
+  background: var(--bg-panel);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.search-input::placeholder {
+  color: var(--fg-3);
+}
+
+/* 配置列表 */
+.config-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.config-list::-webkit-scrollbar {
+  width: 8px;
+}
+.config-list::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 4px;
+  border: 2px solid var(--bg-panel);
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 9px;
+  margin: 1px 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: var(--radius-md);
+  position: relative;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.config-item:hover {
+  background: var(--bg-sunk);
+}
+
+.config-item.selected {
+  background: var(--primary-soft);
+}
+
+.config-item.selected .config-name {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.config-item.selected::before {
+  display: none;
+}
+
+.config-item.editing {
+  background: var(--primary-soft);
+  padding-right: 6px;
+}
+
+/* WebSocket 标签 + 连接状态点 */
+.ws-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0 6px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  margin-right: 2px;
+  flex-shrink: 0;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 状态点：已连接 / 断开（通过圆点暗示连接态） */
+.ws-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-3);
+  flex-shrink: 0;
+}
+
+.config-item.selected .ws-tag::before {
+  background: var(--ok);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.18);
+}
+
+.config-name {
+  font-size: 12.5px;
+  color: var(--fg);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.inline-edit-input {
+  flex: 1;
+  min-width: 100px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--primary-line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--bg-panel);
+  color: var(--fg);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+  transition: var(--dur-base) var(--ease);
+}
+
+.inline-edit-input::placeholder {
+  color: var(--fg-3);
+}
+
+.delete-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--dur-fast) var(--ease);
+}
+
+.config-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  color: var(--err);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* 空状态 */
+.empty-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--fg-3);
+  font-size: 12.5px;
+  padding: 30px 16px;
+  text-align: center;
+}
+
+/* 右键菜单遮罩 */
+.ws-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+}
+
+/* 右键菜单 */
+.ws-context-menu {
+  position: fixed;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  min-width: 150px;
+  z-index: 9999;
+  animation: pop var(--dur-base) var(--ease);
+}
+
+.ws-context-menu .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--fg);
+  transition: var(--dur-fast) var(--ease);
+}
+
+.ws-context-menu .menu-item:hover {
+  background: var(--bg-sunk);
+}
+
+.ws-context-menu .menu-item.delete {
+  color: var(--err);
+}
+
+.ws-context-menu .menu-item.delete:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.ws-context-menu .menu-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 2px;
+}

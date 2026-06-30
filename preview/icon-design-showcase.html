@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FM Tester - Icon Design Showcase</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --border: #30363d;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #a371f7;
+      --accent-orange: #f0883e;
+      --accent-red: #f85149;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    h1 span {
+      color: var(--accent-blue);
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-top: 12px;
+    }
+
+    .styles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .style-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .style-card:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    .style-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .style-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--bg-secondary);
+    }
+
+    .style-badge.a { background: linear-gradient(135deg, #58a6ff, #1f6feb); }
+    .style-badge.b { background: linear-gradient(135deg, #3fb950, #238636); }
+    .style-badge.c { background: linear-gradient(135deg, #a371f7, #8957e5); }
+    .style-badge.d { background: linear-gradient(135deg, #f0883e, #bd561d); }
+    .style-badge.e { background: linear-gradient(135deg, #f85149, #da3633); }
+    .style-badge.f { background: linear-gradient(135deg, #79c0ff, #2f81f7); }
+    .style-badge.g { background: linear-gradient(135deg, #ffc107, #ff9800); }
+    .style-badge.h { background: linear-gradient(135deg, #e0e0e0, #bdbdbd); }
+    .style-badge.i { background: linear-gradient(135deg, #00bcd4, #0097a7); }
+    .style-badge.j { background: linear-gradient(135deg, #e91e63, #c2185b); }
+
+    .style-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .style-desc {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-left: auto;
+      max-width: 300px;
+      text-align: right;
+    }
+
+    .icons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 16px;
+    }
+
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 8px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-item:hover {
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .icon-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-secondary);
+      text-align: center;
+      word-break: break-all;
+    }
+
+    /* Category sections */
+    .category-section {
+      margin-bottom: 24px;
+    }
+
+    .category-title {
+      font-size: 0.75rem;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Selection Panel */
+    .selection-panel {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .selection-panel h2 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    .style-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .style-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      padding: 12px 24px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .style-btn:hover {
+      border-color: var(--accent-blue);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .style-btn.selected {
+      border-color: var(--accent-green);
+      background: rgba(63, 185, 80, 0.2);
+    }
+
+    .btn-badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .btn-badge.a { background: linear-gradient(135deg, #58a6ff, #1f6feb); }
+    .btn-badge.b { background: linear-gradient(135deg, #3fb950, #238636); }
+    .btn-badge.c { background: linear-gradient(135deg, #a371f7, #8957e5); }
+    .btn-badge.d { background: linear-gradient(135deg, #f0883e, #bd561d); }
+    .btn-badge.e { background: linear-gradient(135deg, #f85149, #da3633); }
+    .btn-badge.f { background: linear-gradient(135deg, #79c0ff, #2f81f7); }
+    .btn-badge.g { background: linear-gradient(135deg, #ffc107, #ff9800); }
+    .btn-badge.h { background: linear-gradient(135deg, #e0e0e0, #bdbdbd); color: #333; }
+    .btn-badge.i { background: linear-gradient(135deg, #00bcd4, #0097a7); }
+    .btn-badge.j { background: linear-gradient(135deg, #e91e63, #c2185b); }
+
+    .apply-btn {
+      margin-top: 24px;
+      padding: 16px 48px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-green), #238636);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .apply-btn:hover {
+      transform: scale(1.02);
+    }
+
+    .apply-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* SVG Colors */
+    svg { display: block; }
+
+    /* Style A: Minimal Line */
+    .style-a svg {
+      stroke: var(--text-primary);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-a .filled { fill: var(--text-primary); stroke: none; }
+
+    /* Style B: Filled Block */
+    .style-b svg {
+      stroke: none;
+      fill: var(--accent-blue);
+    }
+    .style-b .outline {
+      fill: none;
+      stroke: var(--accent-blue);
+      stroke-width: 2;
+    }
+    .style-b .accent { fill: var(--accent-green); }
+
+    /* Style C: Gradient Dual-tone */
+    .style-c svg {
+      stroke: var(--accent-purple);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-c .filled {
+      fill: var(--accent-blue);
+      stroke: none;
+    }
+    .style-c .secondary {
+      stroke: var(--accent-blue);
+      opacity: 0.6;
+    }
+
+    /* Style D: Pixel Retro */
+    .style-d svg {
+      stroke: var(--accent-orange);
+      stroke-width: 2;
+      fill: none;
+    }
+    .style-d .pixel {
+      fill: var(--accent-orange);
+      stroke: none;
+    }
+    .style-d .highlight {
+      fill: var(--accent-green);
+      stroke: none;
+    }
+
+    /* Style E: Tech Circuit */
+    .style-e svg {
+      stroke: var(--accent-red);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-e .node {
+      fill: var(--accent-green);
+      stroke: none;
+    }
+    .style-e .signal {
+      fill: var(--accent-blue);
+      stroke: none;
+    }
+    .style-e .pulse {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Style F: Glassmorphism */
+    .style-f svg {
+      stroke: rgba(255, 255, 255, 0.8);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-f .glass {
+      fill: rgba(255, 255, 255, 0.15);
+      stroke: rgba(255, 255, 255, 0.3);
+    }
+    .style-f .highlight {
+      fill: rgba(88, 166, 255, 0.4);
+      stroke: none;
+    }
+    .style-f .blur {
+      fill: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Style G: Hand-drawn Sketch */
+    .style-g svg {
+      stroke: #ffc107;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-g .sketchy {
+      stroke-dasharray: 3 2;
+      stroke-width: 2.5;
+    }
+    .style-g .doodle {
+      fill: #ffc107;
+      stroke: none;
+      opacity: 0.6;
+    }
+    .style-g .accent {
+      stroke: #ff9800;
+      stroke-width: 1.5;
+    }
+
+    /* Style H: Neumorphism */
+    .style-h svg {
+      stroke: #e0e0e0;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-h .shadow {
+      fill: #9e9e9e;
+      stroke: none;
+    }
+    .style-h .light {
+      fill: #ffffff;
+      stroke: none;
+    }
+    .style-h .base {
+      fill: #bdbdbd;
+      stroke: #bdbdbd;
+    }
+    .style-h .inner {
+      stroke: #9e9e9e;
+      stroke-width: 1;
+    }
+
+    /* Style I: Isometric 3D */
+    .style-i svg {
+      stroke: #00bcd4;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .style-i .face-top {
+      fill: rgba(0, 188, 212, 0.8);
+      stroke: none;
+    }
+    .style-i .face-side {
+      fill: rgba(0, 188, 212, 0.5);
+      stroke: none;
+    }
+    .style-i .face-front {
+      fill: rgba(0, 188, 212, 0.6);
+      stroke: #00bcd4;
+    }
+    .style-i .edge {
+      stroke: #0097a7;
+      stroke-width: 2;
+    }
+
+    /* Style J: Neon Cyberpunk */
+    .style-j svg {
+      stroke: #e91e63;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      filter: drop-shadow(0 0 3px #e91e63);
+    }
+    .style-j .neon-primary {
+      stroke: #e91e63;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 4px #e91e63) drop-shadow(0 0 8px #e91e63);
+    }
+    .style-j .neon-secondary {
+      stroke: #c2185b;
+      filter: drop-shadow(0 0 2px #c2185b);
+    }
+    .style-j .glow {
+      fill: #e91e63;
+      stroke: none;
+      filter: drop-shadow(0 0 6px #e91e63);
+    }
+    .style-j .flicker {
+      animation: neonFlicker 2s infinite;
+    }
+
+    @keyframes neonFlicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 6px #e91e63);
+      }
+      20%, 24%, 55% {
+        opacity: 0.4;
+        filter: drop-shadow(0 0 2px #e91e63);
+      }
+    }
+
+    /* Large preview section */
+    .preview-section {
+      margin-top: 60px;
+      padding: 40px;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+    }
+
+    .preview-title {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-bottom: 32px;
+      color: var(--text-secondary);
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 24px;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .preview-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .preview-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>FM Tester <span>Icon Design</span></h1>
+      <p class="subtitle">Choose your preferred icon style for the application</p>
+    </header>
+
+    <div class="styles-grid">
+      <!-- Style A: Minimal Line -->
+      <div class="style-card style-a">
+        <div class="style-header">
+          <span class="style-badge a">A</span>
+          <span class="style-title">极简线条风格</span>
+          <span class="style-desc">干净的单线条设计，现代 IDE 风格</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="6" y1="12" x2="18" y2="12"/><circle cx="18" cy="12" r="3"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4"/><path d="M3 11h17a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H5"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="3" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="21" y2="12"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 3v5"/><path d="M16 21v-5"/><path d="M3 8h5"/><path d="M21 16h-5"/><circle cx="8" cy="8" r="2"/><circle cx="16" cy="16" r="2"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style B: Filled Block -->
+      <div class="style-card style-b">
+        <div class="style-header">
+          <span class="style-badge b">B</span>
+          <span class="style-title">填充块状风格</span>
+          <span class="style-desc">实心填充图标，类似 macOS Big Sur 风格</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><path class="accent" d="M4 7h6v2H4zM4 11h14v2H4zM4 15h10v2H4z"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><ellipse class="accent" cx="12" cy="12" rx="3" ry="9"/><circle class="accent" cx="12" cy="12" r="1.5"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline class="accent" points="12 6 12 12 16 14"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle class="accent" cx="8" cy="10" r="1"/><circle class="accent" cx="12" cy="10" r="1"/><circle class="accent" cx="16" cy="10" r="1"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="4"/><circle cx="6" cy="18" r="4"/><circle cx="18" cy="12" r="4"/><path class="accent" d="M6 10v8"/><path class="accent" d="M6 14h12"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="16" height="8" rx="2"/><path d="M12 2v10"/><path class="accent" d="M7 7l5 5 5-5"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="8" rx="2"/><path d="M12 10v10"/><path class="accent" d="M7 15l5-5 5 5"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><rect class="accent" x="2" y="2" width="14" height="14" rx="2" opacity="0.7"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/><path class="accent" d="M8 4h8v2H8z"/><line class="outline" x1="10" y1="11" x2="10" y2="17"/><line class="outline" x1="14" y1="11" x2="14" y2="17"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="18" height="18" rx="2"/><path class="accent" d="M16 6l2 2-8 8-2-2z"/><circle class="accent" cx="18" cy="18" r="2"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line class="outline" x1="12" y1="7" x2="12" y2="17"/><line class="outline" x1="7" y1="12" x2="17" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><rect class="accent" x="7" y="13" width="10" height="6" rx="1"/><rect class="accent" x="7" y="3" width="8" height="5"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon points="22 2 2 9 22 16 18 9"/><polygon class="accent" points="18 9 22 16 22 2" opacity="0.6"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-8l-2-2H4a2 2 0 0 0-2 2z"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6"/><path class="accent" d="M4 9h16v10H4z"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line class="outline" x1="12" y1="2" x2="12" y2="7"/><line class="outline" x1="12" y1="17" x2="12" y2="22"/><line class="outline" x1="2" y1="12" x2="7" y2="12"/><line class="outline" x1="17" y1="12" x2="22" y2="12"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/><path class="accent" d="M7 10v4h7"/><path class="accent" d="M10 7h4v7"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle class="accent" cx="18" cy="12" r="3"/><path class="accent" d="M6 9v9"/><path class="accent" d="M9 12h6"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle class="outline" cx="12" cy="12" r="8" stroke-dasharray="2 3"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon points="5 12 17 12 12 6 5 12"/><polygon class="accent" points="5 12 17 12 12 18 5 12"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style C: Gradient Dual-tone -->
+      <div class="style-card style-c">
+        <div class="style-header">
+          <span class="style-badge c">C</span>
+          <span class="style-title">双色渐变风格</span>
+          <span class="style-desc">双色搭配，带微妙的层次感</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><path class="filled" d="M5 8h14v10H5z" opacity="0.7"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path class="secondary" d="M12 2v20"/><path class="secondary" d="M2 12h20"/><circle class="filled" cx="12" cy="12" r="3"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect class="filled" x="14" y="3" width="7" height="7" rx="1"/><rect class="filled" x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle class="filled" cx="12" cy="12" r="6"/><path class="secondary" d="M12 12V6"/><path class="secondary" d="M12 12l4 2"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path class="filled" d="M5 7h14v8H5z"/><circle class="filled" cx="8" cy="11" r="1"/><circle class="filled" cx="12" cy="11" r="1"/><circle class="filled" cx="16" cy="11" r="1"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle class="filled" cx="18" cy="12" r="3"/><circle class="filled" cx="6" cy="18" r="3"/><path class="secondary" d="M6 9v9"/><path class="secondary" d="M9 12h6"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="16" height="8" rx="2"/><path class="filled" d="M12 2l-5 5h10z"/><path class="secondary" d="M12 7v7"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="8" rx="2"/><path class="filled" d="M12 22l5-5H7z"/><path class="secondary" d="M12 10v7"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><rect class="filled" x="2" y="2" width="13" height="13" rx="2"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/><path class="filled" d="M8 4h8l2 2H6z"/><path class="secondary" d="M10 10v8"/><path class="secondary" d="M14 10v8"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path class="filled" d="M18.5 2.5l3 3L12 15l-3 1 1-3z"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path class="filled" d="M12 7v10"/><path class="filled" d="M7 12h10"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><rect class="filled" x="7" y="13" width="10" height="6" rx="1"/><rect class="filled" x="7" y="3" width="8" height="5"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="filled" points="2 9 22 2 15 22 12 13"/><path class="secondary" d="M22 2L12 13"/><path class="secondary" d="M15 22L12 13"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><path class="filled" d="M4 8h16v10H4z"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6"/><path class="filled" d="M4 9h16v10H4z"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="filled" cx="12" cy="12" r="4"/><path class="secondary" d="M12 2v6"/><path class="secondary" d="M12 16v6"/><path class="secondary" d="M2 12h6"/><path class="secondary" d="M16 12h6"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="filled" cx="7" cy="7" r="3"/><circle class="filled" cx="17" cy="17" r="3"/><path class="secondary" d="M7 10v7h7"/><path class="secondary" d="M10 7h7v7"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="filled" cx="6" cy="6" r="3"/><circle class="filled" cx="18" cy="12" r="3"/><circle cx="6" cy="18" r="3"/><path class="secondary" d="M6 9v9"/><path class="secondary" d="M9 12h6"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="filled" d="M17 1l4 4-4 4"/><path class="secondary" d="M21 5H7a4 4 0 0 0-4 4v2"/><path class="filled" d="M7 23l-4-4 4-4"/><path class="secondary" d="M3 19h14a4 4 0 0 0 4-4v-2"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="filled" cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path class="secondary" d="M12 1v3"/><path class="secondary" d="M12 20v3"/><path class="secondary" d="M1 12h3"/><path class="secondary" d="M20 12h3"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="filled" d="M12 5l7 7-7 7"/><path class="secondary" d="M5 12h14"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style D: Pixel Retro -->
+      <div class="style-card style-d">
+        <div class="style-header">
+          <span class="style-badge d">D</span>
+          <span class="style-title">像素复古风格</span>
+          <span class="style-desc">像素艺术风格，80-90年代 UI 复古感</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="4" class="pixel"/><rect x="2" y="6" width="20" height="14" rx="0"/><rect x="4" y="8" width="4" height="2" class="highlight"/><rect x="4" y="12" width="8" height="2" class="highlight"/><rect x="4" y="16" width="6" height="2" class="highlight"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><rect x="10" y="2" width="4" height="20" class="highlight"/><rect x="2" y="10" width="20" height="4" class="highlight"/><rect x="8" y="8" width="8" height="8" class="pixel"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="10" height="10" class="pixel"/><rect x="12" y="2" width="10" height="10" class="highlight"/><rect x="2" y="12" width="10" height="10" class="highlight"/><rect x="12" y="12" width="10" height="10" class="pixel"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><rect x="10" y="6" width="4" height="6" class="pixel"/><rect x="10" y="12" width="8" height="2" class="highlight"/><rect x="16" y="12" width="2" height="4" class="pixel"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="16" class="pixel"/><polygon points="4 18 8 22 8 18" class="highlight"/><rect x="6" y="6" width="4" height="4" class="highlight"/><rect x="12" y="6" width="4" height="4" class="highlight"/><rect x="18" y="6" width="4" height="4" class="highlight"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="6" height="6" class="pixel"/><rect x="2" y="16" width="6" height="6" class="highlight"/><rect x="16" y="8" width="6" height="6" class="pixel"/><rect x="4" y="8" width="2" height="8" class="highlight"/><rect x="8" y="10" width="8" height="2" class="pixel"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="16" height="8" class="pixel"/><rect x="10" y="2" width="4" height="12" class="highlight"/><rect x="6" y="6" width="12" height="4" class="pixel"/><rect x="10" y="2" width="4" height="4" class="highlight"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="8" class="pixel"/><rect x="10" y="10" width="4" height="12" class="highlight"/><rect x="6" y="14" width="12" height="4" class="pixel"/><rect x="10" y="18" width="4" height="4" class="highlight"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="12" height="12" class="pixel"/><rect x="10" y="10" width="12" height="12" class="highlight"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="4" class="pixel"/><rect x="6" y="8" width="12" height="14" class="highlight"/><rect x="8" y="10" width="4" height="10" class="pixel"/><rect x="12" y="10" width="4" height="10" class="pixel"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="18" height="18" class="pixel"/><rect x="16" y="4" width="6" height="2" class="highlight"/><rect x="20" y="6" width="2" height="6" class="highlight"/><rect x="16" y="10" width="2" height="2" class="pixel"/><rect x="12" y="14" width="2" height="2" class="highlight"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="10" y="2" width="4" height="20" class="pixel"/><rect x="2" y="10" width="20" height="4" class="pixel"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" class="pixel"/><rect x="6" y="2" width="8" height="6" class="highlight"/><rect x="6" y="12" width="12" height="8" class="highlight"/><rect x="10" y="14" width="4" height="4" class="pixel"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon points="2 10 22 2 18 10 22 18" class="pixel"/><rect x="18" y="8" width="4" height="4" class="highlight"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="4" class="pixel"/><rect x="2" y="6" width="20" height="14" class="highlight"/><rect x="4" y="8" width="16" height="10" class="pixel"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="4" class="pixel"/><rect x="2" y="6" width="20" height="2" class="highlight"/><rect x="4" y="8" width="18" height="12" class="pixel"/><rect x="6" y="10" width="14" height="8" class="highlight"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" class="pixel"/><rect x="10" y="2" width="4" height="6" class="highlight"/><rect x="10" y="16" width="4" height="6" class="highlight"/><rect x="2" y="10" width="6" height="4" class="pixel"/><rect x="16" y="10" width="6" height="4" class="pixel"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="6" height="6" class="pixel"/><rect x="16" y="16" width="6" height="6" class="highlight"/><rect x="4" y="8" width="2" height="8" class="pixel"/><rect x="8" y="14" width="8" height="2" class="highlight"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="6" height="6" class="pixel"/><rect x="2" y="16" width="6" height="6" class="highlight"/><rect x="16" y="8" width="6" height="6" class="pixel"/><rect x="4" y="8" width="2" height="8" class="pixel"/><rect x="8" y="10" width="8" height="2" class="highlight"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="16" y="2" width="6" height="6" class="pixel"/><rect x="2" y="16" width="6" height="6" class="highlight"/><rect x="18" y="8" width="2" height="6" class="pixel"/><rect x="4" y="10" width="14" height="2" class="highlight"/><rect x="2" y="8" width="2" height="6" class="pixel"/><rect x="8" y="18" width="8" height="2" class="pixel"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" class="pixel"/><rect x="10" y="2" width="4" height="6" class="highlight"/><rect x="10" y="16" width="4" height="6" class="highlight"/><rect x="2" y="10" width="6" height="4" class="highlight"/><rect x="16" y="10" width="6" height="4" class="pixel"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="10" width="12" height="4" class="pixel"/><rect x="10" y="6" width="4" height="4" class="highlight"/><rect x="10" y="14" width="4" height="4" class="pixel"/><rect x="14" y="4" width="4" height="4" class="highlight"/><rect x="14" y="16" width="4" height="4" class="pixel"/><rect x="18" y="8" width="4" height="8" class="pixel"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style E: Tech Circuit -->
+      <div class="style-card style-e">
+        <div class="style-header">
+          <span class="style-badge e">E</span>
+          <span class="style-title">科技电路风格</span>
+          <span class="style-desc">电路板节点连接概念，适合 API 测试工具</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/><circle class="node pulse" cx="7" cy="10" r="1.5"/><circle class="node pulse" cx="12" cy="14" r="1.5" style="animation-delay: 0.3s"/><circle class="node pulse" cx="17" cy="10" r="1.5" style="animation-delay: 0.6s"/><path class="signal" d="M8 10h4l0 4h4" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><circle class="node pulse" cx="6" cy="6" r="2"/><circle class="node pulse" cx="18" cy="18" r="2" style="animation-delay: 0.3s"/><circle class="node" cx="12" cy="12" r="2"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><circle class="node pulse" cx="6.5" cy="6.5" r="1.5"/><circle class="node pulse" cx="17.5" cy="6.5" r="1.5" style="animation-delay: 0.3s"/><circle class="node pulse" cx="6.5" cy="17.5" r="1.5" style="animation-delay: 0.6s"/><circle class="node pulse" cx="17.5" cy="17.5" r="1.5" style="animation-delay: 0.9s"/><path class="signal" d="M10 6.5h4M10 17.5h4M6.5 10v4M17.5 10v4" stroke-width="1" opacity="0.3"/><circle class="signal pulse" cx="12" cy="12" r="1.5"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><circle class="node pulse" cx="12" cy="12" r="2"/><circle class="signal pulse" cx="12" cy="6" r="1" style="animation-delay: 0.2s"/><circle class="signal pulse" cx="16" cy="14" r="1" style="animation-delay: 0.5s"/><path class="signal" d="M12 6v6M12 12l4 2" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle class="node pulse" cx="8" cy="10" r="1"/><circle class="node pulse" cx="12" cy="10" r="1" style="animation-delay: 0.2s"/><circle class="node pulse" cx="16" cy="10" r="1" style="animation-delay: 0.4s"/><path class="signal" d="M9 10h2M13 10h2" stroke-width="1" opacity="0.5"/><circle class="signal pulse" cx="20" cy="3" r="2"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="node pulse" cx="6" cy="6" r="2.5"/><circle class="node pulse" cx="18" cy="12" r="2.5" style="animation-delay: 0.5s"/><circle class="node pulse" cx="6" cy="18" r="2.5" style="animation-delay: 0.3s"/><circle class="node pulse" cx="18" cy="18" r="2.5" style="animation-delay: 0.7s"/><path class="signal" d="M8.5 6h0M6 8.5v7M8.5 18h7.5" stroke-width="1" opacity="0.5"/><path class="signal" d="M12 12l6 0" stroke-width="1.5"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="14" width="16" height="8" rx="2"/><path d="M12 2v10"/><path d="M7 7l5 5 5-5"/><circle class="signal pulse" cx="12" cy="2" r="2"/><circle class="node pulse" cx="12" cy="10" r="1.5"/><path class="signal" d="M12 2v8" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="8" rx="2"/><path d="M12 10v10"/><path d="M7 15l5-5 5 5"/><circle class="signal pulse" cx="12" cy="22" r="2"/><circle class="node pulse" cx="12" cy="14" r="1.5"/><path class="signal" d="M12 12v8" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="2" y="2" width="11" height="11" rx="2"/><rect x="11" y="11" width="11" height="11" rx="2"/><circle class="node pulse" cx="5" cy="5" r="1.5"/><circle class="node pulse" cx="16" cy="16" r="1.5" style="animation-delay: 0.3s"/><path class="signal pulse" d="M6.5 5h5l5.5 5.5v5.5" stroke-width="1" opacity="0.4"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/><path d="M8 4h8l2 2H6z"/><path class="signal" d="M10 10v8M14 10v8" stroke-width="2" opacity="0.6"/><circle class="signal pulse" cx="10" cy="10" r="1"/><circle class="signal pulse" cx="14" cy="10" r="1" style="animation-delay: 0.3s"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/><circle class="node pulse" cx="18" cy="3" r="2"/><circle class="signal pulse" cx="12" cy="15" r="1"/><path class="signal" d="M18.5 3.5l-6 11.5" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path class="signal" d="M12 7v10M7 12h10" stroke-width="2"/><circle class="signal pulse" cx="12" cy="12" r="3" fill="none" stroke-width="1.5" stroke="var(--accent-blue)"/><circle class="signal pulse" cx="12" cy="12" r="5" fill="none" stroke-width="1" stroke="var(--accent-blue)" opacity="0.5"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><rect x="7" y="13" width="10" height="6" rx="1"/><rect x="7" y="3" width="8" height="5"/><circle class="signal pulse" cx="20" cy="3" r="1.5"/><circle class="node pulse" cx="12" cy="16" r="1"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon points="22 2 2 9 22 16 18 9"/><path class="signal pulse" d="M2 9l16 0" stroke-width="1" opacity="0.5"/><circle class="signal pulse" cx="2" cy="9" r="2"/><circle class="node pulse" cx="18" cy="9" r="2"/><circle class="signal pulse" cx="22" cy="2" r="2" style="animation-delay: 0.2s"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><circle class="node pulse" cx="7" cy="10" r="1.5"/><circle class="node pulse" cx="12" cy="14" r="1.5" style="animation-delay: 0.3s"/><circle class="node pulse" cx="17" cy="10" r="1.5" style="animation-delay: 0.6s"/><path class="signal" d="M8 10h4M12 14h4" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6"/><circle class="node pulse" cx="6" cy="12" r="1.5"/><circle class="node pulse" cx="12" cy="12" r="1.5" style="animation-delay: 0.2s"/><circle class="node pulse" cx="18" cy="12" r="1.5" style="animation-delay: 0.4s"/><path class="signal" d="M7.5 12h9" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="node pulse" cx="12" cy="12" r="3"/><path class="signal" d="M12 2v6M12 16v6M2 12h6M16 12h6" stroke-width="1" opacity="0.5"/><circle class="signal pulse" cx="12" cy="2" r="1"/><circle class="signal pulse" cx="12" cy="22" r="1" style="animation-delay: 0.2s"/><circle class="signal pulse" cx="2" cy="12" r="1" style="animation-delay: 0.4s"/><circle class="signal pulse" cx="22" cy="12" r="1" style="animation-delay: 0.6s"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="node pulse" cx="6" cy="6" r="2.5"/><circle class="node pulse" cx="18" cy="18" r="2.5" style="animation-delay: 0.3s"/><path class="signal pulse" d="M6 8.5v5.5h5.5v5.5" stroke-width="1.5"/><circle class="signal pulse" cx="12" cy="14" r="1"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="node pulse" cx="6" cy="6" r="2.5"/><circle class="node pulse" cx="18" cy="12" r="2.5" style="animation-delay: 0.5s"/><circle class="node pulse" cx="6" cy="18" r="2.5" style="animation-delay: 0.3s"/><path class="signal" d="M6 8.5v7M8.5 12h7.5" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><circle class="node pulse" cx="17" cy="5" r="1.5"/><circle class="node pulse" cx="7" cy="19" r="1.5" style="animation-delay: 0.3s"/><path class="signal pulse" d="M21 5H7M3 19h14" stroke-width="1" opacity="0.5"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="node pulse" cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path class="signal" d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke-width="1" opacity="0.5"/><circle class="signal pulse" cx="12" cy="1" r="1"/><circle class="signal pulse" cx="12" cy="23" r="1" style="animation-delay: 0.2s"/><circle class="signal pulse" cx="1" cy="12" r="1" style="animation-delay: 0.4s"/><circle class="signal pulse" cx="23" cy="12" r="1" style="animation-delay: 0.6s"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/><circle class="signal pulse" cx="5" cy="12" r="1"/><circle class="signal pulse" cx="8" cy="12" r="1" style="animation-delay: 0.15s"/><circle class="signal pulse" cx="11" cy="12" r="1" style="animation-delay: 0.3s"/><circle class="node pulse" cx="19" cy="12" r="2"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Style F: Glassmorphism -->
+    <div class="styles-grid">
+      <div class="style-card style-f">
+        <div class="style-header">
+          <span class="style-badge f">F</span>
+          <span class="style-title">玻璃拟物风格</span>
+          <span class="style-desc">半透明玻璃效果，带模糊和光晕</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><rect class="blur" x="5" y="7" width="14" height="10" rx="1"/><rect class="highlight" x="6" y="8" width="5" height="2" rx="0.5"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glass" cx="12" cy="12" r="10"/><ellipse class="highlight" cx="12" cy="12" rx="3" ry="8"/><circle class="blur" cx="12" cy="12" r="2"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="glass" x="3" y="3" width="7" height="7" rx="1"/><rect class="highlight" x="14" y="3" width="7" height="7" rx="1"/><rect class="highlight" x="3" y="14" width="7" height="7" rx="1"/><rect class="glass" x="14" y="14" width="7" height="7" rx="1"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glass" cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><circle class="highlight" cx="12" cy="12" r="2"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle class="highlight" cx="8" cy="10" r="1"/><circle class="highlight" cx="12" cy="10" r="1"/><circle class="highlight" cx="16" cy="10" r="1"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glass" cx="6" cy="6" r="3"/><circle class="glass" cx="6" cy="18" r="3"/><circle class="highlight" cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="6" y1="12" x2="18" y2="12"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="glass" x="4" y="14" width="16" height="8" rx="2"/><path d="M12 2v10"/><path d="M7 7l5 5 5-5"/><circle class="highlight" cx="12" cy="7" r="2"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="glass" x="4" y="2" width="16" height="8" rx="2"/><path d="M12 10v10"/><path d="M7 15l5-5 5 5"/><circle class="highlight" cx="12" cy="17" r="2"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="glass" x="9" y="9" width="13" height="13" rx="2"/><rect class="highlight" x="2" y="2" width="13" height="13" rx="2"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/><path class="blur" d="M8 4h8l2 2H6z"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/><circle class="highlight" cx="18" cy="3" r="2"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glass" cx="12" cy="12" r="10"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><rect class="blur" x="7" y="13" width="10" height="6" rx="1"/><rect class="highlight" x="7" y="3" width="8" height="5"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="glass" points="22 2 2 9 22 16 18 9"/><circle class="highlight" cx="18" cy="9" r="2"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><rect class="blur" x="5" y="8" width="14" height="8" rx="1"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6"/><path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4"/><rect class="highlight" x="5" y="10" width="14" height="7" rx="1"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="highlight" cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="glass" x="4" y="4" width="6" height="6" rx="1"/><rect class="highlight" x="14" y="14" width="6" height="6" rx="1"/><path d="M7 10v4h7"/><circle class="blur" cx="12" cy="14" r="1"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glass" cx="6" cy="6" r="3"/><circle class="glass" cx="6" cy="18" r="3"/><circle class="highlight" cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="6" y1="12" x2="18" y2="12"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="glass" d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path class="glass" d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><circle class="highlight" cx="17" cy="5" r="1.5"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="highlight" cx="12" cy="12" r="3"/><circle class="glass" cx="12" cy="12" r="8"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/><circle class="highlight" cx="19" cy="12" r="2"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style G: Hand-drawn Sketch -->
+      <div class="style-card style-g">
+        <div class="style-header">
+          <span class="style-badge g">G</span>
+          <span class="style-title">手绘涂鸦风格</span>
+          <span class="style-desc">不规则手绘线条，像草图笔记</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M3 6c0-2 1-3 3-3h5l2 3h9c2 0 3 1 3 3v11c0 2-1 3-3 3H6c-2 0-3-1-3-3V6z"/><circle class="doodle" cx="7" cy="10" r="2"/><circle class="doodle" cx="12" cy="14" r="1.5"/><line class="accent" x1="7" y1="10" x2="12" y2="14" stroke-dasharray="2 1"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="12" cy="12" r="10"/><path class="accent" d="M2 12c1 0 20 0 20 0" stroke-dasharray="1 1"/><ellipse cx="12" cy="12" rx="4" ry="9" stroke-dasharray="3 2"/><circle class="doodle" cx="12" cy="12" r="2"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="3" y="3" width="7" height="7" rx="1"/><rect class="sketchy" x="14" y="3" width="7" height="7" rx="1"/><rect class="sketchy" x="3" y="14" width="7" height="7" rx="1"/><rect class="sketchy" x="14" y="14" width="7" height="7" rx="1"/><line class="accent" x1="10" y1="6.5" x2="14" y2="6.5" stroke-dasharray="1 1"/><line class="accent" x1="6.5" y1="10" x2="6.5" y2="14" stroke-dasharray="1 1"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="12" cy="12" r="10"/><path class="sketchy" d="M12 6v6l4 2"/><circle class="doodle" cx="12" cy="12" r="1.5"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M21 15c0 2-1 2-2 2H7l-4 4V5c0-2 1-2 2-2h14c1 0 2 0 2 2v10z"/><circle class="doodle" cx="8" cy="10" r="1"/><circle class="doodle" cx="12" cy="10" r="1"/><circle class="doodle" cx="16" cy="10" r="1"/><path class="accent" d="M8 10c2 0 4 0 4 0" stroke-dasharray="1 1"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="6" cy="6" r="3"/><circle class="sketchy" cx="6" cy="18" r="3"/><circle class="sketchy" cx="18" cy="12" r="3"/><line class="accent" x1="6" y1="9" x2="6" y2="15" stroke-dasharray="2 1"/><line class="accent" x1="6" y1="12" x2="18" y2="12" stroke-dasharray="2 1"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="4" y="14" width="16" height="8" rx="2"/><path class="sketchy" d="M12 2v10"/><path class="accent" d="M7 7l5 5 5-5" stroke-dasharray="2 1"/><circle class="doodle" cx="12" cy="5" r="1.5"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="4" y="2" width="16" height="8" rx="2"/><path class="sketchy" d="M12 10v10"/><path class="accent" d="M7 15l5-5 5 5" stroke-dasharray="2 1"/><circle class="doodle" cx="12" cy="18" r="1.5"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="9" y="9" width="13" height="13" rx="2"/><rect class="sketchy" x="2" y="2" width="13" height="13" rx="2"/><circle class="doodle" cx="8" cy="8" r="1"/><circle class="doodle" cx="16" cy="16" r="1"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M4 6h16v14c0 2-1 2-2 2H6c-1 0-2 0-2-2V6z"/><path class="accent" d="M8 4h8l2 2H6" stroke-dasharray="2 1"/><line class="sketchy" x1="10" y1="11" x2="10" y2="17"/><line class="sketchy" x1="14" y1="11" x2="14" y2="17"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="2" y="2" width="20" height="20" rx="2"/><path class="sketchy" d="M16 6l2 2-8 8-2-2z"/><circle class="doodle" cx="16" cy="18" r="1.5"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="12" cy="12" r="10"/><line class="sketchy" x1="12" y1="7" x2="12" y2="17"/><line class="sketchy" x1="7" y1="12" x2="17" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M19 21H5c-2 0-2-1-2-2V5c0-1 0-2 2-2h11l5 5v11c0 1 0 2-2 2z"/><rect class="accent" x="7" y="13" width="10" height="6" rx="1" stroke-dasharray="1 1"/><rect class="accent" x="7" y="3" width="8" height="5" stroke-dasharray="1 1"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="sketchy" points="22 2 2 9 22 16 18 9"/><path class="accent" d="M2 9c5 0 16 0 16 0" stroke-dasharray="1 1"/><circle class="doodle" cx="18" cy="9" r="1.5"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M22 19c0 2-1 2-2 2H4c-1 0-2 0-2-2V5c0-2 1-3 3-3h5l2 3h9c2 0 3 1 3 3v11z"/><circle class="doodle" cx="8" cy="12" r="1"/><circle class="doodle" cx="12" cy="14" r="1"/><path class="accent" d="M8 12c2 1 4 2 4 2" stroke-dasharray="1 1"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M5 19c-2 0-2-1-2-2V7c0-2 1-2 2-2h4l2 2h4"/><path class="sketchy" d="M3 11h17c2 0 2 1 2 2v5c0 1 0 2-2 2H5"/><circle class="doodle" cx="8" cy="12" r="1"/><circle class="doodle" cx="14" cy="12" r="1"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="12" cy="12" r="3"/><line class="accent" x1="12" y1="2" x2="12" y2="9" stroke-dasharray="1 1"/><line class="accent" x1="12" y1="15" x2="12" y2="22" stroke-dasharray="1 1"/><line class="accent" x1="2" y1="12" x2="9" y2="12" stroke-dasharray="1 1"/><line class="accent" x1="15" y1="12" x2="22" y2="12" stroke-dasharray="1 1"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="sketchy" x="4" y="4" width="6" height="6" rx="1"/><rect class="sketchy" x="14" y="14" width="6" height="6" rx="1"/><path class="accent" d="M7 10v4h7v3" stroke-dasharray="2 1"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="6" cy="6" r="3"/><circle class="sketchy" cx="6" cy="18" r="3"/><circle class="sketchy" cx="18" cy="12" r="3"/><line class="accent" x1="6" y1="9" x2="6" y2="15" stroke-dasharray="2 1"/><line class="accent" x1="6" y1="12" x2="18" y2="12" stroke-dasharray="2 1"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="sketchy" d="M17 1l4 4-4 4"/><path class="accent" d="M3 11V9c0-2 2-4 4-4h14" stroke-dasharray="2 1"/><path class="sketchy" d="M7 23l-4-4 4-4"/><path class="accent" d="M21 13v2c0 2-2 4-4 4H3" stroke-dasharray="2 1"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="sketchy" cx="12" cy="12" r="3"/><circle class="accent" cx="12" cy="12" r="7" stroke-dasharray="2 1"/><line class="sketchy" x1="12" y1="1" x2="12" y2="5"/><line class="sketchy" x1="12" y1="19" x2="12" y2="23"/><line class="sketchy" x1="1" y1="12" x2="5" y2="12"/><line class="sketchy" x1="19" y1="12" x2="23" y2="12"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line class="sketchy" x1="5" y1="12" x2="19" y2="12"/><path class="sketchy" d="M12 5l7 7-7 7"/><circle class="doodle" cx="5" cy="12" r="1"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style H: Neumorphism -->
+      <div class="style-card style-h">
+        <div class="style-header">
+          <span class="style-badge h">H</span>
+          <span class="style-title">新拟物风格</span>
+          <span class="style-desc">3D柔和立体效果，类似 iOS 图标</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="3" y="3" width="18" height="18" rx="3"/><rect class="light" x="3.5" y="3.5" width="17" height="17" rx="2.5" opacity="0.5"/><rect class="shadow" x="4" y="4" width="16" height="16" rx="2" opacity="0.3"/><path class="inner" d="M3 6a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v1" opacity="0.6"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="12" cy="12" r="10"/><circle class="light" cx="11" cy="11" r="9" opacity="0.6"/><circle class="shadow" cx="13" cy="13" r="9" opacity="0.3"/><ellipse class="inner" cx="12" cy="12" rx="4" ry="10"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="3" y="3" width="7" height="7" rx="2"/><rect class="base" x="14" y="3" width="7" height="7" rx="2"/><rect class="base" x="3" y="14" width="7" height="7" rx="2"/><rect class="base" x="14" y="14" width="7" height="7" rx="2"/><rect class="light" x="3.5" y="3.5" width="6" height="6" rx="1.5" opacity="0.6"/><rect class="shadow" x="3.5" y="3.5" width="6" height="6" rx="1.5" opacity="0.3" transform="translate(0.5, 0.5)"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="12" cy="12" r="10"/><circle class="light" cx="11" cy="11" r="9" opacity="0.6"/><circle class="shadow" cx="13" cy="13" r="9" opacity="0.3"/><path class="inner" d="M12 6v6l4 2"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="base" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="0" fill="#bdbdbd"/><path class="light" d="M7 4h14a2 2 0 0 1 2 2v1" opacity="0.6" fill="#ffffff"/><circle class="shadow" cx="8" cy="10" r="1.5" opacity="0.4"/><circle class="shadow" cx="12" cy="10" r="1.5" opacity="0.4"/><circle class="shadow" cx="16" cy="10" r="1.5" opacity="0.4"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="6" cy="6" r="3"/><circle class="base" cx="6" cy="18" r="3"/><circle class="base" cx="18" cy="12" r="3"/><circle class="light" cx="5" cy="5" r="2" opacity="0.6"/><circle class="shadow" cx="7" cy="7" r="2" opacity="0.3"/><line class="inner" x1="6" y1="9" x2="6" y2="15"/><line class="inner" x1="6" y1="12" x2="18" y2="12"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="4" y="14" width="16" height="8" rx="2"/><rect class="light" x="4.5" y="14.5" width="15" height="7" rx="1.5" opacity="0.6"/><path class="inner" d="M12 2v10"/><path class="inner" d="M7 7l5 5 5-5"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="4" y="2" width="16" height="8" rx="2"/><rect class="light" x="4.5" y="2.5" width="15" height="7" rx="1.5" opacity="0.6"/><path class="inner" d="M12 10v10"/><path class="inner" d="M7 15l5-5 5 5"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="9" y="9" width="13" height="13" rx="2"/><rect class="base" x="2" y="2" width="13" height="13" rx="2" opacity="0.7"/><rect class="light" x="2.5" y="2.5" width="12" height="12" rx="1.5" opacity="0.5"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="4" y="6" width="16" height="14" rx="2"/><rect class="light" x="4.5" y="6.5" width="15" height="13" rx="1.5" opacity="0.5"/><rect class="shadow" x="6" y="4" width="12" height="2" opacity="0.4"/><line class="inner" x1="10" y1="11" x2="10" y2="17"/><line class="inner" x1="14" y1="11" x2="14" y2="17"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="2" y="2" width="20" height="20" rx="3"/><rect class="light" x="2.5" y="2.5" width="19" height="19" rx="2.5" opacity="0.5"/><path class="inner" d="M16 6l2 2-8 8-2-2z"/><circle class="shadow" cx="18" cy="18" r="2" opacity="0.4"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="12" cy="12" r="10"/><circle class="light" cx="11" cy="11" r="9" opacity="0.6"/><circle class="shadow" cx="13" cy="13" r="9" opacity="0.3"/><line class="inner" x1="12" y1="7" x2="12" y2="17"/><line class="inner" x1="7" y1="12" x2="17" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="3" y="3" width="18" height="18" rx="3"/><rect class="light" x="3.5" y="3.5" width="17" height="17" rx="2.5" opacity="0.5"/><rect class="shadow" x="7" y="13" width="10" height="6" rx="1" opacity="0.4"/><rect class="shadow" x="7" y="3" width="8" height="5" opacity="0.4"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="base" points="22 2 2 9 22 16 18 9"/><polygon class="light" points="22 2 12 7 18 9" opacity="0.5"/><polygon class="shadow" points="18 9 22 16 12 11" opacity="0.3"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="base" d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7l-2-2H5a2 2 0 0 0-2 2z" stroke-width="0"/><path class="light" d="M5 5h5l2 2h9" opacity="0.5"/><rect class="shadow" x="5" y="10" width="14" height="6" rx="1" opacity="0.3"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="base" d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6" stroke-width="0"/><path class="light" d="M4 7h14" opacity="0.5"/><rect class="shadow" x="5" y="11" width="15" height="6" rx="1" opacity="0.3"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="12" cy="12" r="4"/><circle class="light" cx="11" cy="11" r="3" opacity="0.6"/><circle class="shadow" cx="13" cy="13" r="3" opacity="0.3"/><line class="inner" x1="12" y1="2" x2="12" y2="8"/><line class="inner" x1="12" y1="16" x2="12" y2="22"/><line class="inner" x1="2" y1="12" x2="8" y2="12"/><line class="inner" x1="16" y1="12" x2="22" y2="12"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="base" x="4" y="4" width="6" height="6" rx="2"/><rect class="base" x="14" y="14" width="6" height="6" rx="2"/><rect class="light" x="4.5" y="4.5" width="5" height="5" rx="1.5" opacity="0.5"/><rect class="shadow" x="14.5" y="14.5" width="5" height="5" rx="1.5" opacity="0.3"/><line class="inner" x1="7" y1="10" x2="7" y2="14"/><line class="inner" x1="7" y1="14" x2="14" y2="14"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="6" cy="6" r="3"/><circle class="base" cx="6" cy="18" r="3"/><circle class="base" cx="18" cy="12" r="3"/><circle class="light" cx="5" cy="5" r="2" opacity="0.5"/><circle class="shadow" cx="7" cy="7" r="2" opacity="0.3"/><line class="inner" x1="6" y1="9" x2="6" y2="15"/><line class="inner" x1="6" y1="12" x2="18" y2="12"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="17" cy="5" r="3"/><circle class="base" cx="7" cy="19" r="3"/><circle class="light" cx="16" cy="4" r="2" opacity="0.5"/><circle class="shadow" cx="18" cy="6" r="2" opacity="0.3"/><path class="inner" d="M17 2l4 4-4 4"/><path class="inner" d="M3 11V9a4 4 0 0 1 4-4h14"/><path class="inner" d="M7 22l-4-4 4-4"/><path class="inner" d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="12" cy="12" r="3"/><circle class="light" cx="11" cy="11" r="2" opacity="0.5"/><circle class="shadow" cx="13" cy="13" r="2" opacity="0.3"/><circle class="inner" cx="12" cy="12" r="7"/><line class="inner" x1="12" y1="1" x2="12" y2="5"/><line class="inner" x1="12" y1="19" x2="12" y2="23"/><line class="inner" x1="1" y1="12" x2="5" y2="12"/><line class="inner" x1="19" y1="12" x2="23" y2="12"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="base" cx="19" cy="12" r="4"/><circle class="light" cx="18" cy="11" r="3" opacity="0.5"/><circle class="shadow" cx="20" cy="13" r="3" opacity="0.3"/><line class="inner" x1="5" y1="12" x2="15" y2="12"/><polyline class="inner" points="12 5 19 12 12 19"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style I: Isometric 3D -->
+      <div class="style-card style-i">
+        <div class="style-header">
+          <span class="style-badge i">I</span>
+          <span class="style-title">等距视角风格</span>
+          <span class="style-desc">3D等距投影视角，立体感强</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 2 20 6 12 10 4 6"/><polygon class="face-front" points="4 6 12 10 12 18 4 14"/><polygon class="face-side" points="12 10 20 6 20 14 12 18"/><line class="edge" x1="8" y1="8" x2="8" y2="12"/><line class="edge" x1="12" y1="10" x2="12" y2="14"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><ellipse class="face-top" cx="12" cy="6" rx="8" ry="3"/><path class="face-front" d="M4 6v8c0 2 3.5 4 8 4s8-2 8-4V6"/><ellipse class="edge" cx="12" cy="14" rx="8" ry="3"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="6 2 10 4 6 6 2 4"/><polygon class="face-front" points="2 4 6 6 6 10 2 8"/><polygon class="face-side" points="6 6 10 4 10 8 6 10"/><polygon class="face-top" points="18 8 22 10 18 12 14 10" transform="translate(0, -2)"/><polygon class="face-front" points="14 10 18 12 18 16 14 14" transform="translate(0, -2)"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><ellipse class="face-top" cx="12" cy="4" rx="10" ry="4"/><path class="face-front" d="M2 4v12c0 4 4.5 8 10 8s10-4 10-8V4"/><path class="edge" d="M12 8v6"/><path class="edge" d="M12 14l4 2"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 2 20 6 12 10 4 6"/><polygon class="face-front" points="4 6 12 10 12 18 4 14"/><polygon class="face-side" points="12 10 20 6 20 14 12 18"/><polygon class="face-top" points="8 20 12 22 8 24 4 22"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="4 2 8 4 4 6 0 4"/><polygon class="face-front" points="0 4 4 6 4 10 0 8"/><polygon class="face-side" points="4 6 8 4 8 8 4 10"/><polygon class="face-top" points="16 10 20 12 16 14 12 12"/><polygon class="face-front" points="12 12 16 14 16 18 12 16"/><path class="edge" d="M4 10l0 4"/><path class="edge" d="M4 14l12 0"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="8 10 16 14 8 18 0 14"/><polygon class="face-front" points="0 14 8 18 8 22 0 18"/><polygon class="face-side" points="8 18 16 14 16 18 8 22"/><polygon class="face-top" points="12 2 16 4 12 6 8 4"/><polygon class="face-front" points="8 4 12 6 12 10 8 8"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="8 2 16 6 8 10 0 6"/><polygon class="face-front" points="0 6 8 10 8 14 0 10"/><polygon class="face-side" points="8 10 16 6 16 10 8 14"/><polygon class="face-top" points="12 14 16 16 12 18 8 16"/><polygon class="face-front" points="8 16 12 18 12 22 8 20"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="6 4 14 8 6 12 -2 8"/><polygon class="face-front" points="-2 8 6 12 6 16 -2 12"/><polygon class="face-side" points="6 12 14 8 14 12 6 16"/><polygon class="face-top" points="14 8 22 12 14 16 6 12"/><polygon class="face-front" points="6 12 14 16 14 20 6 16"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="10 2 18 6 10 10 2 6"/><polygon class="face-front" points="2 6 10 10 10 18 2 14"/><polygon class="face-side" points="10 10 18 6 18 14 10 18"/><line class="edge" x1="6" y1="8" x2="6" y2="12"/><line class="edge" x1="14" y1="8" x2="14" y2="12"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 2 20 6 12 10 4 6"/><polygon class="face-front" points="4 6 12 10 12 18 4 14"/><polygon class="face-side" points="12 10 20 6 20 14 12 18"/><polygon class="face-top" points="16 6 20 8 16 10 12 8"/><polygon class="face-front" points="12 8 16 10 16 14 12 12"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 4 20 8 12 12 4 8"/><polygon class="face-front" points="4 8 12 12 12 20 4 16"/><polygon class="face-side" points="12 12 20 8 20 16 12 20"/><line class="edge" x1="12" y1="8" x2="12" y2="16"/><line class="edge" x1="8" y1="12" x2="16" y2="12"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 2 20 6 12 10 4 6"/><polygon class="face-front" points="4 6 12 10 12 18 4 14"/><polygon class="face-side" points="12 10 20 6 20 14 12 18"/><polygon class="face-top" points="8 4 12 6 8 8 4 6"/><polygon class="face-front" points="4 10 12 14 12 16 4 12"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="4 6 20 4 16 8 0 10"/><polygon class="face-front" points="0 10 16 8 16 12 0 14"/><polygon class="face-side" points="16 8 20 4 20 8 16 12"/><polygon class="face-top" points="14 8 18 10 14 12 10 10"/><polygon class="face-front" points="10 10 14 12 14 16 10 14"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="8 2 16 6 8 10 0 6"/><polygon class="face-front" points="0 6 8 10 8 18 0 14"/><polygon class="face-side" points="8 10 16 6 16 14 8 18"/><polygon class="face-top" points="4 0 8 2 4 4 0 2"/><polygon class="face-front" points="0 2 4 4 4 6 0 4"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="10 4 18 8 10 12 2 8"/><polygon class="face-front" points="2 8 10 12 10 18 2 14"/><polygon class="face-side" points="10 12 18 8 18 14 10 18"/><polygon class="face-top" points="6 2 10 4 6 6 2 4"/><polygon class="face-front" points="2 4 6 6 6 8 2 6"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 4 16 6 12 8 8 6"/><polygon class="face-front" points="8 6 12 8 12 12 8 10"/><polygon class="face-side" points="12 8 16 6 16 10 12 12"/><line class="edge" x1="12" y1="6" x2="12" y2="2"/><line class="edge" x1="12" y1="10" x2="12" y2="14"/><line class="edge" x1="8" y1="8" x2="4" y2="8"/><line class="edge" x1="16" y1="8" x2="20" y2="8"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="4 4 8 6 4 8 0 6"/><polygon class="face-front" points="0 6 4 8 4 12 0 10"/><polygon class="face-side" points="4 8 8 6 8 10 4 12"/><polygon class="face-top" points="16 12 20 14 16 16 12 14"/><polygon class="face-front" points="12 14 16 16 16 20 12 18"/><path class="edge" d="M4 12l12 6"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="4 4 8 6 4 8 0 6"/><polygon class="face-front" points="0 6 4 8 4 12 0 10"/><polygon class="face-side" points="4 8 8 6 8 10 4 12"/><polygon class="face-top" points="4 16 8 18 4 20 0 18"/><polygon class="face-front" points="0 18 4 20 4 24 0 22"/><polygon class="face-top" points="16 10 20 12 16 14 12 12"/><path class="edge" d="M4 12l0 8"/><path class="edge" d="M8 14l8 0"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="16 2 20 4 16 6 12 4"/><polygon class="face-front" points="12 4 16 6 16 10 12 8"/><polygon class="face-side" points="16 6 20 4 20 8 16 10"/><polygon class="face-top" points="4 16 8 18 4 20 0 18"/><polygon class="face-front" points="0 18 4 20 4 24 0 22"/><path class="edge" d="M16 4l-12 0"/><path class="edge" d="M4 20l12 0"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="12 6 16 8 12 10 8 8"/><polygon class="face-front" points="8 8 12 10 12 14 8 12"/><polygon class="face-side" points="12 10 16 8 16 12 12 14"/><polygon class="face-top" points="12 2 14 3 12 4 10 3"/><polygon class="face-front" points="10 3 12 4 12 6 10 5"/><polygon class="face-top" points="12 14 14 15 12 16 10 15"/><polygon class="face-front" points="10 15 12 16 12 18 10 17"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="face-top" points="16 8 20 10 16 12 12 10"/><polygon class="face-front" points="12 10 16 12 16 16 12 14"/><polygon class="face-side" points="16 12 20 10 20 14 16 16"/><polygon class="face-front" points="4 10 12 10 12 14 4 14"/><polygon class="face-top" points="8 10 12 12 8 14 4 12"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Style J: Neon Cyberpunk -->
+      <div class="style-card style-j">
+        <div class="style-header">
+          <span class="style-badge j">J</span>
+          <span class="style-title">霓虹赛博风格</span>
+          <span class="style-desc">发光效果，赛博朋克科技感</span>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// NAVIGATION</div>
+          <div class="icons-grid">
+            <!-- Collection -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary flicker" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><circle class="glow" cx="7" cy="10" r="1.5 flicker"/><circle class="glow" cx="12" cy="14" r="1"/><circle class="glow" cx="17" cy="10" r="1.5"/><path class="neon-secondary" d="M7 10l5 4l5-4" stroke-dasharray="2 1"/></svg><span class="icon-name">collection</span></div>
+            <!-- Environment -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="neon-primary" cx="12" cy="12" r="10"/><path class="neon-secondary" d="M2 12h20"/><ellipse class="neon-primary flicker" cx="12" cy="12" rx="4" ry="10"/><circle class="glow flicker" cx="12" cy="12" r="2"/></svg><span class="icon-name">environment</span></div>
+            <!-- Workspace -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="neon-primary" x="3" y="3" width="7" height="7" rx="1"/><rect class="neon-primary flicker" x="14" y="3" width="7" height="7" rx="1"/><rect class="neon-primary" x="3" y="14" width="7" height="7" rx="1"/><rect class="neon-primary" x="14" y="14" width="7" height="7" rx="1"/><circle class="glow" cx="6.5" cy="6.5" r="1"/><circle class="glow flicker" cx="17.5" cy="6.5" r="1"/><circle class="glow" cx="6.5" cy="17.5" r="1"/><circle class="glow" cx="17.5" cy="17.5" r="1"/></svg><span class="icon-name">workspace</span></div>
+            <!-- History -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="neon-primary flicker" cx="12" cy="12" r="10"/><path class="neon-primary" d="M12 6v6l4 2"/><circle class="glow" cx="12" cy="12" r="2"/></svg><span class="icon-name">history</span></div>
+            <!-- Chat -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle class="glow flicker" cx="8" cy="10" r="1"/><circle class="glow" cx="12" cy="10" r="1"/><circle class="glow flicker" cx="16" cy="10" r="1"/><circle class="glow" cx="20" cy="3" r="2"/></svg><span class="icon-name">chat</span></div>
+            <!-- Orchestration -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="neon-primary" cx="6" cy="6" r="3"/><circle class="neon-primary flicker" cx="6" cy="18" r="3"/><circle class="neon-primary" cx="18" cy="12" r="3"/><line class="neon-secondary" x1="6" y1="9" x2="6" y2="15"/><line class="neon-secondary" x1="6" y1="12" x2="18" y2="12"/><circle class="glow" cx="6" cy="6" r="1"/><circle class="glow" cx="6" cy="18" r="1"/><circle class="glow" cx="18" cy="12" r="1"/></svg><span class="icon-name">orchestration</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// ACTIONS</div>
+          <div class="icons-grid">
+            <!-- Import -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="neon-primary" x="4" y="14" width="16" height="8" rx="2"/><path class="neon-primary flicker" d="M12 2v10"/><path class="neon-secondary" d="M7 7l5 5 5-5"/><circle class="glow flicker" cx="12" cy="2" r="2"/></svg><span class="icon-name">import</span></div>
+            <!-- Export -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="neon-primary" x="4" y="2" width="16" height="8" rx="2"/><path class="neon-primary" d="M12 10v10"/><path class="neon-secondary flicker" d="M7 15l5-5 5 5"/><circle class="glow" cx="12" cy="22" r="2"/></svg><span class="icon-name">export</span></div>
+            <!-- Copy -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="neon-primary" x="9" y="9" width="13" height="13" rx="2"/><rect class="neon-secondary" x="2" y="2" width="13" height="13" rx="2"/><circle class="glow flicker" cx="8" cy="8" r="1"/><circle class="glow" cx="16" cy="16" r="1"/></svg><span class="icon-name">copy</span></div>
+            <!-- Delete -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/><path class="neon-secondary flicker" d="M8 4h8l2 2H6"/><line class="neon-primary" x1="10" y1="11" x2="10" y2="17"/><line class="neon-primary" x1="14" y1="11" x2="14" y2="17"/></svg><span class="icon-name">delete</span></div>
+            <!-- Edit -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path class="neon-primary flicker" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/><circle class="glow" cx="18" cy="3" r="2"/></svg><span class="icon-name">edit</span></div>
+            <!-- Add -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="neon-primary flicker" cx="12" cy="12" r="10"/><line class="neon-primary" x1="12" y1="7" x2="12" y2="17"/><line class="neon-primary" x1="7" y1="12" x2="17" y2="12"/><circle class="glow" cx="12" cy="12" r="3" fill="none" stroke="#e91e63" stroke-width="1.5"/></svg><span class="icon-name">add</span></div>
+            <!-- Save -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><rect class="neon-secondary" x="7" y="13" width="10" height="6" rx="1"/><rect class="neon-secondary flicker" x="7" y="3" width="8" height="5"/><circle class="glow" cx="20" cy="3" r="1.5"/></svg><span class="icon-name">save</span></div>
+            <!-- Send -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><polygon class="neon-primary flicker" points="22 2 2 9 22 16 18 9"/><line class="neon-secondary" x1="2" y1="9" x2="18" y2="9"/><circle class="glow flicker" cx="2" cy="9" r="2"/><circle class="glow" cx="18" cy="9" r="2"/><circle class="glow" cx="22" cy="2" r="2"/></svg><span class="icon-name">send</span></div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <div class="category-title">// OTHERS</div>
+          <div class="icons-grid">
+            <!-- Folder -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/><circle class="glow flicker" cx="7" cy="10" r="1.5"/><circle class="glow" cx="12" cy="14" r="1"/><circle class="glow" cx="17" cy="10" r="1.5"/><path class="neon-secondary" d="M7 10l5 4l5-4" stroke-dasharray="2 1"/></svg><span class="icon-name">folder</span></div>
+            <!-- Folder Open -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary" d="M2 7v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6"/><path class="neon-secondary" d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4"/><circle class="glow" cx="6" cy="12" r="1"/><circle class="glow flicker" cx="12" cy="12" r="1"/><circle class="glow" cx="18" cy="12" r="1"/></svg><span class="icon-name">folder-open</span></div>
+            <!-- API -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glow" cx="12" cy="12" r="3"/><line class="neon-primary" x1="12" y1="2" x2="12" y2="9"/><line class="neon-primary" x1="12" y1="15" x2="12" y2="22"/><line class="neon-primary" x1="2" y1="12" x2="9" y2="12"/><line class="neon-primary" x1="15" y1="12" x2="22" y2="12"/><circle class="glow flicker" cx="12" cy="2" r="1"/><circle class="glow" cx="12" cy="22" r="1"/><circle class="glow" cx="2" cy="12" r="1"/><circle class="glow flicker" cx="22" cy="12" r="1"/></svg><span class="icon-name">api</span></div>
+            <!-- WebSocket -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><rect class="neon-primary" x="4" y="4" width="6" height="6" rx="1"/><rect class="neon-primary flicker" x="14" y="14" width="6" height="6" rx="1"/><path class="neon-secondary" d="M7 10v4h7v3"/><circle class="glow" cx="12" cy="14" r="1"/></svg><span class="icon-name">websocket</span></div>
+            <!-- Git -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="neon-primary" cx="6" cy="6" r="3"/><circle class="neon-primary" cx="6" cy="18" r="3"/><circle class="neon-primary flicker" cx="18" cy="12" r="3"/><line class="neon-secondary" x1="6" y1="9" x2="6" y2="15"/><line class="neon-secondary" x1="6" y1="12" x2="18" y2="12"/><circle class="glow" cx="6" cy="6" r="1"/><circle class="glow" cx="6" cy="18" r="1"/><circle class="glow flicker" cx="18" cy="12" r="1"/></svg><span class="icon-name">git</span></div>
+            <!-- Sync -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><path class="neon-primary flicker" d="M17 1l4 4-4 4"/><path class="neon-secondary" d="M3 11V9a4 4 0 0 1 4-4h14"/><path class="neon-primary" d="M7 23l-4-4 4-4"/><path class="neon-secondary flicker" d="M21 13v2a4 4 0 0 1-4 4H3"/><circle class="glow" cx="17" cy="5" r="1.5"/><circle class="glow flicker" cx="7" cy="19" r="1.5"/></svg><span class="icon-name">sync</span></div>
+            <!-- Settings -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><circle class="glow" cx="12" cy="12" r="3"/><circle class="neon-primary" cx="12" cy="12" r="7"/><line class="neon-primary flicker" x1="12" y1="1" x2="12" y2="5"/><line class="neon-primary" x1="12" y1="19" x2="12" y2="23"/><line class="neon-primary" x1="1" y1="12" x2="5" y2="12"/><line class="neon-primary flicker" x1="19" y1="12" x2="23" y2="12"/><circle class="glow" cx="12" cy="1" r="1"/><circle class="glow flicker" cx="12" cy="23" r="1"/><circle class="glow" cx="1" cy="12" r="1"/><circle class="glow" cx="23" cy="12" r="1"/></svg><span class="icon-name">settings</span></div>
+            <!-- Arrow -->
+            <div class="icon-item"><svg class="icon-svg" viewBox="0 0 24 24"><line class="neon-primary" x1="5" y1="12" x2="19" y2="12"/><polyline class="neon-primary flicker" points="12 5 19 12 12 19"/><circle class="glow flicker" cx="5" cy="12" r="1"/><circle class="glow" cx="8" cy="12" r="1"/><circle class="glow" cx="11" cy="12" r="1"/><circle class="glow flicker" cx="19" cy="12" r="2"/></svg><span class="icon-name">arrow-right</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selection Panel -->
+    <div class="selection-panel">
+      <h2>选择您喜欢的风格</h2>
+      <div class="style-buttons">
+        <button class="style-btn" data-style="a" onclick="selectStyle('a')">
+          <span class="btn-badge a">A</span>
+          <span>极简线条</span>
+        </button>
+        <button class="style-btn" data-style="b" onclick="selectStyle('b')">
+          <span class="btn-badge b">B</span>
+          <span>填充块状</span>
+        </button>
+        <button class="style-btn" data-style="c" onclick="selectStyle('c')">
+          <span class="btn-badge c">C</span>
+          <span>双色渐变</span>
+        </button>
+        <button class="style-btn" data-style="d" onclick="selectStyle('d')">
+          <span class="btn-badge d">D</span>
+          <span>像素复古</span>
+        </button>
+        <button class="style-btn" data-style="e" onclick="selectStyle('e')">
+          <span class="btn-badge e">E</span>
+          <span>科技电路</span>
+        </button>
+        <button class="style-btn" data-style="f" onclick="selectStyle('f')">
+          <span class="btn-badge f">F</span>
+          <span>玻璃拟物</span>
+        </button>
+        <button class="style-btn" data-style="g" onclick="selectStyle('g')">
+          <span class="btn-badge g">G</span>
+          <span>手绘涂鸦</span>
+        </button>
+        <button class="style-btn" data-style="h" onclick="selectStyle('h')">
+          <span class="btn-badge h">H</span>
+          <span>新拟物</span>
+        </button>
+        <button class="style-btn" data-style="i" onclick="selectStyle('i')">
+          <span class="btn-badge i">I</span>
+          <span>等距视角</span>
+        </button>
+        <button class="style-btn" data-style="j" onclick="selectStyle('j')">
+          <span class="btn-badge j">J</span>
+          <span>霓虹赛博</span>
+        </button>
+      </div>
+      <button class="apply-btn" id="applyBtn" disabled onclick="applyStyle()">
+        应用选中风格
+      </button>
+      <p style="color: var(--text-secondary); margin-top: 16px; font-size: 0.875rem;">
+        选中后点击"应用选中风格"按钮，将更新项目中的图标组件
+      </p>
+    </div>
+
+    <!-- Large Preview Section -->
+    <div class="preview-section">
+      <div class="preview-title">大尺寸预览 (48px)</div>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-collection">
+            <!-- Will be filled dynamically -->
+          </div>
+          <span class="preview-label">collection</span>
+        </div>
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-environment"></div>
+          <span class="preview-label">environment</span>
+        </div>
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-send"></div>
+          <span class="preview-label">send</span>
+        </div>
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-api"></div>
+          <span class="preview-label">api</span>
+        </div>
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-git"></div>
+          <span class="preview-label">git</span>
+        </div>
+        <div class="preview-item">
+          <div class="preview-icon" id="preview-settings"></div>
+          <span class="preview-label">settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedStyle = null;
+
+    function selectStyle(style) {
+      selectedStyle = style;
+
+      // Update button states
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.style === style) {
+          btn.classList.add('selected');
+        }
+      });
+
+      // Enable apply button
+      document.getElementById('applyBtn').disabled = false;
+
+      // Update preview
+      updatePreview(style);
+    }
+
+    function updatePreview(style) {
+      // This would update the large preview section with the selected style icons
+      console.log('Preview updated for style:', style);
+    }
+
+    function applyStyle() {
+      if (!selectedStyle) return;
+
+      // This would trigger the actual icon component update
+      alert(`即将应用风格 ${selectedStyle} 到项目中。\n\n请确认您的选择，我将更新 src/components/Icon/index.vue 文件。`);
+
+      // In real implementation, this would communicate with Claude to update the Vue component
+      console.log('Applying style:', selectedStyle);
+    }
+
+    // Add some interactivity
+    document.querySelectorAll('.icon-item').forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        item.style.transform = 'scale(1.1)';
+      });
+      item.addEventListener('mouseleave', () => {
+        item.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

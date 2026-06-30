@@ -1,0 +1,165 @@
+.cookie-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--shadow-color);
+  z-index: 1000;
+}
+
+.cookie-panel {
+  position: absolute;
+  right: 16px;
+  bottom: 40px;
+  width: 380px;
+  max-height: 450px;
+  background: var(--background-panel);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--background-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.panel-actions {
+  padding: 8px 16px;
+  background: var(--background-panel);
+}
+
+.clear-btn {
+  background: transparent;
+  color: var(--method-delete);
+  border: 1px solid var(--method-delete);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: var(--method-delete);
+  color: var(--background-panel);
+}
+
+.panel-content {
+  padding: 16px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.empty-message {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 13px;
+}
+
+.cookie-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cookie-item {
+  padding: 12px;
+  background: var(--background-card);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.cookie-item:hover {
+  border-color: var(--border-color);
+}
+
+.cookie-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.cookie-name {
+  font-size: 14px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.cookie-domain {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cookie-value {
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.cookie-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.delete-btn:hover {
+  background: var(--method-delete-bg);
+  color: var(--method-delete);
+}

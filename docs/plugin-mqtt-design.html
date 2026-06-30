@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="paper">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MQTT Tester · 插件设计规格 · 墨砚 Inkwell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* 墨砚 Inkwell · MQTT Tester 插件设计规格（与主规格同视觉系统） */
+:root{
+  --paper:#faf9f6; --panel:#ffffff; --sunk:#f5f3ee; --rail:#f1efea;
+  --ink:#1c1917; --ink-2:#57534e; --ink-3:#a8a29e;
+  --line:#e7e5e4; --line-2:#d6d3d1; --line-strong:#b8b1a8;
+  --blue:#2563eb; --blue-h:#1d4ed8; --blue-soft:#eff6ff; --blue-line:#bfdbfe;
+  --amber:#b45309; --amber-soft:#fef3c7; --amber-line:#fcd9a1;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --violet:#7c3aed; --teal:#0891b2;
+  --serif:"Fraunces","Songti SC",Georgia,serif; --sans:"Manrope","PingFang SC",-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono","SFMono-Regular",Consolas,Menlo,monospace;
+  --shadow-sm:0 1px 2px rgba(28,25,23,.05); --shadow:0 4px 14px rgba(28,25,23,.07); --shadow-lg:0 22px 60px rgba(28,25,23,.16);
+  --grain-op:.035; --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --side-w:268px; --maxw:920px;
+}
+[data-theme="ink"]{
+  --paper:#15120d; --panel:#1d1913; --sunk:#181410; --rail:#131009;
+  --ink:#f1ece1; --ink-2:#c4bdae; --ink-3:#8b8473;
+  --line:#322c22; --line-2:#3d362a; --line-strong:#524a3b;
+  --blue:#8ab4ff; --blue-h:#a9c9ff; --blue-soft:#1a2236; --blue-line:#33425f;
+  --amber:#f1b340; --amber-soft:#3a2c0f; --amber-line:#5a4316;
+  --ok:#4ade80; --warn:#fbbf24; --err:#f87171; --violet:#c4b5fd; --teal:#5fd4e0;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow:0 6px 20px rgba(0,0,0,.45); --shadow-lg:0 28px 70px rgba(0,0,0,.6); --grain-op:.06;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:32px;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.72;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11";transition:background .5s,color .5s;}
+body::before{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");opacity:var(--grain-op);mix-blend-mode:multiply;}
+[data-theme="ink"] body::before{mix-blend-mode:screen;}
+::selection{background:var(--amber);color:#fff;}
+
+.shell{display:grid;grid-template-columns:var(--side-w) 1fr;align-items:start;}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:30px 22px 40px;border-right:1px solid var(--line);background:linear-gradient(180deg,var(--sunk),var(--paper));z-index:50;}
+.content{max-width:var(--maxw);margin:0 auto;padding:0 56px 120px;}
+
+.brand{display:flex;align-items:center;gap:11px;margin-bottom:26px;}
+.brand .seal{width:38px;height:38px;border-radius:9px;flex:none;position:relative;background:radial-gradient(120% 120% at 30% 20%,var(--teal) 0%,#0e7490 55%,#0b4a5a 100%);box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,255,255,.18);display:grid;place-items:center;color:#fff;font-family:var(--serif);font-weight:900;font-style:italic;font-size:18px;}
+.brand .seal::after{content:"";position:absolute;inset:5px;border-radius:5px;border:1px solid rgba(255,255,255,.35);}
+.brand b{font-family:var(--serif);font-weight:700;font-size:16px;letter-spacing:-.01em;display:block;line-height:1.1;}
+.brand span{font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--blue);text-decoration:none;margin-bottom:18px;font-weight:600;}
+.back-link:hover{color:var(--blue-h);}
+
+.toc-label{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);margin:18px 4px 10px;}
+.toc{list-style:none;padding:0;margin:0 0 18px;}
+.toc li{margin:1px 0;}
+.toc a{display:flex;gap:9px;align-items:baseline;padding:6px 10px;border-radius:var(--r-sm);color:var(--ink-2);text-decoration:none;font-size:13px;font-weight:500;border-left:2px solid transparent;transition:.2s;}
+.toc a .n{font-family:var(--serif);font-style:italic;font-weight:500;font-size:12px;color:var(--ink-3);min-width:20px;}
+.toc a:hover{background:var(--panel);color:var(--ink);}
+.toc a.active{background:var(--blue-soft);color:var(--blue-h);border-left-color:var(--blue);font-weight:600;}
+.toc a.active .n{color:var(--blue);}
+
+.side-meta{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line-2);font-size:11.5px;color:var(--ink-3);}
+.side-meta div{display:flex;justify-content:space-between;padding:3px 10px;}
+.side-meta b{color:var(--ink-2);font-weight:600;}
+
+.theme-toggle{position:fixed;right:26px;bottom:26px;z-index:200;width:50px;height:50px;border-radius:50%;cursor:pointer;background:var(--panel);border:1px solid var(--line-2);box-shadow:var(--shadow-lg);display:grid;place-items:center;color:var(--ink-2);transition:.35s;font-size:20px;}
+.theme-toggle:hover{transform:translateY(-3px) rotate(-12deg);color:var(--amber);border-color:var(--amber);}
+[data-theme="ink"] .ic-sun{display:block;} [data-theme="ink"] .ic-moon{display:none;} [data-theme="paper"] .ic-sun{display:none;}
+
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;letter-spacing:-.015em;color:var(--ink);}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--amber);font-weight:700;}
+
+header.hero{padding:84px 0 64px;border-bottom:1px solid var(--line);position:relative;margin-bottom:8px;}
+header.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,var(--teal),transparent 60%);}
+.hero .kicker{display:flex;align-items:center;gap:12px;margin-bottom:26px;}
+.hero .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(8,145,178,.15);}
+.hero h1{font-size:clamp(46px,7vw,86px);line-height:.98;font-weight:600;margin:0 0 6px;font-variation-settings:"opsz" 120;letter-spacing:-.035em;}
+.hero h1 em{font-style:italic;font-weight:500;color:var(--teal);}
+.hero .lede{font-size:19px;line-height:1.6;color:var(--ink-2);max-width:660px;margin:22px 0 0;}
+.hero .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--line-2);font-size:12px;color:var(--ink-2);font-weight:500;box-shadow:var(--shadow-sm);}
+.chip b{color:var(--ink);font-weight:700;}
+.chip .pill{font-family:var(--mono);font-size:11px;padding:1px 7px;border-radius:5px;background:var(--blue-soft);color:var(--blue-h);}
+.ink-blot{position:absolute;right:-40px;top:40px;width:340px;height:340px;opacity:.5;pointer-events:none;background:radial-gradient(circle at 40% 40%,rgba(8,145,178,.3) 0%,transparent 62%),radial-gradient(circle at 60% 70%,var(--amber-line) 0%,transparent 55%);filter:blur(8px);border-radius:50%;}
+[data-theme="ink"] .ink-blot{opacity:.35;}
+
+section{padding:62px 0 18px;border-bottom:1px solid var(--line);scroll-margin-top:24px;}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:30px;}
+.sec-num{font-family:var(--serif);font-style:italic;font-weight:500;font-size:54px;line-height:1;color:var(--teal);opacity:.85;font-variation-settings:"opsz" 144;min-width:74px;}
+.sec-head h2{font-size:34px;margin:0;line-height:1.08;}
+.sec-head .eyebrow{display:block;margin-bottom:6px;}
+section > p{color:var(--ink-2);margin:0 0 16px;}
+p.lead::first-letter{font-family:var(--serif);font-weight:700;font-size:54px;float:left;line-height:.82;padding:6px 12px 0 0;color:var(--teal);font-variation-settings:"opsz" 144;}
+h3{font-size:21px;margin:34px 0 12px;display:flex;align-items:center;gap:10px;}
+h3 .tag{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--amber);border:1px solid var(--amber-line);background:var(--amber-soft);padding:2px 8px;border-radius:5px;letter-spacing:.04em;}
+h4{font-size:16px;margin:22px 0 8px;color:var(--ink);}
+ul,ol{color:var(--ink-2);padding-left:22px;} li{margin:5px 0;}
+strong{color:var(--ink);font-weight:700;}
+code{font-family:var(--mono);font-size:.86em;background:var(--sunk);padding:1.5px 6px;border-radius:5px;border:1px solid var(--line);color:var(--amber);}
+[data-theme="ink"] code{color:var(--amber);}
+
+.tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--shadow-sm);}
+.tbl th{background:var(--sunk);text-align:left;padding:11px 14px;font-weight:700;color:var(--ink);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--line-2);}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td b{color:var(--ink);}
+.tbl tr:hover td{background:var(--sunk);}
+
+.badges{display:flex;flex-wrap:wrap;gap:7px;}
+.bg{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;font-weight:500;border:1px solid var(--line-2);background:var(--sunk);color:var(--ink-2);}
+.bg.b{background:var(--blue-soft);color:var(--blue-h);border-color:var(--blue-line);}
+.bg.t{background:rgba(8,145,178,.1);color:var(--teal);border-color:rgba(8,145,178,.25);}
+.bg.a{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line);}
+.bg.ok{background:rgba(22,163,74,.1);color:var(--ok);border-color:rgba(22,163,74,.25);}
+.bg.err{background:rgba(220,38,38,.1);color:var(--err);border-color:rgba(220,38,38,.25);}
+.bg.mut{background:transparent;color:var(--ink-3);}
+
+.callout{display:flex;gap:14px;margin:20px 0;padding:16px 18px;border-radius:var(--r-md);background:var(--amber-soft);border:1px solid var(--amber-line);border-left:4px solid var(--amber);}
+.callout.blue{background:var(--blue-soft);border-color:var(--blue-line);border-left-color:var(--blue);}
+.callout.teal{background:rgba(8,145,178,.08);border-color:rgba(8,145,178,.25);border-left-color:var(--teal);}
+.callout .ico{font-family:var(--serif);font-style:italic;font-weight:700;font-size:22px;color:var(--amber);line-height:1;flex:none;}
+.callout.blue .ico{color:var(--blue);} .callout.teal .ico{color:var(--teal);}
+.callout p{margin:0;font-size:13.5px;color:var(--ink-2);} .callout b{color:var(--ink);}
+
+.code{margin:18px 0;background:var(--sunk);border:1px solid var(--line-2);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--shadow-sm);}
+.code .ch{display:flex;align-items:center;gap:9px;padding:9px 14px;background:var(--panel);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--ink-3);}
+.code .ch .fn{color:var(--ink-2);font-weight:600;}
+.code .ch .dots{display:flex;gap:5px;} .code .ch .dots i{width:9px;height:9px;border-radius:50%;background:var(--line-strong);display:block;}
+.code .ch .lang{margin-left:auto;padding:1px 7px;border-radius:4px;background:var(--amber-soft);color:var(--amber);font-size:10px;}
+.code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.65;color:var(--ink);}
+.code pre .k{color:var(--blue);} .code pre .s{color:var(--ok);} .code pre .c{color:var(--ink-3);font-style:italic;} .code pre .n{color:var(--amber);} .code pre .t{color:var(--teal);}
+
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0;}
+.tri .t{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;position:relative;transition:.25s;}
+.tri .t:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--blue-line);}
+.tri .t .rk{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--teal);opacity:.55;line-height:1;}
+.tri .t h4{margin:8px 0 4px;font-size:17px;}
+.tri .t .sub{font-size:12px;color:var(--ink-3);margin-bottom:12px;font-family:var(--mono);}
+.tri .t p{font-size:13px;color:var(--ink-2);margin:0;line-height:1.6;}
+
+/* 架构图 */
+.arch{margin:24px 0;display:flex;flex-direction:column;gap:0;}
+.arch .layer{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--shadow-sm);position:relative;}
+.arch .layer .lh{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.arch .layer .lh b{font-family:var(--serif);font-size:14px;font-weight:700;}
+.arch .layer .lh .lr{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.08em;}
+.arch .nodes{display:flex;flex-wrap:wrap;gap:7px;}
+.arch .node{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;background:var(--sunk);border:1px solid var(--line-2);color:var(--ink-2);}
+.arch .node.acc{background:var(--blue-soft);border-color:var(--blue-line);color:var(--blue-h);}
+.arch .node.am{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber);}
+.arch .node.tl{background:rgba(8,145,178,.1);border-color:rgba(8,145,178,.3);color:var(--teal);}
+.arch .arrow{align-self:center;color:var(--ink-3);font-family:var(--mono);font-size:18px;padding:5px 0;display:flex;align-items:center;gap:8px;}
+.arch .arrow span{font-family:var(--sans);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);}
+.arch .arrow .wire{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line-strong) 0 6px,transparent 6px 12px);max-width:140px;}
+.arch .layer.be{border-color:var(--blue-line);}
+.arch .layer.br{background:linear-gradient(180deg,var(--panel),var(--sunk));border-style:dashed;border-color:rgba(8,145,178,.4);}
+.arch .persist{position:absolute;top:10px;right:14px;font-family:var(--serif);font-style:italic;font-size:11.5px;color:var(--teal);}
+
+/* 时序图 */
+.seq{margin:24px 0;padding:8px 0 0;position:relative;}
+.seq .actors{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:0;}
+.seq .actors .ac{text-align:center;font-family:var(--serif);font-weight:600;font-size:13px;padding:8px 8px;border-radius:var(--r-sm);background:var(--panel);border:1px solid var(--line-2);box-shadow:var(--shadow-sm);position:relative;z-index:2;margin:0 24%;}
+.seq .actors .ac.t{background:rgba(8,145,178,.1);border-color:rgba(8,145,178,.3);color:var(--teal);}
+.seq .lane{position:relative;padding:6px 0;}
+.seq .lane::before,.seq .lane::after,.seq .lane .mid{content:"";position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--line-strong);}
+.seq .lane::before{left:15.3%;} .seq .lane .mid{left:50%;} .seq .lane::after{left:84.6%;}
+.msg{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;margin:13px 0;min-height:30px;}
+.msg .arr{grid-column:1/4;position:relative;height:22px;display:flex;align-items:center;}
+.msg .arr .line{height:2px;background:var(--ink-2);border-radius:2px;}
+.msg .arr .lab{position:absolute;top:-9px;background:var(--paper);padding:1px 10px;font-family:var(--mono);font-size:11px;color:var(--ink);border:1px solid var(--line);border-radius:5px;white-space:nowrap;box-shadow:var(--shadow-sm);}
+.msg .arr .head{position:absolute;top:50%;transform:translateY(-50%);width:0;height:0;border:6px solid transparent;}
+.msg.rl .arr .line{margin:0 15.3% 0 50%;} .msg.rl .arr .head{left:84.6%;margin-left:-12px;border-left-color:var(--ink-2);}
+.msg.lr .arr .line{margin:0 50% 0 15.3%;} .msg.lr .arr .head{left:15.3%;border-right-color:var(--ink-2);}
+.msg.lc .arr .line{margin:0 84.6% 0 15.3%;}
+.msg .lab.c{left:50%;transform:translateX(-50%);} .msg .lab.l{left:15.3%;transform:translateX(-50%);} .msg .lab.r{left:84.6%;transform:translateX(-50%);}
+.msg.teal .arr .line{background:var(--teal);} .msg.teal .arr .head{border-left-color:var(--teal)!important;border-right-color:var(--teal)!important;}
+.msg.blue .arr .line{background:var(--blue);} .msg.blue .arr .head{border-left-color:var(--blue)!important;border-right-color:var(--blue)!important;}
+.msg.note{margin:0 15.3% 0 15.3%;}
+.msg.note .nb{grid-column:1/4;background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--r-sm);padding:6px 11px;font-size:11px;color:var(--amber);font-family:var(--mono);text-align:center;}
+.seq-cap{font-size:12px;color:var(--ink-3);text-align:center;margin-top:14px;font-style:italic;font-family:var(--serif);}
+
+/* 时间轴 */
+.timeline{margin:24px 0;position:relative;padding-left:8px;}
+.timeline::before{content:"";position:absolute;left:20px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--teal),var(--blue) 60%,var(--line));}
+.tl{display:grid;grid-template-columns:48px 1fr;gap:0;margin-bottom:14px;align-items:start;}
+.tl .ph{position:relative;font-family:var(--serif);font-style:italic;font-weight:700;font-size:16px;color:var(--teal);padding-top:2px;text-align:right;padding-right:16px;}
+.tl .ph::after{content:"";position:absolute;right:-7px;top:8px;width:13px;height:13px;border-radius:50%;background:var(--panel);border:2.5px solid var(--teal);z-index:2;}
+.tl .bd{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 16px;box-shadow:var(--shadow-sm);margin-left:14px;}
+.tl .bd b{font-family:var(--serif);font-size:14.5px;}
+.tl .bd p{margin:5px 0 0;font-size:12.5px;color:var(--ink-2);line-height:1.55;}
+
+/* UI 原型框 */
+.mock{margin:22px 0;border:1px solid var(--line-2);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);background:var(--panel);}
+.mock .tb{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--sunk);border-bottom:1px solid var(--line);}
+.mock .tb .dt{display:flex;gap:6px;} .mock .tb .dt i{width:11px;height:11px;border-radius:50%;display:block;}
+.mock .tb .dt i:nth-child(1){background:#ed6a5e;} .mock .tb .dt i:nth-child(2){background:#f4bf4f;} .mock .tb .dt i:nth-child(3){background:#61c554;}
+.mock .tb .tt{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:6px;}
+.mock .tb .cap{margin-left:auto;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--teal);}
+.mock .scr{padding:0;font-family:var(--mono);font-size:11px;line-height:1.65;color:var(--ink-2);background:var(--paper);overflow-x:auto;}
+.mock .scr pre{margin:0;padding:14px 16px;white-space:pre;}
+.mock .scr .hl{color:var(--blue);font-weight:600;}
+.mock .scr .tlc{color:var(--teal);font-weight:600;}
+.mock .scr .dim{color:var(--ink-3);}
+.mock .scr .em{color:var(--amber);font-weight:600;}
+.mock .scr .ok{color:var(--ok);} .mock .scr .vi{color:var(--violet);}
+
+.check{list-style:none;padding:0;margin:16px 0;}
+.check li{padding-left:28px;position:relative;color:var(--ink-2);margin:8px 0;}
+.check li::before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line-strong);background:var(--panel);}
+.check li::after{content:"✓";position:absolute;left:4px;top:0;color:var(--teal);font-weight:800;font-size:14px;opacity:.6;}
+
+footer.foot{padding:54px 0 30px;text-align:center;color:var(--ink-3);font-size:12px;border-top:1px solid var(--line);margin-top:40px;}
+footer.foot .mk{font-family:var(--serif);font-style:italic;color:var(--teal);font-size:14px;}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+.reveal.in{opacity:1;transform:none;}
+@keyframes rise{from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:none;}}
+.hero .kicker,.hero h1,.hero .lede,.hero .meta-row{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
+.hero h1{animation-delay:.08s;} .hero .lede{animation-delay:.18s;} .hero .meta-row{animation-delay:.28s;}
+
+@media (max-width:1080px){.content{padding:0 36px 100px;}}
+@media (max-width:880px){
+  .shell{grid-template-columns:1fr;} .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);}
+  .content{padding:0 22px 80px;} .tri{grid-template-columns:1fr;} .sec-num{font-size:42px;min-width:58px;}
+  header.hero{padding:52px 0 44px;} .ink-blot{display:none;}
+  .seq .lane::before{left:10%;} .seq .lane .mid{left:50%;} .seq .lane::after{left:90%;}
+  .msg.rl .arr .line{margin:0 10% 0 50%;} .msg.rl .arr .head{left:90%;margin-left:-12px;}
+  .msg.lr .arr .line{margin:0 50% 0 10%;} .msg.lr .arr .head{left:10%;} .msg.lc .arr .line{margin:0 90% 0 10%;}
+  .msg .lab.r{left:90%;} .msg .lab.l{left:10%;}
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" title="切换 纸/墨 主题" aria-label="切换主题"><span class="ic ic-moon">☾</span><span class="ic ic-sun">☀</span></button>
+
+<div class="shell">
+  <!-- 侧栏 -->
+  <aside class="sidebar">
+    <div class="brand"><div class="seal">MQ</div><div><b>MQTT Tester</b><span>Plugin Spec</span></div></div>
+    <a class="back-link" href="plugin-system-design.html">← 返回插件平台规格</a>
+    <div class="toc-label">目 录</div>
+    <ul class="toc" id="toc">
+      <li><a href="#overview"><span class="n">01</span> 定位与能力</a></li>
+      <li><a href="#arch"><span class="n">02</span> 架构：连接驻留后端</a></li>
+      <li><a href="#protocol"><span class="n">03</span> FMPP 协议</a></li>
+      <li><a href="#lifecycle"><span class="n">04</span> 连接生命周期</a></li>
+      <li><a href="#ui"><span class="n">05</span> Webview 界面</a></li>
+      <li><a href="#payload"><span class="n">06</span> 负载处理</a></li>
+      <li><a href="#security"><span class="n">07</span> 安全</a></li>
+      <li><a href="#backend"><span class="n">08</span> 后端实现</a></li>
+      <li><a href="#roadmap"><span class="n">09</span> 路线图</a></li>
+      <li><a href="#risks"><span class="n">10</span> 风险</a></li>
+      <li><a href="#manifest"><span class="n">§</span> 完整 Manifest</a></li>
+    </ul>
+    <div class="side-meta">
+      <div><span>插件</span><b>io.fm.mqtt-tester</b></div>
+      <div><span>版本</span><b>v0.1.0 草案</b></div>
+      <div><span>呈现</span><b>嵌入式 Webview</b></div>
+      <div><span>MQTT</span><b>v3.1.1 / v5</b></div>
+    </div>
+  </aside>
+
+  <!-- 正文 -->
+  <main class="content">
+    <header class="hero">
+      <div class="ink-blot"></div>
+      <div class="kicker"><span class="dot"></span><span class="eyebrow">Plugin Design Spec · 参考样板插件</span></div>
+      <h1>MQTT Tester<br/><em>嵌入式 MQTT 工作台</em></h1>
+      <p class="lede">一个加载进 FM Tester 的 <b>MQTT 测试插件</b>：连接任意 Broker，订阅主题、发布消息、实时查看消息流与统计。连接<b>驻留在 CLI 后端</b>，与 UI 解耦——消息持续流动，即便视图被关闭。本设计同时是「如何用插件平台规范一个真实插件」的参考样板。</p>
+      <div class="meta-row">
+        <span class="chip"><b>视图</b> Webview 工作台</span>
+        <span class="chip"><b>连接</b> <span class="pill">CLI 后端持有</span></span>
+        <span class="chip"><b>凭据</b> fm.secret · AES-GCM</span>
+        <span class="chip"><b>协议</b> MQTT v3.1.1 / v5</span>
+      </div>
+    </header>
+
+    <!-- 01 定位 -->
+    <section id="overview">
+      <div class="sec-head reveal"><div class="sec-num">01</div><div><span class="eyebrow">Overview</span><h2>定位与能力</h2></div></div>
+      <p class="lead reveal">MQTT 是物联网领域的主流发布/订阅协议。本插件把它做成 FM Tester 里的一个常驻工作台——适合 IoT 调试、设备联调、消息流验证。它<b>不依赖 HTTP 请求/响应</b>，因此不走既有「请求钩子」，而是以 <b>Webview 视图</b> 为中心，辅以少量命令。</p>
+
+      <div class="callout teal reveal"><div class="ico">§</div><div><p><b>为何是插件而非内置：</b>MQTT 是长连接、异步推送、二进制负载密集的场景，与 FM Tester 的 HTTP 核心正交。作为 CLI 插件，可用任意成熟 MQTT 库（Node mqtt.js / Python paho / Go paho / Rust rumqttc），不污染核心，且<b>连接进程独立</b>——崩溃不影响主应用。</p></div></div>
+
+      <h3 class="reveal">能力声明 <span class="tag">capabilities</span></h3>
+      <div class="tri reveal">
+        <div class="t"><div class="rk">▦</div><h4>Webview 视图</h4><div class="sub">workspace · 主区标签页 + 侧边栏</div><p>交互式工作台：连接树、发布面板、实时消息流、统计。这是核心，承载全部 MQTT 交互。</p></div>
+        <div class="t"><div class="rk">⌘</div><h4>命令</h4><div class="sub">commandPalette · sidebar</div><p><code>newConnection</code> 快速连接；<code>publishClip</code> 把剪贴板/选中内容作为 payload 发布；<code>importBrokers</code> 批量导入 Broker 配置。</p></div>
+        <div class="t"><div class="rk">♺</div><h4>AI 工具（可选）</h4><div class="sub">tools · MCP 风格</div><p><code>mqttInspect</code>：让 AI 助手查询近期消息、主题活跃度，辅助分析设备上报。</p></div>
+      </div>
+
+      <h3 class="reveal">权限申请</h3>
+      <div class="badges reveal">
+        <span class="bg">fm.console.log</span>
+        <span class="bg">fm.context.read</span>
+        <span class="bg a">fm.secret.read</span>
+        <span class="bg b">webview.embed</span>
+        <span class="bg a">network.outbound</span>
+      </div>
+      <p class="reveal" style="font-size:13px;"><code>fm.secret.read</code> 复用宿主 AES-GCM 加密存储保存 Broker 凭据；<code>secrets: ["mqtt.broker.*"]</code> 声明可读的凭据键。</p>
+    </section>
+
+    <!-- 02 架构 -->
+    <section id="arch">
+      <div class="sec-head reveal"><div class="sec-num">02</div><div><span class="eyebrow">Architecture</span><h2>架构：连接驻留后端</h2></div></div>
+      <p class="lead reveal">关键设计：<b>MQTT 连接由插件 CLI 进程持有，而非 Webview</b>。Webview 仅负责渲染与交互，经 FMPP 驱动后端；后端维持长连接，把收到的消息以事件流推回 Webview。</p>
+
+      <div class="arch reveal">
+        <div class="layer">
+          <div class="persist">UI 可关可换，连接不断</div>
+          <div class="lh"><b>插件 Webview</b> <span class="bg mut" style="font-size:10px;">iframe · sandbox</span><span class="lr">FRONTEND</span></div>
+          <div class="nodes"><span class="node">连接树</span><span class="node">发布面板</span><span class="node tl">消息流渲染</span><span class="node">统计</span><span class="node am">postMessage ↔</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span><span>FMPP · mqtt/* 命令 + onMessage 事件</span><span class="wire"></span></div>
+        <div class="layer be">
+          <div class="persist">连接、订阅、消息缓冲都在此</div>
+          <div class="lh"><b>插件 CLI 后端</b><span class="lr">BACKEND · 持有 MQTT 连接</span></div>
+          <div class="nodes"><span class="node acc">连接管理</span><span class="node acc">pub/sub</span><span class="node acc">消息缓冲/限流</span><span class="node">profiles.json</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span><span>TCP / TLS / WebSocket（mqtt · mqtts · ws · wss）</span><span class="wire"></span></div>
+        <div class="layer br">
+          <div class="lh"><b>MQTT Broker</b> <span class="bg mut" style="font-size:10px;">EMQX · Mosquitto · Mosca · 自建</span><span class="lr">EXTERNAL</span></div>
+          <div class="nodes"><span class="node tl">topic 树</span><span class="node tl">QoS 0/1/2</span><span class="node tl">retain</span><span class="node tl">LWT</span></div>
+        </div>
+      </div>
+
+      <div class="callout blue reveal"><div class="ico">¶</div><div><p><b>解耦带来的三个好处：</b>① 视图关闭/切换时连接<b>不断</b>，消息持续累积于后端缓冲；② 同一连接可被<b>多个视图</b>订阅展示（如一个看原文、一个看聚合）；③ Webview 崩溃不丢连接，重开即恢复。</p></div></div>
+    </section>
+
+    <!-- 03 协议 -->
+    <section id="protocol">
+      <div class="sec-head reveal"><div class="sec-num">03</div><div><span class="eyebrow">FMPP Protocol</span><h2>mqtt/* 协议</h2></div></div>
+      <p class="lead reveal">在 FMPP 之上定义 MQTT 专用方法。命令类带 <code>id</code> 走 JSON-RPC 请求/响应；消息到达、连接断开等<b>异步事件用通知</b>（无 id）推回。</p>
+
+      <h3 class="reveal">命令（应用/Webview → 插件）</h3>
+      <table class="tbl reveal">
+        <thead><tr><th>method</th><th>params</th><th>result</th></tr></thead>
+        <tbody>
+          <tr><td><code>mqtt/connect</code></td><td>brokerUrl, clientId, username, secretRef, keepAlive, clean, will, version, tls</td><td>connected, sessionPresent, assignedClientId</td></tr>
+          <tr><td><code>mqtt/disconnect</code></td><td>connId</td><td>ok</td></tr>
+          <tr><td><code>mqtt/subscribe</code></td><td>connId, filters: [{topic, qos}]</td><td>granted: [{topic, qos}]</td></tr>
+          <tr><td><code>mqtt/unsubscribe</code></td><td>connId, topics: []</td><td>ok</td></tr>
+          <tr><td><code>mqtt/publish</code></td><td>connId, topic, payload(base64), qos, retain, contentType</td><td>packetId, delivered</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="reveal">事件（插件 → 应用/Webview，通知）</h3>
+      <table class="tbl reveal">
+        <thead><tr><th>method</th><th>触发</th><th>data</th></tr></thead>
+        <tbody>
+          <tr><td><code>mqtt/onConnect</code></td><td>连接建立</td><td>connId, sessionPresent, broker</td></tr>
+          <tr><td><code>mqtt/onMessage</code></td><td>收到消息（核心事件流）</td><td>connId, topic, payload(base64), qos, retain, dup, ts, contentType</td></tr>
+          <tr><td><code>mqtt/onDisconnect</code></td><td>断开（含 v5 reason code）</td><td>connId, reason, code</td></tr>
+          <tr><td><code>mqtt/stats</code></td><td>周期统计</td><td>msgIn/s, msgOut/s, bytesIn, bytesOut, rtt</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="reveal">时序：连接 → 订阅 → 收消息 → 发布</h3>
+      <div class="seq reveal">
+        <div class="actors"><div class="ac">Webview</div><div class="ac t">CLI 后端</div><div class="ac">Broker</div></div>
+        <div class="lane">
+          <div class="msg lr blue"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab c">① mqtt/connect</div></div></div>
+          <div class="msg note"><div class="nb">secretRef → fm/secret.get 取凭据（权限校验）</div></div>
+          <div class="msg rl teal"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab r">CONNACK</div></div></div>
+          <div class="msg lr"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab c">② mqtt/subscribe · sensors/#</div></div></div>
+          <div class="msg rl teal"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab r">SUBACK</div></div></div>
+          <div class="msg rl teal"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab r">③ PUBLISH（设备上报）</div></div></div>
+          <div class="msg lr"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab c">mqtt/onMessage · 推回 UI</div></div></div>
+          <div class="msg note"><div class="nb">payload(base64) · 二进制安全</div></div>
+          <div class="msg lr blue"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab c">④ mqtt/publish · cmd/led</div></div></div>
+          <div class="msg rl teal"><div class="arr"><div class="line"></div><div class="head"></div><div class="lab r">PUBACK</div></div></div>
+        </div>
+        <div class="seq-cap">Webview 只与后端通信；后端与 Broker 维持长连接</div>
+      </div>
+    </section>
+
+    <!-- 04 生命周期 -->
+    <section id="lifecycle">
+      <div class="sec-head reveal"><div class="sec-num">04</div><div><span class="eyebrow">Connection Lifecycle</span><h2>连接生命周期</h2></div></div>
+      <p class="lead reveal">长连接与插件平台的「空闲回收」机制存在张力——必须让<b>活跃连接保活进程</b>，否则 idle 超时会杀掉连接。</p>
+
+      <div class="tri reveal">
+        <div class="t"><div class="rk">①</div><h4>连接保活进程</h4><div class="sub">hold-alive</div><p>只要存在活跃 MQTT 连接，<code>PluginRunner</code> 视作「有活动」，<b>不触发空闲回收</b>。建议 manifest <code>idleTimeoutMs: 0</code> 或由 runner 识别连接态。</p></div>
+        <div class="t"><div class="rk">②</div><h4>视图无关持久</h4><div class="sub">view-decoupled</div><p>关闭视图/标签页<b>不断开</b>连接；后端继续收消息并缓冲。重开视图即拉取缓冲恢复展示。</p></div>
+        <div class="t"><div class="rk">③</div><h4>断线重连</h4><div class="sub">auto-reconnect</div><p>网络抖动时后端按指数退避自动重连，重订阅原 filters，并 <code>onDisconnect/onConnect</code> 通知 UI 更新状态点。</p></div>
+      </div>
+
+      <div class="callout reveal"><div class="ico">!</div><div><p><b>平台交互要点：</b>插件禁用 / 应用退出时，后端须<b>优雅断开</b>（发 DISCONNECT，v5 携带 reason），而非直接杀进程——否则 Broker 侧会触发 LWT（遗嘱）。退出流程由宿主 <code>shutdown</code> 驱动。</p></div></div>
+
+      <h3 class="reveal">消息缓冲与限流</h3>
+      <ul class="reveal">
+        <li>高吞吐 Broker 下，<code>onMessage</code> 通知可能淹没 Webview。后端按<b>时间窗/数量</b>聚合后批量推送（如每 50ms 或满 64 条一帧）。</li>
+        <li>后端维护<b>有界环形缓冲</b>（如最近 5000 条），供视图重开时回放；超出按 topic 优先级丢弃。</li>
+        <li>用户可在 UI 设「暂停接收」/「仅保留匹配过滤」以降噪。</li>
+      </ul>
+    </section>
+
+    <!-- 05 UI -->
+    <section id="ui">
+      <div class="sec-head reveal"><div class="sec-num">05</div><div><span class="eyebrow">Webview UI</span><h2>工作台界面</h2></div></div>
+      <p class="lead reveal">嵌入式 Webview 渲染的 MQTT 工作台。左：连接/主题树；中上：发布面板；中：实时消息流；底：统计。</p>
+
+      <div class="mock reveal">
+        <div class="tb"><span class="dt"><i></i><i></i><i></i></span><span class="tt">MQTT Tester · workspace</span><span class="cap">Webview 工作台</span></div>
+        <div class="scr"><pre><span class="dim">┌─────────────┬───────────────────────────────────────────┐</span>
+│ <span class="tlc">连接 / 主题</span>  │  <span class="em">发布 Publish</span>                              │
+│             │  topic [cmd/device/12/led      ]            │
+│ ▾ <span class="ok">●</span> prod-emqx│  payload ▸ JSON | Text | Hex | Base64       │
+│   sensors/# │  ┌──────────────────────────────────────┐   │
+│   cmd/#     │  │ { "led": "on", "brightness": 80 }     │   │
+│ ▾ <span class="ok">●</span> local    │  └──────────────────────────────────────┘   │
+│   test/#    │  QoS [1] ☐retain         [ <span class="hl">发 布</span> ]          │
+│ ◯ staging   ├───────────────────────────────────────────┤
+│             │  <span class="em">消息流 Messages</span>  ⏸暂停  🔎filter  QoS▾       │
+│ [+ 新连接]   │  ts   dir topic            payload        │
+│             │  .032 ◀ sensors/temp/1   {"t":36.5}  Q1 R   │
+│             │  .041 ◀ sensors/humid/1  {"h":48}     Q1    │
+│             │  .120 ▶ cmd/device/12/led {"led":"on"} Q1   │
+│             │  .122 ◀ cmd/device/12/led ack         Q1    │
+│             ├───────────────────────────────────────────┤
+│             │  <span class="vi">↑ 142 msg/s  ↓ 8 msg/s  RTT 18ms  连接 2/3</span>    │
+<span class="dim">└─────────────┴───────────────────────────────────────────┘</span></pre></div>
+      </div>
+      <p class="reveal" style="font-size:13px;">消息流按方向着色：<span style="color:var(--ok)">◀ 接收</span> / <span style="color:var(--blue)">▶ 发布</span>；点击展开完整 payload 并按所选模式格式化（见 §06）。状态点 <span style="color:var(--ok)">●</span>已连 / <span style="color:var(--ink-3)">◯</span>断开。</p>
+    </section>
+
+    <!-- 06 负载 -->
+    <section id="payload">
+      <div class="sec-head reveal"><div class="sec-num">06</div><div><span class="eyebrow">Payload</span><h2>负载处理</h2></div></div>
+      <p class="lead reveal">MQTT 负载常为二进制（protobuf / 自定义协议 / 传感器裸数据）。协议层一律以 <b>base64</b> 传输，保证二进制安全；Webview 按所选模式解码展示。</p>
+
+      <table class="tbl reveal">
+        <thead><tr><th>模式</th><th>解码</th><th>适用</th></tr></thead>
+        <tbody>
+          <tr><td><span class="bg">UTF-8</span></td><td>原文</td><td>文本/JSON 仪表上报</td></tr>
+          <tr><td><span class="bg b">JSON</span></td><td>pretty 格式化</td><td>结构化设备数据</td></tr>
+          <tr><td><span class="bg t">Hex</span></td><td>十六进制 dump（带偏移）</td><td>私有协议 / 裸字节</td></tr>
+          <tr><td><span class="bg a">Base64</span></td><td>原文</td><td>图片/文件载荷</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout teal reveal"><div class="ico">§</div><div><p><b>与大负载：</b>单条超大消息（如固件 OTA 分片）经 base64 会有 ~33% 膨胀。约定单帧上限（如 256KB），超出由后端<b>分片</b>推送并在 UI 标记「truncated」；亦可勾选「大负载仅存引用不渲染」。</p></div></div>
+    </section>
+
+    <!-- 07 安全 -->
+    <section id="security">
+      <div class="sec-head reveal"><div class="sec-num">07</div><div><span class="eyebrow">Security</span><h2>安全</h2></div></div>
+
+      <h3 class="reveal">凭据：复用宿主 AES-GCM 加密存储</h3>
+      <p class="lead reveal">Broker 的用户名/密码不存插件目录，而是经 <code>fm/secret.get</code> 存取于宿主的加密存储（复用既有 <code>encryption.rs</code>）。连接时声明 <code>secretRef</code>，后端凭权限取回明文用于握手。</p>
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">凭据键约定</span><span class="lang">secret</span></div>
+<pre><span class="c">// manifest 声明可读的凭据键前缀</span>
+<span class="k">"secrets"</span>: [<span class="s">"mqtt.broker.*"</span>]
+
+<span class="c">// 连接时引用（不传明文）</span>
+{ <span class="k">"secretRef"</span>: <span class="s">"mqtt.broker.prod-emqx"</span> }
+  → <span class="t">fm/secret.get</span>(<span class="s">"mqtt.broker.prod-emqx"</span>)
+  → { username, password }   <span class="c">// AES-GCM 解密后仅在握手期间驻留内存</span></pre>
+      </div>
+
+      <h3 class="reveal">TLS</h3>
+      <ul class="reveal">
+        <li><code>mqtts://</code> / <code>wss://</code> 启用 TLS；支持自定义 CA 证书、客户端证书 + 私钥（mTLS）。</li>
+        <li>证书文件可来自插件沙箱目录或用户指定路径；<code>insecure</code> 选项（跳过校验）默认关闭并醒目提示。</li>
+      </ul>
+
+      <div class="callout reveal"><div class="ico">!</div><div><p><b>网络诚实声明：</b>MQTT 是 Broker 间的原始 TCP/TLS socket 连接，<b>不经</b>宿主 HTTP 网关（<code>fm/request.send</code>）。因此 <code>network.outbound</code> 权限在此为<b>声明 + 审计</b>性质——插件 CLI 进程直连 Broker；真正的 socket 级管控需 OS 沙箱（平台 P6）。安装授权时须向用户明示「该插件将直连你配置的 Broker 地址」。</p></div></div>
+    </section>
+
+    <!-- 08 后端 -->
+    <section id="backend">
+      <div class="sec-head reveal"><div class="sec-num">08</div><div><span class="eyebrow">Backend</span><h2>后端实现选项</h2></div></div>
+      <p class="lead reveal">CLI 后端可用任意语言。权衡成熟度、分发体积与跨平台一致性：</p>
+      <table class="tbl reveal">
+        <thead><tr><th>方案</th><th>库</th><th>优点</th><th>权衡</th></tr></thead>
+        <tbody>
+          <tr><td><b>Node</b> <span class="bg ok">推荐起手</span></td><td>mqtt.js</td><td>生态成熟，mqtt/mqtts/ws/wss 与 v3/v5 全支持，前端同栈</td><td>需随包 Node 运行时（或 pkg 打包）</td></tr>
+          <tr><td><b>Rust</b> <span class="bg b">推荐分发</span></td><td>rumqttc</td><td>单二进制、跨平台一致、性能/内存佳</td><td>v5 支持需确认完整性</td></tr>
+          <tr><td><b>Go</b></td><td>paho.golang</td><td>单二进制、v5 一等支持</td><td>二进制体积偏大</td></tr>
+          <tr><td><b>Python</b></td><td>paho-mqtt</td><td>原型快、易写</td><td>需 Python 环境，分发不便</td></tr>
+        </tbody>
+      </table>
+      <p class="reveal" style="font-size:13px;">建议：<b>开发期用 Node mqtt.js</b> 快速迭代，<b>正式分发用 Rust/Go 单二进制</b>，manifest 的跨平台 <code>entry.command</code> 分别指向各平台产物。</p>
+    </section>
+
+    <!-- 09 路线图 -->
+    <section id="roadmap">
+      <div class="sec-head reveal"><div class="sec-num">09</div><div><span class="eyebrow">Roadmap</span><h2>插件路线图</h2></div></div>
+      <div class="timeline reveal">
+        <div class="tl"><div class="ph">P1</div><div class="bd"><b>单连接 · 基础收发</b><p>连接 / 订阅 / 发布，text + JSON 负载，实时消息流，连接状态点。够用的小型联调。</p></div></div>
+        <div class="tl"><div class="ph">P2</div><div class="bd"><b>多连接 · 安全 · 二进制</b><p>多 Broker 并行；TLS + mTLS；凭据经 fm.secret；Hex/Base64 负载；暂停/过滤；统计。</p></div></div>
+        <div class="tl"><div class="ph">P3</div><div class="bd"><b>持久化 · 场景</b><p>连接/订阅 profile 持久化；消息日志保存与回放；脚本化发布序列（编排式压测）；主题聚合视图。</p></div></div>
+        <div class="tl"><div class="ph">P4</div><div class="bd"><b>MQTT v5 · AI 工具</b><p>user properties / content type / topic alias / 共享订阅($share) / reason codes；<code>mqttInspect</code> AI 工具。</p></div></div>
+      </div>
+    </section>
+
+    <!-- 10 风险 -->
+    <section id="risks">
+      <div class="sec-head reveal"><div class="sec-num">10</div><div><span class="eyebrow">Risks</span><h2>风险与对策</h2></div></div>
+      <table class="tbl reveal">
+        <thead><tr><th>风险</th><th>影响</th><th>对策</th></tr></thead>
+        <tbody>
+          <tr><td><b>空闲回收误杀连接</b></td><td>连接被 runner 回收，触发 Broker LWT</td><td>活跃连接保活进程；<code>idleTimeoutMs:0</code>；退出走优雅 DISCONNECT</td></tr>
+          <tr><td><b>高吞吐消息淹没 UI</b></td><td>Webview 卡顿/内存涨</td><td>后端时间窗/数量聚合批推；有界环形缓冲；暂停/过滤</td></tr>
+          <tr><td><b>二进制 base64 膨胀</b></td><td>大负载带宽/内存</td><td>单帧上限 + 分片 + truncated 标记；大负载仅存引用</td></tr>
+          <tr><td><b>凭据泄露</b></td><td>Broker 密码外泄</td><td>明文不落盘，存 fm.secret(AES-GCM)；仅在握手期驻留内存</td></tr>
+          <tr><td><b>socket 不经网关</b></td><td>network 权限无法硬约束</td><td>声明+审计+安装明示；OS 沙箱列平台 P6</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Manifest -->
+    <section id="manifest" style="border-bottom:none;">
+      <div class="sec-head reveal"><div class="sec-num">§</div><div><span class="eyebrow">Manifest</span><h2>完整 plugin.json</h2></div></div>
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">io.fm.mqtt-tester / plugin.json</span><span class="lang">json</span></div>
+<pre>{
+  <span class="k">"manifestVersion"</span>: <span class="n">1</span>,
+  <span class="k">"id"</span>: <span class="s">"io.fm.mqtt-tester"</span>,
+  <span class="k">"name"</span>: <span class="s">"MQTT Tester"</span>,
+  <span class="k">"version"</span>: <span class="s">"0.1.0"</span>,
+  <span class="k">"description"</span>: <span class="s">"嵌入式 MQTT 工作台：连接 Broker、订阅发布、实时消息流。"</span>,
+  <span class="k">"engines"</span>: { <span class="k">"fmTester"</span>: <span class="s">"^0.9.0"</span> },
+
+  <span class="k">"entry"</span>: {
+    <span class="k">"command"</span>: { <span class="k">"windows"</span>: <span class="s">"${dir}/mqtt-tester.exe"</span>, <span class="k">"macos"</span>: <span class="s">"${dir}/mqtt-tester"</span>, <span class="k">"linux"</span>: <span class="s">"${dir}/mqtt-tester"</span> },
+    <span class="k">"transport"</span>: <span class="s">"stdio-ndjson"</span>,
+    <span class="k">"idleTimeoutMs"</span>: <span class="n">0</span>,            <span class="c">// 活跃连接保活，不空闲回收</span>
+    <span class="k">"restartOnError"</span>: <span class="n">true</span>,
+    <span class="k">"maxRestarts"</span>: <span class="n">5</span>
+  },
+
+  <span class="k">"webview"</span>: {
+    <span class="k">"entry"</span>: <span class="s">"webview/index.html"</span>,
+    <span class="k">"csp"</span>: <span class="s">"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none';"</span>
+  },
+
+  <span class="k">"capabilities"</span>: {
+    <span class="k">"views"</span>: [{
+      <span class="k">"id"</span>: <span class="s">"workspace"</span>,
+      <span class="k">"title"</span>: { <span class="k">"zh-CN"</span>: <span class="s">"MQTT 工作台"</span>, <span class="k">"en"</span>: <span class="s">"MQTT Workspace"</span> },
+      <span class="k">"placement"</span>: [<span class="s">"tab"</span>, <span class="s">"sidebar"</span>],
+      <span class="k">"render"</span>: <span class="s">"webview"</span>,
+      <span class="k">"defaultOpen"</span>: <span class="s">"tab"</span>
+    }],
+    <span class="k">"commands"</span>: [
+      { <span class="k">"id"</span>: <span class="s">"newConnection"</span>, <span class="k">"title"</span>: { <span class="k">"zh-CN"</span>: <span class="s">"新建 MQTT 连接"</span>, <span class="k">"en"</span>: <span class="s">"New MQTT Connection"</span> }, <span class="k">"placement"</span>: [<span class="s">"commandPalette"</span>, <span class="s">"sidebar"</span>], <span class="k">"output"</span>: <span class="s">"open-webview"</span> },
+      { <span class="k">"id"</span>: <span class="s">"publishClip"</span>,    <span class="k">"title"</span>: { <span class="k">"zh-CN"</span>: <span class="s">"发布剪贴板为 Payload"</span>, <span class="k">"en"</span>: <span class="s">"Publish Clipboard"</span> }, <span class="k">"placement"</span>: [<span class="s">"commandPalette"</span>] },
+      { <span class="k">"id"</span>: <span class="s">"importBrokers"</span>, <span class="k">"title"</span>: { <span class="k">"zh-CN"</span>: <span class="s">"导入 Broker 配置"</span>, <span class="k">"en"</span>: <span class="s">"Import Brokers"</span> }, <span class="k">"placement"</span>: [<span class="s">"commandPalette"</span>], <span class="k">"output"</span>: <span class="s">"json-ui"</span> }
+    ],
+    <span class="k">"tools"</span>: [
+      { <span class="k">"id"</span>: <span class="s">"mqttInspect"</span>, <span class="k">"description"</span>: <span class="s">"Query recent MQTT messages / topic activity"</span>,
+        <span class="k">"inputSchema"</span>: { <span class="k">"type"</span>: <span class="s">"object"</span>, <span class="k">"properties"</span>: { <span class="k">"connId"</span>: {<span class="k">"type"</span>:<span class="s">"string"</span>}, <span class="k">"topic"</span>: {<span class="k">"type"</span>:<span class="s">"string"</span>} } } }
+    ]
+  },
+
+  <span class="k">"permissions"</span>: [<span class="s">"fm.console.log"</span>, <span class="s">"fm.context.read"</span>, <span class="s">"fm.secret.read"</span>, <span class="s">"webview.embed"</span>, <span class="s">"network.outbound"</span>],
+  <span class="k">"secrets"</span>: [<span class="s">"mqtt.broker.*"</span>],
+  <span class="k">"checksum"</span>: <span class="s">"sha256:…"</span>
+}</pre>
+      </div>
+
+      <ul class="check reveal" style="margin-top:18px;">
+        <li>以 Webview 视图为中心，命令辅佐，AI 工具可选</li>
+        <li>连接驻留 CLI 后端，与 UI 解耦、可被多视图共享</li>
+        <li>异步事件（onMessage）走 JSON-RPC 通知，命令走请求/响应</li>
+        <li>二进制 base64 传输 + 多模式解码；高吞吐聚合批推 + 环形缓冲</li>
+        <li>凭据复用宿主 AES-GCM 存储，不经网关的网络诚实声明</li>
+      </ul>
+    </section>
+
+    <footer class="foot reveal">
+      <div class="mk">墨砚 Inkwell · MQTT Tester Plugin Spec</div>
+      <div style="margin-top:8px;">io.fm.mqtt-tester · v0.1.0 草案 · 2026-06-30</div>
+      <div style="margin-top:4px;opacity:.7;">← <a href="plugin-system-design.html" style="color:var(--blue);text-decoration:none;">返回插件平台规格</a> · 纸(Paper) / 墨(Ink) 双主题</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+const root=document.documentElement;const saved=localStorage.getItem("fm-theme");if(saved)root.setAttribute("data-theme",saved);
+document.getElementById("themeToggle").addEventListener("click",()=>{const n=root.getAttribute("data-theme")==="ink"?"paper":"ink";root.setAttribute("data-theme",n);localStorage.setItem("fm-theme",n);});
+const links=[...document.querySelectorAll(".toc a")];const map=new Map(links.map(a=>[a.getAttribute("href").slice(1),a]));
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.remove("active"));const a=map.get(e.target.id);if(a)a.classList.add("active");}}),{rootMargin:"-30% 0px -60% 0px",threshold:0});
+document.querySelectorAll("section[id]").forEach(s=>spy.observe(s));
+const rev=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");rev.unobserve(e.target);}}),{rootMargin:"0px 0px -8% 0px",threshold:.06});
+document.querySelectorAll(".reveal").forEach(el=>rev.observe(el));
+</script>
+</body>
+</html>

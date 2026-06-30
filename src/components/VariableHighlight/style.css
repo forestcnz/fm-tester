@@ -1,0 +1,185 @@
+/* 变量高亮文本模式 */
+.var-highlight-text {
+  display: inline;
+}
+
+/* 变量引用高亮样式 - 无 padding/font-weight 避免错位 */
+.var-ref {
+  color: var(--primary);
+  background: rgba(24, 144, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* 未定义变量样式 */
+.var-undefined {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+}
+
+/* 占位符样式 */
+.var-placeholder {
+  color: var(--text-muted);
+}
+
+/* 输入框模式容器 */
+.var-highlight-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* 高亮覆盖层 */
+.var-highlight-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  z-index: 1;
+
+  /* 文本颜色（非变量部分） */
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background: var(--background-panel);
+}
+
+/* CollectionSettingsPanel 使用更小的 border-radius */
+.param-row .var-highlight-overlay {
+  border-radius: 2px;
+}
+
+/* 覆盖层内文本 span - 与输入框 padding 同步 */
+.var-highlight-overlay > span {
+  display: block;
+  padding: 4px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 占位符在覆盖层内的样式 */
+.var-highlight-overlay .var-placeholder {
+  display: block;
+  padding: 4px 8px;
+  color: var(--text-muted);
+}
+
+/* 透明输入框 - 决定容器高度 */
+.var-highlight-input {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+
+  /* 透明文本，只显示光标 */
+  color: transparent;
+  caret-color: #262626;
+
+  /* 输入框样式 */
+  padding: 4px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  outline: none;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* 表格中的输入框固定高度 */
+.params-list .var-highlight-input,
+.form-list .var-highlight-input {
+  height: 28px;
+}
+
+/* URL 输入框模式 - 固定 32px 高度，与按钮对齐 */
+.url-mode.var-highlight-input-wrapper {
+  height: 32px;
+  flex: 1;
+  min-width: 0;
+}
+
+.url-mode .var-highlight-input {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.url-mode .var-highlight-overlay {
+  height: 32px;
+}
+
+.url-mode .var-highlight-overlay > span {
+  height: 32px;
+  padding: 0 12px;
+  line-height: 30px;
+}
+
+/* CollectionSettingsPanel 使用更小的 border-radius */
+.param-row .var-highlight-input {
+  border-radius: 2px;
+}
+
+.var-highlight-input:focus {
+  border-color: var(--primary);
+}
+
+.var-highlight-input::placeholder {
+  color: transparent;
+}
+
+/* 覆盖层中的变量高亮 - 无 padding/font-weight 避免错位 */
+.var-highlight-overlay .var-ref {
+  color: var(--primary);
+  background: rgba(24, 144, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* 变量自动补全下拉菜单 */
+.var-autocomplete {
+  position: absolute;
+  background: var(--background-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  min-width: 200px;
+}
+
+.var-autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.var-autocomplete-item:hover {
+  background: var(--background-app);
+}
+
+.var-autocomplete-item.selected {
+  background: var(--primary-light);
+}
+
+.var-autocomplete-key {
+  color: var(--primary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.var-autocomplete-value {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}

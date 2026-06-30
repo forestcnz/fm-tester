@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester · 编排 · 重新设计</title>
+<link rel="stylesheet" href="inkwell.css">
+<style>
+.orch-main{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.orch-head{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0}
+.orch-glyph{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(140deg,var(--m-put),#1e3a8a);color:#fff;box-shadow:var(--shadow-sm);flex-shrink:0}
+.orch-glyph svg{width:17px;height:17px}
+.orch-title{font-family:"Fraunces",serif;font-weight:600;font-size:18px;display:flex;align-items:center;gap:10px}
+.sched-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:6px}
+.sched-badge svg{width:11px;height:11px}
+.orch-head .acts{margin-left:auto;display:flex;gap:8px}
+.act-btn{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg-panel);color:var(--fg-2);font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+.act-btn:hover{border-color:var(--primary-line);color:var(--primary)}
+.act-btn.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.act-btn.run{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:var(--shadow-sm)}
+.act-btn.run:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.act-btn.run:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.act-btn.stop{background:var(--fg-2);border-color:var(--fg-2);color:#fff}
+.act-btn svg{width:14px;height:14px}
+
+.orch-body{flex:1;display:flex;min-height:0}
+.col{display:flex;flex-direction:column;min-height:0}
+.steps-col{flex:1.3;border-right:1px solid var(--line)}
+.hist-col{flex:0 0 290px;background:var(--bg-app)}
+
+.sec-head{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--bg-sunk);flex-shrink:0}
+.sec-head .st{font-size:12px;font-weight:700;color:var(--fg-2);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:7px}
+.sec-head .st .c{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--fg-3);background:var(--bg-panel);padding:1px 6px;border-radius:7px}
+.sec-head .spacer{flex:1}
+.add-api{display:flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:7px;border:1px dashed var(--line-strong);background:none;color:var(--fg-2);font-size:12px;font-weight:600;cursor:pointer;transition:.14s}
+.add-api:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.add-api svg{width:13px;height:13px}
+.clr-btn{font-size:11.5px;color:var(--fg-3);background:none;border:none;cursor:pointer;font-weight:600}
+.clr-btn:hover{color:var(--err)}
+
+.steps-scroll{flex:1;overflow-y:auto;padding:14px 16px}
+.steps-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-panel)}
+.step{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--bg-panel);box-shadow:var(--shadow-sm);margin-bottom:10px;transition:.15s;cursor:grab;position:relative}
+.step:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.step.dragging{opacity:.4;cursor:grabbing}
+.step.drag-before::before,.step.drag-after::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--primary);border-radius:2px}
+.step.drag-before::before{top:-7px}.step.drag-after::after{bottom:-7px}
+.step.disabled{opacity:.55}
+.step.running{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.step.success{border-left:3px solid var(--ok)}
+.step.failed{border-left:3px solid var(--err)}
+.step.skipped{border-left:3px solid var(--warn)}
+.step-idx{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--bg-sunk);font-family:"Fraunces",serif;font-weight:600;font-size:13px;color:var(--fg-2);flex-shrink:0}
+.step.running .step-idx{background:var(--primary);color:#fff}
+.step.running .step-idx::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid transparent;border-top-color:var(--primary);animation:spin .8s linear infinite}
+.step.success .step-idx{background:var(--ok);color:#fff}
+.step.failed .step-idx{background:var(--err);color:#fff}
+.step-info{flex:1;min-width:0}
+.step-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-api{display:flex;align-items:center;gap:8px;margin-top:3px;font-size:11.5px}
+.mtag{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:700;min-width:38px}
+.step-url{font-family:"IBM Plex Mono",monospace;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-cfg{display:flex;gap:6px;flex-shrink:0}
+.cfg-pill{font-size:10.5px;color:var(--fg-2);background:var(--bg-sunk);padding:3px 8px;border-radius:6px;font-weight:600;display:flex;align-items:center;gap:4px;border:1px solid var(--line)}
+.cfg-pill svg{width:11px;height:11px;color:var(--fg-3)}
+.step-acts{display:flex;gap:3px;flex-shrink:0}
+.sact{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;border:1px solid transparent;background:none;color:var(--fg-2);cursor:pointer;transition:.13s}
+.sact:hover{background:var(--bg-sunk);border-color:var(--line);color:var(--primary)}
+.sact.del:hover{color:var(--err)}
+.sact svg{width:14px;height:14px}
+.empty-s{text-align:center;padding:36px 20px;color:var(--fg-3);font-size:12.5px}
+.empty-s svg{width:40px;height:40px;opacity:.35;margin-bottom:8px}
+
+/* 历史列表 */
+.hist-scroll{flex:1;overflow-y:auto;padding:10px}
+.hist-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;border:2px solid var(--bg-app)}
+.hist-item{border:1px solid var(--line);border-radius:10px;background:var(--bg-panel);padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.13s;box-shadow:var(--shadow-sm)}
+.hist-item:hover{border-color:var(--line-strong);transform:translateY(-1px)}
+.hist-top{display:flex;align-items:center;gap:8px}
+.hist-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px}
+.hist-status.success{background:rgba(22,163,74,.12);color:var(--ok)}
+.hist-status.failed{background:rgba(220,38,38,.1);color:var(--err)}
+.hist-status.running{background:rgba(37,99,235,.1);color:var(--primary)}
+.hist-status.partial{background:rgba(217,119,6,.12);color:var(--warn)}
+.hist-time{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--fg-3)}
+.hist-stats{display:flex;gap:9px;margin-top:7px;font-size:11.5px}
+.hist-stats .s{display:flex;align-items:center;gap:4px;font-weight:600}
+.hist-stats .s.ok{color:var(--ok)}.hist-stats .s.err{color:var(--err)}.hist-stats .s.sk{color:var(--warn)}
+.hist-total{margin-top:5px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--fg-3)}
+
+/* 弹窗 */
+.overlay{position:absolute;inset:0;background:rgba(28,25,23,.4);backdrop-filter:blur(3px);z-index:60;display:none;align-items:center;justify-content:center}
+.overlay.open{display:flex;animation:fade .18s}
+.modal{width:460px;max-width:90%;max-height:84%;background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;animation:rise .2s}
+.modal.wide{width:540px}
+.modal-head{display:flex;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}
+.modal-head .mt{font-family:"Fraunces",serif;font-weight:600;font-size:16px}
+.modal-head .x{margin-left:auto;width:28px;height:28px;border-radius:7px;border:none;background:none;color:var(--fg-2);cursor:pointer;font-size:18px}
+.modal-head .x:hover{background:var(--bg-sunk)}
+.modal-body{padding:16px 18px;overflow-y:auto;flex:1}
+.modal-foot{display:flex;justify-content:flex-end;gap:9px;padding:13px 18px;border-top:1px solid var(--line);background:var(--bg-sunk)}
+
+/* 定时配置 */
+.sched-field{margin-bottom:15px}
+.sched-field>label{display:block;font-size:12px;font-weight:600;color:var(--fg-2);margin-bottom:8px}
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer}
+.tswitch{width:38px;height:21px;border-radius:11px;background:var(--line-2);position:relative;transition:.2s;flex-shrink:0}
+.tswitch.on{background:var(--primary)}
+.tswitch::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s;box-shadow:var(--shadow-sm)}
+.tswitch.on::after{left:19px}
+.cron-in{width:100%;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg-app);font:inherit;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--fg);outline:none;transition:.15s}
+.cron-in:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft);background:var(--bg-panel)}
+.cron-err{font-size:11.5px;color:var(--err);margin-top:6px}
+.next-runs{margin-top:10px}
+.nrt{font-size:11px;color:var(--fg-3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.nri{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12px}
+.nri .ni{width:18px;height:18px;border-radius:50%;background:var(--bg-sunk);display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--fg-3);font-weight:700}
+.nri .nt{font-family:"IBM Plex Mono",monospace;color:var(--fg-2)}
+.ex-title{font-size:11px;color:var(--fg-3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:6px 0 8px}
+.ex-list{display:flex;flex-wrap:wrap;gap:6px}
+.ex-btn{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:5px 9px;border-radius:6px;border:1px solid var(--line);background:var(--bg-panel);color:var(--fg-2);cursor:pointer;transition:.13s}
+.ex-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+
+/* API 选择器 */
+.api-search{width:100%;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg-app);font:inherit;font-size:13px;color:var(--fg);outline:none;margin-bottom:12px}
+.api-search:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft);background:var(--bg-panel)}
+.api-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);margin-bottom:7px;cursor:pointer;transition:.13s;background:var(--bg-card)}
+.api-item:hover{border-color:var(--primary);background:var(--primary-soft)}
+
+/* 步骤配置 */
+.cf{margin-bottom:14px}
+.cf>label{display:block;font-size:12px;font-weight:600;color:var(--fg-2);margin-bottom:7px}
+.cf input[type=text],.cf input[type=number]{width:100%;height:34px;padding:0 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg-app);font:inherit;font-size:13px;color:var(--fg);outline:none;transition:.15s}
+.cf input:focus{border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-soft);background:var(--bg-panel)}
+.cf-inline{display:flex;align-items:center;gap:9px}
+.radio-grp{display:flex;gap:9px}
+.radio-it{display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;flex:1;font-size:12.5px;font-weight:600;transition:.13s}
+.radio-it:hover{border-color:var(--line-strong)}
+.radio-it.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+.radio-it input{accent-color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame theme-paper" id="frame">
+
+  <div class="titlebar">
+    <div class="tlights"><span class="tl-r"></span><span class="tl-y"></span><span class="tl-g"></span></div>
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l6-12 4 8 6-4-4 8z"/></svg></div><div class="brand-name">FM <em>Tester</em></div><div class="brand-sub">Inkwell · 墨砚</div></div>
+    <div class="tb-spacer"></div><div class="tb-actions"><button class="tb-btn" id="themeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="ws-select"><div class="ws-ico">A</div><span class="ws-name">Acme 电商平台</span><svg class="ws-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="env-switch"><button class="env-chip"><span class="ed"></span>Local</button><button class="env-chip on"><span class="ed"></span>Staging</button><button class="env-chip"><span class="ed"></span>Prod</button></div>
+    <div class="cmdk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">搜索接口、切换环境或执行命令…</span><span class="kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>
+  </div>
+
+  <div class="body">
+    <div class="rail">
+      <div class="rail-grp"><a class="rail-item" href="redesign-preview.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="tip">集合</span></a><a class="rail-item" href="page-websocket.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v4M16 3v4M4 11h16M5 7h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/></svg><span class="tip">WebSocket</span></a><button class="rail-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg><span class="tip">编排</span></button></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><a class="rail-item" href="page-environment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3z"/></svg><span class="tip">环境变量</span></a><button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/></svg><span class="tip">历史记录<span class="rail-badge">3</span></span></button></div>
+      <div class="rail-sep"></div>
+      <div class="rail-grp"><button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tip">工作区</span></button><button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><span class="tip">AI 对话</span></button></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sb-head"><div class="sb-title"><h2>编排</h2><div class="acts"><button class="mini-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+        <div class="sb-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="过滤编排…"></div></div>
+      <div class="sb-list" id="orchList">
+        <div class="lrow sel"><span class="lrow-ico" style="color:var(--m-put)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg></span><span class="lrow-t">订单履约流程</span><span class="lrow-meta">4步</span></div>
+        <div class="lrow"><span class="lrow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg></span><span class="lrow-t">用户注册引导</span><span class="lrow-meta">6步</span></div>
+        <div class="lrow"><span class="lrow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg></span><span class="lrow-t">支付对账</span><span class="lrow-meta">8步</span></div>
+      </div>
+    </div>
+
+    <div class="main"><div class="orch-main" style="position:relative">
+      <!-- header -->
+      <div class="orch-head">
+        <div class="orch-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5M8.5 6H6"/></svg></div>
+        <div class="orch-title">订单履约流程 <span class="sched-badge" id="schedBadge" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>定时已启用</span></div>
+        <div class="acts">
+          <button class="act-btn" id="schedBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>定时配置</button>
+          <button class="act-btn run" id="runBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span id="runTxt">运行</span></button>
+          <button class="act-btn stop" id="stopBtn" style="display:none"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>停止</button>
+        </div>
+      </div>
+
+      <div class="orch-body">
+        <!-- 步骤 -->
+        <div class="col steps-col">
+          <div class="sec-head"><span class="st">步骤 <span class="c" id="stepCnt">4</span></span><div class="spacer"></div><button class="add-api" id="addApi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>添加接口</button></div>
+          <div class="steps-scroll" id="stepsList"></div>
+        </div>
+        <!-- 运行历史 -->
+        <div class="col hist-col">
+          <div class="sec-head"><span class="st">运行历史</span><div class="spacer"></div><button class="clr-btn" id="clrHist">清空</button></div>
+          <div class="hist-scroll" id="histList"></div>
+        </div>
+      </div>
+
+      <!-- 定时配置弹窗 -->
+      <div class="overlay" id="schedOv">
+        <div class="modal">
+          <div class="modal-head"><span class="mt">定时任务配置</span><button class="x" data-close="schedOv">×</button></div>
+          <div class="modal-body">
+            <div class="sched-field"><label>启用定时执行</label>
+              <div class="toggle" id="cronToggle"><div class="tswitch" id="cronSw"></div><span id="cronToggleTxt">未启用</span></div>
+            </div>
+            <div class="sched-field"><label>Cron 表达式</label>
+              <input class="cron-in" id="cronInput" placeholder="如 0 */5 * * * ?" value="0 */5 * * * ?">
+              <div class="cron-err" id="cronErr" style="display:none"></div>
+            </div>
+            <div class="next-runs"><div class="nrt">接下来 5 次执行时间</div><div id="nextRuns"></div></div>
+            <div class="ex-title">常用示例</div>
+            <div class="ex-list">
+              <button class="ex-btn" data-c="0 * * * * ?">每分钟</button>
+              <button class="ex-btn" data-c="0 */5 * * * ?">每 5 分钟</button>
+              <button class="ex-btn" data-c="0 */30 * * * ?">每 30 分钟</button>
+              <button class="ex-btn" data-c="0 0 * * * ?">每小时</button>
+              <button class="ex-btn" data-c="0 0 2 * * ?">每天 2:00</button>
+              <button class="ex-btn" data-c="0 0 9 ? * 2">每周一 9:00</button>
+              <button class="ex-btn" data-c="0 30 9 ? * 2-6">工作日 9:30</button>
+              <button class="ex-btn" data-c="0 0 0 1 * ?">每月 1 号</button>
+            </div>
+          </div>
+          <div class="modal-foot"><button class="btn ghost sm" data-close="schedOv">取消</button><button class="btn primary sm" id="saveSched">保存</button></div>
+        </div>
+      </div>
+
+      <!-- API 选择器 -->
+      <div class="overlay" id="apiOv">
+        <div class="modal wide">
+          <div class="modal-head"><span class="mt">选择接口添加为步骤</span><button class="x" data-close="apiOv">×</button></div>
+          <div class="modal-body">
+            <input class="api-search" id="apiSearch" placeholder="搜索接口名称或 URL…">
+            <div id="apiList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 步骤配置 -->
+      <div class="overlay" id="cfgOv">
+        <div class="modal">
+          <div class="modal-head"><span class="mt">步骤配置</span><button class="x" data-close="cfgOv">×</button></div>
+          <div class="modal-body">
+            <div class="cf"><label>步骤名称</label><input type="text" id="cfName"></div>
+            <div class="cf"><label>等待前置时间 (ms)</label><input type="number" id="cfWait" min="0"></div>
+            <div class="cf-inline" style="gap:14px;margin-bottom:14px">
+              <div class="cf" style="flex:1;margin:0"><label>重试次数</label><input type="number" id="cfRetry" min="0"></div>
+              <div class="cf" style="flex:1;margin:0"><label>重试间隔 (ms)</label><input type="number" id="cfDelay" min="0"></div>
+            </div>
+            <div class="cf"><label>失败时</label><div class="radio-grp">
+              <label class="radio-it on" data-of="stop"><input type="radio" name="of" value="stop" checked>停止执行</label>
+              <label class="radio-it" data-of="continue"><input type="radio" name="of" value="continue">继续执行</label>
+            </div></div>
+            <div class="cf"><label>启用</label><div class="cf-inline"><input type="checkbox" id="cfEn" style="width:18px;height:18px;accent-color:var(--primary)"></div></div>
+          </div>
+          <div class="modal-foot"><button class="btn ghost sm" data-close="cfgOv">取消</button><button class="btn primary sm" id="saveCfg">保存</button></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sb-l"><span class="v">v0.8.2</span><span class="git"><i></i>已同步 · main @ 2a3f1c</span></div>
+    <div class="sb-c">编排 · <b>订单履约流程</b> · 4 步</div>
+    <div class="sb-r"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Cookie</span><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>控制台</span><span class="si on"><span class="dot"></span>Staging</span></div>
+  </div>
+</div></div>
+
+<div class="toast-wrap" id="toasts"></div>
+<div class="note"><span class="nd"></span><span><b>编排</b> · 顺序执行接口：拖拽步骤重排，齿轮配置 等待/重试/失败策略；定时按钮配 Cron；运行后步骤依次点亮、历史实时记录 · <span class="tag">⌘.</span> 主题</span></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$('#themeBtn').addEventListener('click',()=>{$('#frame').classList.toggle('theme-paper');$('#frame').classList.toggle('theme-dark');toast('已切换主题');});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();$('#themeBtn').click();}if(e.key==='Escape')closeAll();});
+function closeAll(){$$('.overlay').forEach(o=>o.classList.remove('open'));}
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).classList.remove('open')));
+$$('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+/* 步骤数据：对齐真实 step 字段 api_id/name/enabled/wait_before/retry_count/retry_delay/on_failure */
+let steps=[
+  {id:'s1',name:'用户登录',method:'POST',url:'/api/v2/auth/login',enabled:true,wait_before:0,retry_count:0,retry_delay:0,on_failure:'stop',status:null},
+  {id:'s2',name:'校验权限',method:'GET',url:'/api/v1/users/me',enabled:true,wait_before:500,retry_count:2,retry_delay:1000,on_failure:'stop',status:null},
+  {id:'s3',name:'创建订单',method:'POST',url:'/api/v1/orders',enabled:true,wait_before:0,retry_count:1,retry_delay:500,on_failure:'continue',status:null},
+  {id:'s4',name:'查询订单',method:'GET',url:'/api/v1/orders/{{id}}',enabled:false,wait_before:0,retry_count:0,retry_delay:0,on_failure:'stop',status:null},
+];
+let runHistory=[
+  {id:'h1',status:'success',time:'10:24:51',success:4,failed:0,skipped:0,total:1840},
+  {id:'h2',status:'partial',time:'10:18:03',success:3,failed:1,skipped:0,total:3210},
+  {id:'h3',status:'failed',time:'09:55:20',success:2,failed:1,skipped:1,total:5600},
+];
+
+function renderSteps(){
+  const w=$('#stepsList');w.innerHTML='';
+  if(!steps.length){w.innerHTML='<div class="empty-s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg><p>暂无步骤，点击「添加接口」开始编排</p></div>';$('#stepCnt').textContent=0;return;}
+  steps.forEach((s,i)=>{
+    const el=document.createElement('div');el.className='step'+(s.enabled?'':' disabled')+(s.status?' '+s.status:'');
+    el.dataset.id=s.id;
+    const idxTxt=s.status==='running'?'':(s.status==='success'?'✓':s.status==='failed'?'✗':s.status==='skipped'?'⤳':(i+1));
+    el.innerHTML=`<div class="step-idx">${idxTxt}</div>
+      <div class="step-info"><div class="step-name">${esc(s.name)}</div>
+        <div class="step-api"><span class="mtag m-${s.method.toLowerCase()}">${s.method}</span><span class="step-url">${esc(s.url)}</span></div></div>
+      <div class="step-cfg">
+        ${s.wait_before>0?`<span class="cfg-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>等待 ${s.wait_before}ms</span>`:''}
+        ${s.retry_count>0?`<span class="cfg-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.5 2.6L21 3"/></svg>重试 ${s.retry_count}</span>`:''}
+        ${!s.enabled?`<span class="cfg-pill" style="color:var(--fg-3)">已禁用</span>`:''}
+      </div>
+      <div class="step-acts"><button class="sact cfg" data-id="${s.id}" title="配置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        <button class="sact del" data-id="${s.id}" data-del title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
+    w.appendChild(el);
+  });
+  $('#stepCnt').textContent=steps.length;
+  bindSteps();
+}
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* 步骤事件 */
+function bindSteps(){
+  $$('#stepsList .cfg').forEach(b=>b.addEventListener('click',()=>openCfg(b.dataset.id)));
+  $$('#stepsList [data-del]').forEach(b=>b.addEventListener('click',()=>{steps=steps.filter(s=>s.id!==b.dataset.id);renderSteps();toast('步骤已删除');}));
+  $$('#orchList .lrow').forEach((r,i)=>r.onclick=()=>{$$('#orchList .lrow').forEach(x=>x.classList.remove('sel'));r.classList.add('sel');});
+}
+/* 拖拽排序（阈值4px，before/after） */
+let dragId=null,dY=0,started=false;
+$('#stepsList').addEventListener('mousedown',e=>{
+  if(e.target.closest('.sact'))return;
+  const stEl=e.target.closest('.step');if(!stEl)return;
+  dragId=stEl.dataset.id;dY=e.clientY;started=false;
+  const onMove=ev=>{
+    if(!dragId)return;const dlt=Math.abs(ev.clientY-dY);
+    if(!started&&dlt<4)return;started=true;
+    stEl.classList.add('dragging');
+    $$('#stepsList .step').forEach(el=>{
+      if(el===stEl)return;const r=el.getBoundingClientRect();const mid=r.top+r.height/2;
+      el.classList.remove('drag-before','drag-after');
+      if(ev.clientY>=r.top&&ev.clientY<=r.bottom){el.classList.add(ev.clientY<mid?'drag-before':'drag-after');}
+    });
+  };
+  const onUp=()=>{
+    document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);
+    stEl.classList.remove('dragging');
+    if(started){
+      const overEl=[...$$('#stepsList .step')].find(el=>el.classList.contains('drag-before')||el.classList.contains('drag-after'));
+      if(overEl){
+        const from=steps.findIndex(s=>s.id===dragId),to=steps.findIndex(s=>s.id===overEl.dataset.id);
+        const pos=overEl.classList.contains('drag-before')?'before':'after';
+        const [m]=steps.splice(from,1);let ins=steps.findIndex(s=>s.id===overEl.dataset.id);
+        if(pos==='after')ins++;steps.splice(ins,0,m);renderSteps();toast('步骤顺序已更新');
+      }
+    }
+    $$('#stepsList .step').forEach(el=>el.classList.remove('drag-before','drag-after'));dragId=null;started=false;
+  };
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUpl=onU);
+});
+function onU(){}
+
+/* 添加接口弹窗 */
+const apiPool=[
+  {id:'a1',name:'用户登录',method:'POST',url:'/api/v2/auth/login'},
+  {id:'a2',name:'获取用户信息',method:'GET',url:'/api/v1/users/me'},
+  {id:'a3',name:'创建订单',method:'POST',url:'/api/v1/orders'},
+  {id:'a4',name:'订单列表',method:'GET',url:'/api/v1/orders'},
+  {id:'a5',name:'支付回调',method:'POST',url:'/api/v1/payments/callback'},
+  {id:'a6',name:'发货通知',method:'PUT',url:'/api/v1/orders/{{id}}/ship'},
+];
+function renderApiPool(q=''){
+  const list=apiPool.filter(a=>!q||a.name.includes(q)||a.url.includes(q));
+  $('#apiList').innerHTML=list.map(a=>`<div class="api-item" data-id="${a.id}"><span class="mtag m-${a.method.toLowerCase()}">${a.method}</span><span style="font-weight:600;font-size:13px">${a.name}</span><span class="step-url" style="margin-left:auto">${a.url}</span></div>`).join('')||'<div style="text-align:center;color:var(--fg-3);padding:20px">无匹配接口</div>';
+  $$('#apiList .api-item').forEach(el=>el.addEventListener('click',()=>{const a=apiPool.find(x=>x.id===el.dataset.id);steps.push({id:'s'+Date.now(),name:a.name,method:a.method,url:a.url,enabled:true,wait_before:0,retry_count:0,retry_delay:0,on_failure:'stop',status:null});renderSteps();$('#apiOv').classList.remove('open');toast('已添加步骤');}));
+}
+$('#addApi').addEventListener('click',()=>{$('#apiSearch').value='';renderApiPool();$('#apiOv').classList.add('open');});
+$('#apiSearch').addEventListener('input',e=>renderApiPool(e.target.value));
+
+/* 步骤配置弹窗 */
+let cfgId=null;
+function openCfg(id){const s=steps.find(x=>x.id===id);if(!s)return;cfgId=id;
+  $('#cfName').value=s.name;$('#cfWait').value=s.wait_before;$('#cfRetry').value=s.retry_count;$('#cfDelay').value=s.retry_delay;$('#cfEn').checked=s.enabled;
+  $$('.radio-it[data-of]').forEach(r=>r.classList.toggle('on',r.dataset.of===s.on_failure));
+  $$('input[name=of]').forEach(r=>r.checked=r.value===s.on_failure);
+  $('#cfgOv').classList.add('open');}
+$$('.radio-it[data-of]').forEach(r=>r.addEventListener('click',()=>{$$('.radio-it[data-of]').forEach(x=>x.classList.remove('on'));r.classList.add('on');$$('input[name=of]').forEach(i=>i.checked=i.parentNode===r);}));
+$('#saveCfg').addEventListener('click',()=>{const s=steps.find(x=>x.id===cfgId);if(!s)return;
+  s.name=$('#cfName').value;s.wait_before=+$('#cfWait').value||0;s.retry_count=+$('#cfRetry').value||0;s.retry_delay=+$('#cfDelay').value||0;s.enabled=$('#cfEn').checked;s.on_failure=$$('.radio-it[data-of].on')[0].dataset.of;
+  $('#cfgOv').classList.remove('open');renderSteps();toast('步骤配置已保存');});
+
+/* 定时配置 */
+let cronEnabled=false;
+$('#schedBtn').addEventListener('click',()=>{$('#schedOv').classList.add('open');validateCron($('#cronInput').value);});
+$('#cronToggle').addEventListener('click',()=>{cronEnabled=!cronEnabled;$('#cronSw').classList.toggle('on',cronEnabled);$('#cronToggleTxt').textContent=cronEnabled?'已启用':'未启用';});
+$('#cronInput').addEventListener('input',e=>validateCron(e.target.value));
+function validateCron(v){
+  const err=$('#cronErr');
+  if(!v){err.style.display='none';renderNext([]);return;}
+  // 简单格式校验：6-7 段（含秒）
+  const segs=v.trim().split(/\s+/);
+  if(segs.length<6||segs.length>7){err.style.display='';err.textContent='Cron 应为 6-7 段（含秒），当前 '+segs.length+' 段';renderNext([]);return;}
+  err.style.display='none';renderNext(v);
+}
+function renderNext(v){
+  const w=$('#nextRuns');w.innerHTML='';
+  if(!v){for(let i=1;i<=5;i++)w.innerHTML+=`<div class="nri"><span class="ni">${i}</span><span class="nt">--</span></div>`;return;}
+  // 模拟预测（真实由后端计算）
+  const base=Date.now();const step=parseInt($('#cronInput').value.match(/\*\/(\d+)/)?.[1]||5);
+  for(let i=1;i<=5;i++){const d=new Date(base+i*step*60000);w.innerHTML+=`<div class="nri"><span class="ni">${i}</span><span class="nt">${d.toLocaleString()}</span></div>`;}
+}
+$$('.ex-btn').forEach(b=>b.addEventListener('click',()=>{$('#cronInput').value=b.dataset.c;validateCron(b.dataset.c);}));
+$('#saveSched').addEventListener('click',()=>{
+  if(cronEnabled&&!$('#cronInput').value){toast('请输入 Cron 表达式');return;}
+  if($('#cronErr').style.display!=='none'){return;}
+  $('#schedOv').classList.remove('open');
+  $('#schedBadge').style.display=cronEnabled?'':'none';
+  toast(cronEnabled?'定时任务已启用':'配置已保存');
+});
+renderNext([]);
+
+/* 运行模拟 */
+let running=false;
+function renderHist(){
+  const w=$('#histList');
+  if(!runHistory.length){w.innerHTML='<div style="text-align:center;color:var(--fg-3);padding:30px;font-size:12.5px">暂无运行记录</div>';return;}
+  w.innerHTML=runHistory.map(h=>`<div class="hist-item" data-id="${h.id}">
+    <div class="hist-top"><span class="hist-status ${h.status}">${({success:'成功',failed:'失败',partial:'部分成功',running:'运行中'})[h.status]}</span><span class="hist-time">${h.time}</span></div>
+    <div class="hist-stats"><span class="s ok">${h.success} 通过</span>${h.failed?`<span class="s err">${h.failed} 失败</span>`:''}${h.skipped?`<span class="s sk">${h.skipped} 跳过</span>`:''}</div>
+    <div class="hist-total">总耗时 ${h.total}ms</div></div>`).join('');
+}
+$('#runBtn').addEventListener('click',()=>{
+  if(running)return;running=true;
+  steps.forEach(s=>s.status=null);renderSteps();
+  $('#runBtn').style.display='none';$('#stopBtn').style.display='';$('#runTxt').textContent='运行中';
+  let i=0;
+  const tick=()=>{
+    if(i>=steps.length){finish();return;}
+    const s=steps[i];
+    if(!s.enabled){s.status='skipped';renderSteps();i++;setTimeout(tick,300);return;}
+    s.status='running';renderSteps();
+    setTimeout(()=>{
+      // 失败策略演示：第3步(on_failure continue) 偶尔失败
+      const fail=s.on_failure==='continue'&&Math.random()<0.4;
+      s.status=fail?'failed':'success';renderSteps();i++;setTimeout(tick,500);
+    },750);
+  };
+  window._stop=false;
+  tick();
+  function finish(){
+    running=false;$('#runBtn').style.display='';$('#stopBtn').style.display='';$('#runTxt').textContent='运行';
+    const sc=steps.filter(s=>s.status==='success').length,fa=steps.filter(s=>s.status==='failed').length,sk=steps.filter(s=>s.status==='skipped').length;
+    const status=fa===0?'success':sc===0?'failed':'partial';
+    runHistory.unshift({id:'h'+Date.now(),status,time:new Date().toLocaleTimeString(),success:sc,failed:fa,skipped:sk,total:Math.round(600+Math.random()*2400)});
+    renderHist();toast('运行完成 · '+sc+' 通过');
+  }
+});
+$('#stopBtn').addEventListener('click',()=>{running=false;$('#runBtn').style.display='';$('#stopBtn').style.display='';$('#runTxt').textContent='运行';steps.forEach(s=>{if(s.status==='running')s.status=null;});renderSteps();toast('已停止');});
+$('#clrHist').addEventListener('click',()=>{runHistory=[];renderHist();toast('历史已清空');});
+
+renderSteps();renderHist();
+function toast(msg){const w=$('#toasts');const t=document.createElement('div');t.className='toast';t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+msg;w.appendChild(t);setTimeout(()=>{t.style.transition='all .25s';t.style.opacity=0;t.style.transform='translateX(20px)';setTimeout(()=>t.remove(),250);},2200);}
+</script>
+</body>
+</html>

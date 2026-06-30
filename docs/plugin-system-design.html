@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="paper">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FM Tester · 插件系统设计规格 · 墨砚 Inkwell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   墨砚 Inkwell · 插件系统设计规格
+   单文件自包含 · 纸(Paper)/墨(Ink) 双主题
+   ============================================================ */
+
+:root{
+  --paper:#faf9f6; --panel:#ffffff; --sunk:#f5f3ee; --rail:#f1efea;
+  --ink:#1c1917; --ink-2:#57534e; --ink-3:#a8a29e;
+  --line:#e7e5e4; --line-2:#d6d3d1; --line-strong:#b8b1a8;
+  --blue:#2563eb; --blue-h:#1d4ed8; --blue-soft:#eff6ff; --blue-line:#bfdbfe;
+  --amber:#b45309; --amber-soft:#fef3c7; --amber-line:#fcd9a1;
+  --ok:#16a34a; --warn:#d97706; --err:#dc2626; --violet:#7c3aed; --teal:#0891b2;
+  --serif:"Fraunces", "Songti SC", Georgia, serif;
+  --sans:"Manrope", "PingFang SC", -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", "SFMono-Regular", Consolas, Menlo, monospace;
+  --shadow-sm:0 1px 2px rgba(28,25,23,.05);
+  --shadow:0 4px 14px rgba(28,25,23,.07);
+  --shadow-lg:0 22px 60px rgba(28,25,23,.16);
+  --grain-op:.035;
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px;
+  --side-w:268px;
+  --maxw:920px;
+}
+[data-theme="ink"]{
+  --paper:#15120d; --panel:#1d1913; --sunk:#181410; --rail:#131009;
+  --ink:#f1ece1; --ink-2:#c4bdae; --ink-3:#8b8473;
+  --line:#322c22; --line-2:#3d362a; --line-strong:#524a3b;
+  --blue:#8ab4ff; --blue-h:#a9c9ff; --blue-soft:#1a2236; --blue-line:#33425f;
+  --amber:#f1b340; --amber-soft:#3a2c0f; --amber-line:#5a4316;
+  --ok:#4ade80; --warn:#fbbf24; --err:#f87171; --violet:#c4b5fd; --teal:#5fd4e0;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 6px 20px rgba(0,0,0,.45);
+  --shadow-lg:0 28px 70px rgba(0,0,0,.6);
+  --grain-op:.06;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth; scroll-padding-top:32px;}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  font-feature-settings:"ss01","cv11";
+  transition:background .5s ease, color .5s ease;
+}
+/* 纸质颗粒 */
+body::before{
+  content:""; position:fixed; inset:0; z-index:9999; pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:var(--grain-op); mix-blend-mode:multiply;
+}
+[data-theme="ink"] body::before{mix-blend-mode:screen;}
+
+::selection{background:var(--amber); color:#fff;}
+
+/* ---------- 布局 ---------- */
+.shell{display:grid; grid-template-columns:var(--side-w) 1fr; align-items:start;}
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding:30px 22px 40px; border-right:1px solid var(--line);
+  background:linear-gradient(180deg, var(--sunk), var(--paper));
+  z-index:50;
+}
+.content{max-width:var(--maxw); margin:0 auto; padding:0 56px 120px;}
+
+/* 侧栏品牌 */
+.brand{display:flex; align-items:center; gap:11px; margin-bottom:26px;}
+.brand .seal{
+  width:38px; height:38px; border-radius:9px; flex:none; position:relative;
+  background:radial-gradient(120% 120% at 30% 20%, var(--blue) 0%, var(--blue-h) 55%, #0b2a8a 100%);
+  box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,255,255,.18);
+  display:grid; place-items:center; color:#fff; font-family:var(--serif);
+  font-weight:900; font-style:italic; font-size:20px;
+}
+.brand .seal::after{
+  content:""; position:absolute; inset:5px; border-radius:5px;
+  border:1px solid rgba(255,255,255,.35);
+}
+.brand b{font-family:var(--serif); font-weight:700; font-size:16px; letter-spacing:-.01em; display:block; line-height:1.1;}
+.brand span{font-size:11px; color:var(--ink-3); letter-spacing:.14em; text-transform:uppercase;}
+
+.toc-label{font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-3); margin:18px 4px 10px;}
+.toc{list-style:none; padding:0; margin:0 0 18px;}
+.toc li{margin:1px 0;}
+.toc a{
+  display:flex; gap:9px; align-items:baseline; padding:6px 10px; border-radius:var(--r-sm);
+  color:var(--ink-2); text-decoration:none; font-size:13px; font-weight:500;
+  border-left:2px solid transparent; transition:.2s;
+}
+.toc a .n{font-family:var(--serif); font-style:italic; font-weight:500; font-size:12px; color:var(--ink-3); min-width:20px;}
+.toc a:hover{background:var(--panel); color:var(--ink);}
+.toc a.active{background:var(--blue-soft); color:var(--blue-h); border-left-color:var(--blue); font-weight:600;}
+.toc a.active .n{color:var(--blue);}
+.toc .sub a{padding-left:34px; font-size:12.5px; color:var(--ink-3);}
+.toc .sub a .n{min-width:0; opacity:.6;}
+
+.side-meta{margin-top:22px; padding-top:18px; border-top:1px dashed var(--line-2); font-size:11.5px; color:var(--ink-3);}
+.side-meta div{display:flex; justify-content:space-between; padding:3px 10px;}
+.side-meta b{color:var(--ink-2); font-weight:600;}
+
+/* 主题切换 */
+.theme-toggle{
+  position:fixed; right:26px; bottom:26px; z-index:200;
+  width:50px; height:50px; border-radius:50%; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line-2);
+  box-shadow:var(--shadow-lg); display:grid; place-items:center;
+  color:var(--ink-2); transition:.35s; font-size:20px;
+}
+.theme-toggle:hover{transform:translateY(-3px) rotate(-12deg); color:var(--amber); border-color:var(--amber);}
+[data-theme="ink"] .theme-toggle .ic-sun{display:block;} .theme-toggle .ic-moon{display:block;}
+[data-theme="ink"] .theme-toggle .ic-moon{display:none;}
+[data-theme="paper"] .theme-toggle .ic-sun{display:none;}
+
+/* ---------- 排版 ---------- */
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; letter-spacing:-.015em; color:var(--ink);}
+.eyebrow{font-family:var(--sans); font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--amber); font-weight:700;}
+
+/* HERO */
+header.hero{padding:84px 0 64px; border-bottom:1px solid var(--line); position:relative; margin-bottom:8px;}
+header.hero::after{
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+  background:linear-gradient(90deg, var(--blue), transparent 60%);
+}
+.hero .kicker{display:flex; align-items:center; gap:12px; margin-bottom:26px;}
+.hero .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--amber); box-shadow:0 0 0 4px var(--amber-soft);}
+.hero h1{
+  font-size:clamp(46px, 7vw, 86px); line-height:.98; font-weight:600; margin:0 0 6px;
+  font-variation-settings:"opsz" 120; letter-spacing:-.035em;
+}
+.hero h1 em{font-style:italic; font-weight:500; color:var(--blue);}
+.hero .lede{font-size:19px; line-height:1.6; color:var(--ink-2); max-width:640px; margin:22px 0 0; font-weight:400;}
+.hero .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:34px;}
+.chip{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px;
+  background:var(--panel); border:1px solid var(--line-2); font-size:12px; color:var(--ink-2);
+  font-weight:500; box-shadow:var(--shadow-sm);
+}
+.chip b{color:var(--ink); font-weight:700;}
+.chip .pill{font-family:var(--mono); font-size:11px; padding:1px 7px; border-radius:5px; background:var(--blue-soft); color:var(--blue-h);}
+
+/* hero 墨迹装饰 */
+.ink-blot{
+  position:absolute; right:-40px; top:40px; width:340px; height:340px; opacity:.5; pointer-events:none;
+  background:radial-gradient(circle at 40% 40%, var(--blue-line) 0%, transparent 62%),
+             radial-gradient(circle at 60% 70%, var(--amber-line) 0%, transparent 55%);
+  filter:blur(8px); border-radius:50%;
+}
+[data-theme="ink"] .ink-blot{opacity:.35;}
+
+/* 章节 */
+section{padding:62px 0 18px; border-bottom:1px solid var(--line); scroll-margin-top:24px;}
+.sec-head{display:flex; align-items:baseline; gap:18px; margin-bottom:30px;}
+.sec-num{font-family:var(--serif); font-style:italic; font-weight:500; font-size:54px; line-height:1;
+  color:var(--blue); opacity:.85; font-variation-settings:"opsz" 144; min-width:74px;}
+.sec-head h2{font-size:34px; margin:0; line-height:1.08;}
+.sec-head .eyebrow{display:block; margin-bottom:6px;}
+section > p{color:var(--ink-2); margin:0 0 16px;}
+
+p.lead::first-letter{
+  font-family:var(--serif); font-weight:700; font-size:54px; float:left; line-height:.82;
+  padding:6px 12px 0 0; color:var(--blue); font-variation-settings:"opsz" 144;
+}
+
+h3{font-size:21px; margin:34px 0 12px; display:flex; align-items:center; gap:10px;}
+h3 .tag{font-family:var(--mono); font-size:11px; font-weight:500; color:var(--amber);
+  border:1px solid var(--amber-line); background:var(--amber-soft); padding:2px 8px; border-radius:5px; letter-spacing:.04em;}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink);}
+ul,ol{color:var(--ink-2); padding-left:22px;} li{margin:5px 0;}
+strong{color:var(--ink); font-weight:700;}
+code{font-family:var(--mono); font-size:.86em; background:var(--sunk); padding:1.5px 6px; border-radius:5px;
+  border:1px solid var(--line); color:var(--amber);}
+[data-theme="ink"] code{color:var(--amber);}
+a.inline{color:var(--blue); text-decoration:none; border-bottom:1px solid var(--blue-line);}
+
+/* ---------- 组件 ---------- */
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:24px 26px; box-shadow:var(--shadow-sm); margin:18px 0; position:relative;
+}
+.card.glow{box-shadow:var(--shadow);}
+.card h4{margin-top:0;}
+
+/* 表格 */
+.tbl{width:100%; border-collapse:collapse; margin:16px 0; font-size:13.5px; background:var(--panel);
+  border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; box-shadow:var(--shadow-sm);}
+.tbl th{background:var(--sunk); text-align:left; padding:11px 14px; font-weight:700; color:var(--ink);
+  font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; border-bottom:1px solid var(--line-2);}
+.tbl td{padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink-2);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td b{color:var(--ink);}
+.tbl tr:hover td{background:var(--sunk);}
+.tbl .ok{color:var(--ok); font-weight:600;} .tbl .no{color:var(--err); font-weight:600;}
+
+/* 标签 */
+.badges{display:flex; flex-wrap:wrap; gap:7px;}
+.bg{font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:5px; font-weight:500; border:1px solid var(--line-2); background:var(--sunk); color:var(--ink-2);}
+.bg.b{background:var(--blue-soft); color:var(--blue-h); border-color:var(--blue-line);}
+.bg.a{background:var(--amber-soft); color:var(--amber); border-color:var(--amber-line);}
+.bg.ok{background:rgba(22,163,74,.1); color:var(--ok); border-color:rgba(22,163,74,.25);}
+.bg.warn{background:rgba(217,119,6,.12); color:var(--warn); border-color:rgba(217,119,6,.25);}
+.bg.err{background:rgba(220,38,38,.1); color:var(--err); border-color:rgba(220,38,38,.25);}
+.bg.mut{background:transparent; color:var(--ink-3);}
+
+/* 旁注 / 标注 */
+.callout{
+  display:flex; gap:14px; margin:20px 0; padding:16px 18px; border-radius:var(--r-md);
+  background:var(--amber-soft); border:1px solid var(--amber-line); border-left:4px solid var(--amber);
+}
+.callout.blue{background:var(--blue-soft); border-color:var(--blue-line); border-left-color:var(--blue);}
+.callout .ico{font-family:var(--serif); font-style:italic; font-weight:700; font-size:22px; color:var(--amber); line-height:1; flex:none;}
+.callout.blue .ico{color:var(--blue);}
+.callout p{margin:0; font-size:13.5px; color:var(--ink-2);}
+.callout b{color:var(--ink);}
+
+/* 代码卡 */
+.code{
+  margin:18px 0; background:var(--sunk); border:1px solid var(--line-2); border-radius:var(--r-md);
+  overflow:hidden; box-shadow:var(--shadow-sm);
+}
+.code .ch{display:flex; align-items:center; gap:9px; padding:9px 14px; background:var(--panel);
+  border-bottom:1px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--ink-3);}
+.code .ch .fn{color:var(--ink-2); font-weight:600;}
+.code .ch .dots{display:flex; gap:5px;} .code .ch .dots i{width:9px;height:9px;border-radius:50%; background:var(--line-strong); display:block;}
+.code .ch .lang{margin-left:auto; padding:1px 7px; border-radius:4px; background:var(--amber-soft); color:var(--amber); font-size:10px;}
+.code pre{margin:0; padding:16px 18px; overflow-x:auto; font-family:var(--mono); font-size:12.5px; line-height:1.65; color:var(--ink);}
+.code pre .k{color:var(--blue);}                 /* key */
+.code pre .s{color:var(--ok);}                   /* string */
+.code pre .c{color:var(--ink-3); font-style:italic;} /* comment */
+.code pre .n{color:var(--amber);}                /* number/bool */
+.code pre .p{color:var(--violet);}               /* punct keyword */
+
+/* 三栏对比 (呈现模型) */
+.tri{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:22px 0;}
+.tri .t{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-lg); padding:20px; position:relative; transition:.25s;}
+.tri .t:hover{transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--blue-line);}
+.tri .t .rk{font-family:var(--serif); font-style:italic; font-size:30px; color:var(--blue); opacity:.5; line-height:1;}
+.tri .t h4{margin:8px 0 4px; font-size:17px;}
+.tri .t .sub{font-size:12px; color:var(--ink-3); margin-bottom:12px; font-family:var(--mono);}
+.tri .t p{font-size:13px; color:var(--ink-2); margin:0 0 12px; line-height:1.6;}
+.tri .t.rec{border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft);}
+.tri .t.rec::after{content:"推荐"; position:absolute; top:-9px; right:14px; background:var(--blue); color:#fff;
+  font-size:10px; font-weight:700; letter-spacing:.1em; padding:3px 9px; border-radius:999px;}
+
+/* 印章式信任徽章 */
+.seals{display:flex; gap:18px; flex-wrap:wrap; margin:20px 0;}
+.seal-stamp{position:relative; width:118px; height:118px; display:grid; place-items:center; text-align:center;}
+.seal-stamp .ring{position:absolute; inset:0; border-radius:50%; border:2.5px solid currentColor; opacity:.85;}
+.seal-stamp .ring2{position:absolute; inset:7px; border-radius:50%; border:1px solid currentColor; opacity:.4;}
+.seal-stamp .core{font-family:var(--serif); font-style:italic; font-weight:700; font-size:15px; line-height:1.15;}
+.seal-stamp .lbl{font-family:var(--mono); font-size:9px; letter-spacing:.14em; margin-top:3px; opacity:.8;}
+.seal-stamp.v{color:var(--ok);} .seal-stamp.t{color:var(--blue);} .seal-stamp.u{color:var(--err);}
+.seal-stamp.u .ring{border-style:dashed;}
+
+/* 架构图 (layered) */
+.arch{margin:24px 0; display:flex; flex-direction:column; gap:0;}
+.arch .layer{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); padding:14px 16px; box-shadow:var(--shadow-sm); position:relative;}
+.arch .layer .lh{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.arch .layer .lh b{font-family:var(--serif); font-size:14px; font-weight:700;}
+.arch .layer .lh .lr{margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3); letter-spacing:.08em;}
+.arch .nodes{display:flex; flex-wrap:wrap; gap:7px;}
+.arch .node{font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:6px; background:var(--sunk);
+  border:1px solid var(--line-2); color:var(--ink-2);}
+.arch .node.acc{background:var(--blue-soft); border-color:var(--blue-line); color:var(--blue-h);}
+.arch .node.am{background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber);}
+.arch .arrow{align-self:center; color:var(--ink-3); font-family:var(--mono); font-size:18px; padding:5px 0;
+  display:flex; align-items:center; gap:8px;}
+.arch .arrow span{font-family:var(--sans); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);}
+.arch .arrow .wire{flex:1; height:1px; background:repeating-linear-gradient(90deg,var(--line-strong) 0 6px, transparent 6px 12px); max-width:120px;}
+.arch .layer.be{border-color:var(--blue-line);}
+.arch .layer.pl{background:linear-gradient(180deg,var(--panel),var(--sunk)); border-style:dashed;}
+
+/* 时序图 */
+.seq{margin:24px 0; padding:8px 0 0; position:relative;}
+.seq .actors{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-bottom:0;}
+.seq .actors .ac{text-align:center; font-family:var(--serif); font-weight:600; font-size:14px; padding:8px 10px; border-radius:var(--r-sm);
+  background:var(--panel); border:1px solid var(--line-2); box-shadow:var(--shadow-sm); position:relative; z-index:2; margin:0 30%;}
+.seq .actors .ac.r{background:var(--blue-soft); border-color:var(--blue-line); color:var(--blue-h);}
+.seq .lane{position:relative; padding:6px 0;}
+.seq .lane::before, .seq .lane::after{content:""; position:absolute; top:0; bottom:0; width:0; border-left:1.5px dashed var(--line-strong);}
+.seq .lane::before{left:20%;} .seq .lane::after{left:80%;}
+.msg{position:relative; display:grid; grid-template-columns:1fr 1fr; align-items:center; margin:13px 0; min-height:30px;}
+.msg .arr{grid-column:1/3; position:relative; height:22px; display:flex; align-items:center;}
+.msg .arr .line{height:2px; background:var(--ink-2); border-radius:2px;}
+.msg .arr .lab{position:absolute; left:50%; transform:translateX(-50%); top:-9px; background:var(--paper); padding:1px 10px;
+  font-family:var(--mono); font-size:11px; color:var(--ink); border:1px solid var(--line); border-radius:5px; white-space:nowrap; box-shadow:var(--shadow-sm);}
+.msg .arr .head{position:absolute; top:50%; transform:translateY(-50%); width:0;height:0; border:6px solid transparent;}
+.msg.r .arr .line{margin:0 20% 0 20%; }
+.msg.r .arr .head.r{right:20%; border-left-color:var(--ink-2); margin-top:-6px;}
+.msg.l .arr .line{margin:0 20% 0 20%; }
+.msg.l .arr .head.l{left:20%; border-right-color:var(--ink-2); margin-top:-6px;}
+.msg.blue .arr .line{background:var(--blue);} .msg.blue .arr .head{border-left-color:var(--blue)!important; border-right-color:var(--blue)!important;}
+.msg.note{margin-left:20%; margin-right:20%;}
+.msg.note .nb{grid-column:1/3; background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:var(--r-sm);
+  padding:7px 12px; font-size:11.5px; color:var(--amber); font-family:var(--mono);}
+.seq-cap{font-size:12px; color:var(--ink-3); text-align:center; margin-top:14px; font-style:italic; font-family:var(--serif);}
+
+/* 时间轴 (路线图) */
+.timeline{margin:24px 0; position:relative; padding-left:8px;}
+.timeline::before{content:""; position:absolute; left:20px; top:8px; bottom:8px; width:2px; background:linear-gradient(180deg,var(--blue),var(--amber) 70%, var(--line));}
+.tl{display:grid; grid-template-columns:48px 1fr; gap:0; margin-bottom:14px; align-items:start;}
+.tl .ph{position:relative; font-family:var(--serif); font-style:italic; font-weight:700; font-size:16px; color:var(--blue);
+  padding-top:2px; text-align:right; padding-right:16px;}
+.tl .ph::after{content:""; position:absolute; right:-7px; top:8px; width:13px; height:13px; border-radius:50%;
+  background:var(--panel); border:2.5px solid var(--blue); z-index:2;}
+.tl.done .ph::after{background:var(--blue);}
+.tl .bd{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); padding:12px 16px; box-shadow:var(--shadow-sm); margin-left:14px;}
+.tl .bd b{font-family:var(--serif); font-size:14.5px;}
+.tl .bd p{margin:5px 0 0; font-size:12.5px; color:var(--ink-2); line-height:1.55;}
+
+/* UI 原型框 */
+.mock{margin:22px 0; border:1px solid var(--line-2); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--shadow);
+  background:var(--panel);}
+.mock .tb{display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--sunk); border-bottom:1px solid var(--line);}
+.mock .tb .dt{display:flex; gap:6px;} .mock .tb .dt i{width:11px;height:11px;border-radius:50%; display:block;}
+.mock .tb .dt i:nth-child(1){background:#ed6a5e;} .mock .tb .dt i:nth-child(2){background:#f4bf4f;} .mock .tb .dt i:nth-child(3){background:#61c554;}
+.mock .tb .tt{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-left:6px;}
+.mock .tb .cap{margin-left:auto; font-family:var(--serif); font-style:italic; font-size:12px; color:var(--amber);}
+.mock .scr{padding:0; font-family:var(--mono); font-size:11.5px; line-height:1.7; color:var(--ink-2); background:var(--paper); overflow-x:auto;}
+.mock .scr pre{margin:0; padding:14px 16px; white-space:pre;}
+.mock .scr .hl{color:var(--blue); font-weight:600;}
+.mock .scr .dim{color:var(--ink-3);}
+.mock .scr .em{color:var(--amber); font-weight:600;}
+.mock .scr .ok{color:var(--ok);}
+.mock-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+
+/* 检查清单 */
+.check{list-style:none; padding:0; margin:16px 0;}
+.check li{padding-left:28px; position:relative; color:var(--ink-2); margin:8px 0;}
+.check li::before{content:""; position:absolute; left:0; top:2px; width:18px; height:18px; border-radius:5px;
+  border:1.5px solid var(--line-strong); background:var(--panel);}
+.check li::after{content:"✓"; position:absolute; left:4px; top:0; color:var(--blue); font-weight:800; font-size:14px; opacity:.55;}
+
+/* 插件创意卡 */
+.ideas{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:22px 0;}
+.idea{background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); padding:16px 18px; transition:.2s;}
+.idea:hover{border-color:var(--blue-line); transform:translateY(-3px); box-shadow:var(--shadow);}
+.idea h4{margin:0 0 4px; font-size:15px; display:flex; align-items:center; gap:8px;}
+.idea h4 .em{font-size:18px;}
+.idea p{margin:0; font-size:12px; color:var(--ink-3);}
+.idea .cap{margin-top:9px; font-size:11px; color:var(--ink-2);}
+.idea.unrelated{border-left:3px solid var(--amber);}
+.idea.unrelated h4 .em{color:var(--amber);}
+
+/* 页脚 */
+footer.foot{padding:54px 0 30px; text-align:center; color:var(--ink-3); font-size:12px; border-top:1px solid var(--line); margin-top:40px;}
+footer.foot .mk{font-family:var(--serif); font-style:italic; color:var(--amber); font-size:14px;}
+
+/* 动效 */
+.reveal{opacity:0; transform:translateY(18px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);}
+.reveal.in{opacity:1; transform:none;}
+@keyframes rise{from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;}}
+.hero .kicker, .hero h1, .hero .lede, .hero .meta-row{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;}
+.hero h1{animation-delay:.08s;} .hero .lede{animation-delay:.18s;} .hero .meta-row{animation-delay:.28s;}
+
+/* 响应式 */
+@media (max-width:1080px){
+  .content{padding:0 36px 100px;}
+}
+@media (max-width:880px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{position:static; height:auto; border-right:none; border-bottom:1px solid var(--line);}
+  .content{padding:0 22px 80px;}
+  .tri{grid-template-columns:1fr;} .ideas{grid-template-columns:1fr;} .mock-grid{grid-template-columns:1fr;}
+  .sec-num{font-size:42px; min-width:58px;}
+  header.hero{padding:52px 0 44px;}
+  .ink-blot{display:none;}
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" title="切换 纸/墨 主题" aria-label="切换主题">
+  <span class="ic ic-moon">☾</span><span class="ic ic-sun">☀</span>
+</button>
+
+<div class="shell">
+
+  <!-- ============ 侧栏 ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="seal">墨</div>
+      <div><b>FM Tester</b><span>Plugin Spec</span></div>
+    </div>
+
+    <div class="toc-label">目 录</div>
+    <ul class="toc" id="toc">
+      <li><a href="#overview"><span class="n">01</span> 概述与定位</a></li>
+      <li><a href="#concepts"><span class="n">02</span> 核心概念</a></li>
+      <li><a href="#render"><span class="n">03</span> 三种呈现模型</a></li>
+      <li><a href="#webview"><span class="n">04</span> 嵌入式 Webview</a></li>
+      <li><a href="#protocol"><span class="n">05</span> FMPP 协议</a></li>
+      <li><a href="#lifecycle"><span class="n">06</span> 生命周期</a></li>
+      <li><a href="#security"><span class="n">07</span> 安全与权限</a></li>
+      <li><a href="#arch"><span class="n">08</span> 架构落地</a></li>
+      <li><a href="#roadmap"><span class="n">09</span> 路线图</a></li>
+      <li><a href="#ui"><span class="n">10</span> UI 原型</a></li>
+      <li><a href="#manifest"><span class="n">11</span> Manifest 示例</a></li>
+      <li><a href="#ideas"><span class="n">12</span> 典型插件</a></li>
+    </ul>
+
+    <div class="side-meta">
+      <div><span>版本</span><b>v2.0 草案</b></div>
+      <div><span>目标</span><b>0.9.0+</b></div>
+      <div><span>日期</span><b>2026-06-29</b></div>
+      <div><span>协议</span><b>FMPP 2.0</b></div>
+    </div>
+  </aside>
+
+  <!-- ============ 正文 ============ -->
+  <main class="content">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="ink-blot"></div>
+      <div class="kicker"><span class="dot"></span><span class="eyebrow">Design Specification · 设计规格</span></div>
+      <h1>插件系统<br/><em>Inkwell Plugin Platform</em></h1>
+      <p class="lede">一个语言无关的 <b>CLI 插件平台</b>——任意可执行程序都可为 FM Tester 增加新命令、新视图、新工具，与 API 测试无直接关系亦可。中心原语是<b>命令</b>与<b>视图</b>，UI 自主度覆盖声明式渲染到嵌入式 Webview。</p>
+      <div class="meta-row">
+        <span class="chip"><b>CLI 进程</b> 任意语言</span>
+        <span class="chip"><b>协议</b> <span class="pill">FMPP</span> stdio·NDJSON·JSON-RPC</span>
+        <span class="chip"><b>UI</b> 声明式 + 嵌入 Webview</span>
+        <span class="chip"><b>隔离</b> 沙箱 + 权限 + 审计</span>
+      </div>
+    </header>
+
+    <!-- 01 概述 -->
+    <section id="overview">
+      <div class="sec-head reveal">
+        <div class="sec-num">01</div>
+        <div><span class="eyebrow">Overview</span><h2>概述与定位</h2></div>
+      </div>
+
+      <p class="lead reveal">FM Tester 已有强内置扩展——rquickjs 脚本引擎、导入器、AI 助手、压测断言——但所有扩展点在<b>编译期固定</b>，第三方无法不改源码地增强。本方案建立一个<b>通用扩展平台</b>：一个插件可以是完全独立的工具（JSON 树浏览器、本地看板、内部运维小工具、笔记管理器），它只是「住在 FM Tester 这个壳里」，借用宿主的窗口、标签页、侧边栏、变量、凭据与日志。</p>
+
+      <div class="callout blue reveal">
+        <div class="ico">§</div>
+        <div><p><b>关键演进（相对 v1）：</b>插件不再围绕 API 测试既有功能。中心原语是 <b>命令(Commands)</b> 与 <b>视图(Views)</b>；既有「请求钩子 / 导入器 / 渲染器 / 断言」<b>降级为可选能力组</b>，插件按需 opt-in。i18n 中已预留 <code>menu.plugin = "插件"</code> 占位，本方案将其落地。</p></div>
+      </div>
+
+      <h3 class="reveal">设计目标</h3>
+      <div class="tri reveal">
+        <div class="t"><div class="rk">G1</div><h4>语言无关</h4><div class="sub">any language</div><p>插件是可执行 CLI 程序，应用经子进程 + stdio 协议加载。Node / Python / Go / Rust / Shell / 二进制皆可。</p></div>
+        <div class="t"><div class="rk">G2</div><h4>通用扩展</h4><div class="sub">not bound to API testing</div><p>以命令与视图为中心；插件可提供与 API 测试完全无关的全新能力。</p></div>
+        <div class="t"><div class="rk">G3</div><h4>三档 UI</h4><div class="sub">declarative → webview</div><p>声明式 JSON-UI、富文本 Markdown/HTML、嵌入式 Webview（最强，类 VS Code）。</p></div>
+      </div>
+      <div class="badges reveal" style="margin-top:6px;">
+        <span class="bg b">G4 声明式 manifest</span>
+        <span class="bg a">G5 沙箱 + 权限</span>
+        <span class="bg">G6 零侵入核心</span>
+        <span class="bg mut">G7 可选复用既有扩展点</span>
+      </div>
+
+      <h3 class="reveal">与脚本引擎的关系</h3>
+      <table class="tbl reveal">
+        <thead><tr><th>维度</th><th>rquickjs 脚本</th><th>CLI 插件</th></tr></thead>
+        <tbody>
+          <tr><td><b>运行位置</b></td><td>应用进程内，QuickJS 沙箱</td><td>独立 OS 进程 + 可选沙箱 Webview</td></tr>
+          <tr><td><b>语言</b></td><td>仅 JavaScript</td><td>任意语言（前端可用任意 Web 技术）</td></tr>
+          <tr><td><b>能力</b></td><td>受限 <code>fm.*</code> API</td><td>声明任意权限 + 自带 UI</td></tr>
+          <tr><td><b>定位</b></td><td>请求内轻逻辑</td><td>跨请求 / 强能力 / 可分发 / 独立小工具</td></tr>
+        </tbody>
+      </table>
+      <p class="reveal">二者<b>并存互补</b>：脚本用于请求内轻逻辑，插件用于通用扩展。</p>
+    </section>
+
+    <!-- 02 核心概念 -->
+    <section id="concepts">
+      <div class="sec-head reveal">
+        <div class="sec-num">02</div>
+        <div><span class="eyebrow">Core Concepts</span><h2>核心概念</h2></div>
+      </div>
+
+      <p class="lead reveal">一个插件即一个目录，包含声明文件、CLI 入口、可选的 Webview 前端与私有数据空间。</p>
+
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">plugins/com.example.json-explorer/</span><span class="lang">tree</span></div>
+<pre><span class="c">plugins/</span>
+└── <span class="k">com.example.json-explorer/</span>
+    ├── <span class="s">plugin.json</span>            <span class="c"># 声明文件（必需）</span>
+    ├── <span class="s">backend(.exe)</span>          <span class="c"># CLI 入口（任意语言/二进制/脚本）</span>
+    ├── <span class="s">webview/</span>               <span class="c"># 可选：自定义 Webview 前端</span>
+    │   ├── index.html
+    │   └── app.js
+    └── <span class="s">.fm/</span>                   <span class="c"># 运行期私有数据（fs.write 默认作用域）</span></pre>
+      </div>
+
+      <h3 class="reveal">中心原语 <span class="tag">Command</span> <span class="tag">View</span></h3>
+      <div class="tri reveal">
+        <div class="t"><div class="rk">⌘</div><h4>命令 Command</h4><div class="sub">one-shot action</div><p>一次性动作，出现在<b>命令面板 / 菜单 / 右键 / 侧边栏入口</b>。可带输入 schema，输出可为声明式 / 富文本 / 打开 Webview。无状态、即用即走。</p></div>
+        <div class="t" style="grid-column:span 2;"><div class="rk">▦</div><h4>视图 View</h4><div class="sub">persistent surface</div><p>持久 UI 面，挂载到<b>侧边栏</b>或<b>主区标签页</b>。由插件渲染（声明式 JSON-UI 流，或嵌入式 Webview），可与其 CLI 后端双向交互、保持状态。这是 VS Code「Webview View」与 Raycast「Command」的结合。</p></div>
+      </div>
+
+      <h3 class="reveal">能力组 Capability Group</h3>
+      <p class="reveal">插件按需声明提供或接入的能力。通用能力（命令 / 视图 / Webview）为中心；既有功能位为可选 opt-in。</p>
+      <div class="badges reveal" style="margin-bottom:6px;">
+        <span class="bg b">commands[] 通用</span>
+        <span class="bg b">views[] 通用</span>
+        <span class="bg b">webview 通用</span>
+      </div>
+      <div class="badges reveal">
+        <span class="bg a">hooks 请求钩子·可选</span>
+        <span class="bg a">importers / exporters·可选</span>
+        <span class="bg a">responseRenderers·可选</span>
+        <span class="bg a">assertions·可选</span>
+        <span class="bg a">tools (AI·MCP)·可选</span>
+      </div>
+      <p class="reveal" style="font-size:13px;">未声明的能力即使插件实现也不会被调用（manifest 与运行期 <code>initialize</code> 取交集）。</p>
+    </section>
+
+    <!-- 03 呈现模型 -->
+    <section id="render">
+      <div class="sec-head reveal">
+        <div class="sec-num">03</div>
+        <div><span class="eyebrow">Rendering Models</span><h2>三种呈现模型</h2></div>
+      </div>
+      <p class="lead reveal">插件命令 / 视图的渲染分三档，由插件按场景选择——简单走声明式，复杂上 Webview，<b>共用同一套协议与权限</b>。</p>
+
+      <div class="tri reveal">
+        <div class="t">
+          <div class="rk">①</div><h4>声明式 JSON-UI</h4><div class="sub">light · safe</div>
+          <p>插件返回一棵<b>组件树</b>（JSON），应用用原生组件渲染。组件白名单：column / table / chart(echarts) / button / input … 交互经 <code>view/action</code> 回调。无任意 HTML 执行，最安全。</p>
+        </div>
+        <div class="t">
+          <div class="rk">②</div><h4>富文本</h4><div class="sub">markdown / html</div>
+          <p>插件返回 Markdown 或 HTML，应用用既有 <code>marked</code> + <code>dompurify</code> 渲染。适合文档、报告、富结果展示。</p>
+        </div>
+        <div class="t rec">
+          <div class="rk">③</div><h4>嵌入式 Webview</h4><div class="sub">full custom UI</div>
+          <p>插件自带 <code>webview/index.html</code>（任意 Web 技术），加载进<b>沙箱 iframe</b>，经 FMPP 与其 CLI 后端双向通信。复杂表单、看板、可视化工具，甚至与 API 测试无关的小应用。</p>
+        </div>
+      </div>
+
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">声明式 JSON-UI 样例</span><span class="lang">json</span></div>
+<pre>{
+  <span class="k">"type"</span>: <span class="s">"column"</span>, <span class="k">"children"</span>: [
+    { <span class="k">"type"</span>: <span class="s">"heading"</span>, <span class="k">"level"</span>: <span class="n">2</span>, <span class="k">"text"</span>: <span class="s">"导入结果"</span> },
+    { <span class="k">"type"</span>: <span class="s">"stat"</span>, <span class="k">"label"</span>: <span class="s">"成功"</span>, <span class="k">"value"</span>: <span class="s">"12"</span>, <span class="k">"tone"</span>: <span class="s">"success"</span> },
+    { <span class="k">"type"</span>: <span class="s">"table"</span>, <span class="k">"columns"</span>: [<span class="s">"名称"</span>,<span class="s">"状态"</span>], <span class="k">"rows"</span>: [[<span class="s">"a"</span>,<span class="s">"ok"</span>]] },
+    { <span class="k">"type"</span>: <span class="s">"chart"</span>, <span class="k">"option"</span>: { <span class="c">/* echarts option */</span> } },
+    { <span class="k">"type"</span>: <span class="s">"button"</span>, <span class="k">"label"</span>: <span class="s">"重试"</span>, <span class="k">"action"</span>: <span class="s">"retry"</span> }
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <!-- 04 Webview -->
+    <section id="webview">
+      <div class="sec-head reveal">
+        <div class="sec-num">04</div>
+        <div><span class="eyebrow">Embedded Webview</span><h2>嵌入式 Webview 架构</h2></div>
+      </div>
+      <p class="lead reveal">插件自带 HTML 页加载进沙箱 iframe，与其 CLI 后端经协议双向通信。这是最强呈现模型，也是安全面最大处——故隔离是第一要务。</p>
+
+      <h3 class="reveal">沙箱与隔离 <span class="tag">sandbox</span></h3>
+      <ul class="reveal">
+        <li>iframe <code>sandbox</code> <b>不含 <code>allow-same-origin</code></b> → 插件页为 opaque 源，无法访问主窗口 DOM / Tauri 原生对象。</li>
+        <li>CSP 由<b>应用钳制</b>（插件只能更严）：<code>default-src 'none'; connect-src 'none'</code>——<b>禁止插件页直连网络</b>，数据一律走协议。</li>
+        <li>主窗口 ↔ iframe 仅靠 <code>postMessage</code>，消息带来源校验。第三方资源需<b>离线随包分发</b>，不得外链 CDN。</li>
+      </ul>
+
+      <h3 class="reveal">消息流</h3>
+      <div class="arch reveal" style="margin:18px 0;">
+        <div class="layer">
+          <div class="lh"><b>插件 Webview</b> <span class="bg mut" style="font-size:10px;">iframe · sandbox · opaque origin</span><span class="lr">FRONTEND</span></div>
+          <div class="nodes"><span class="node">index.html</span><span class="node">app.js</span><span class="node am">postMessage ↔</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span><span>postMessage bridge</span><span class="wire"></span></div>
+        <div class="layer">
+          <div class="lh"><b>主窗口 Bridge</b><span class="lr">TRANSLATE → FMPP</span></div>
+          <div class="nodes"><span class="node acc">来源校验</span><span class="node acc">权限网关 HostCapabilityGate</span><span class="node">AssetProtocol</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span><span>stdio · NDJSON · JSON-RPC</span><span class="wire"></span></div>
+        <div class="layer pl">
+          <div class="lh"><b>插件 CLI 进程</b> <span class="bg mut" style="font-size:10px;">插件自己的「后端」</span><span class="lr">BACKEND</span></div>
+          <div class="nodes"><span class="node am">任意语言</span><span class="node">fm/* 反向能力</span><span class="node">fm/request.send</span></div>
+        </div>
+      </div>
+      <p class="reveal" style="font-size:13px;">Webview 的「后端」就是插件 CLI 进程；CLI 通过 <code>fm/*</code> 反向能力访问宿主（变量 / 凭据 / 网络 / 剪贴板），全部经权限校验。</p>
+    </section>
+
+    <!-- 05 协议 -->
+    <section id="protocol">
+      <div class="sec-head reveal">
+        <div class="sec-num">05</div>
+        <div><span class="eyebrow">FMPP Protocol</span><h2>FMPP 通信协议</h2></div>
+      </div>
+      <p class="lead reveal">FMPP = FM Plugin Protocol。<b>传输</b>采用子进程 stdin/stdout 的 NDJSON（每行一 JSON 对象），<b>信封</b>为 JSON-RPC 2.0。stderr 仅用于诊断日志。生命周期为长驻进程 + 空闲回收 + 崩溃重启。</p>
+
+      <div class="callout reveal">
+        <div class="ico">¶</div>
+        <div><p><b>选型理由：</b>NDJSON + JSON-RPC 是 MCP / LSP / Docker / kubectl 等成熟工具链的通用做法——逐行解析无歧义、流式友好、语言无关。长驻进程摊薄启动成本；轻量场景可退化为 <code>cli-once</code>（调用即启动、完成即退出）。</p></div>
+      </div>
+
+      <h3 class="reveal">方法概览</h3>
+      <table class="tbl reveal">
+        <thead><tr><th>方向</th><th>method</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3" class="mut"><b>应用 → 插件</b></td><td><code>command/invoke</code></td><td>运行命令，返回输出（json-ui / markdown / html / open-webview）</td></tr>
+          <tr><td><code>view/render</code> · <code>view/action</code></td><td>声明式视图渲染树 / button·input 回调</td></tr>
+          <tr><td><code>webview/ready</code> · <code>webview/message</code></td><td>Webview 就绪通知 / 透传 iframe ↔ CLI 消息</td></tr>
+          <tr><td rowspan="4" class="mut"><b>插件 → 应用</b></td><td><code>fm/log</code> · <code>fm/toast</code></td><td>控制台 / Toast <span class="bg mut" style="font-size:10px;">fm.console.log · fm.toast</span></td></tr>
+          <tr><td><code>fm/variable.*</code></td><td>读写环境·集合变量 <span class="bg mut" style="font-size:10px;">fm.variable.read/write</span></td></tr>
+          <tr><td><code>fm/request.send</code></td><td>经网关发请求 <span class="bg mut" style="font-size:10px;">network.outbound</span></td></tr>
+          <tr><td><code>fm/secret.get</code> · <code>fm/context.get</code></td><td>取凭据 / 当前上下文 <span class="bg mut" style="font-size:10px;">fm.secret.read · fm.context.read</span></td></tr>
+          <tr><td class="mut"><b>可选组</b></td><td><code>hook/*</code> · <code>import/*</code> · <code>render/response</code> · <code>assertion/run</code> · <code>tool/invoke</code></td><td>请求钩子 / 导入导出 / 响应渲染 / 断言 / AI 工具</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="reveal">时序：命令调用（声明式输出）</h3>
+      <div class="seq reveal">
+        <div class="actors"><div class="ac">应用 FM Tester</div><div class="ac r">插件 · JSON Explorer</div></div>
+        <div class="lane">
+          <div class="msg r"><div class="arr"><div class="line"></div><div class="head r"></div><div class="lab">command/invoke · format</div></div></div>
+          <div class="msg note"><div class="nb">params: { text }, context: { workspace, sel }</div></div>
+          <div class="msg l blue"><div class="arr"><div class="line"></div><div class="head l"></div><div class="lab">result · output(markdown)</div></div></div>
+          <div class="msg note"><div class="nb">"```json\n{...}\n```"</div></div>
+        </div>
+        <div class="seq-cap">命令一次性触发，返回声明式结果由应用渲染</div>
+      </div>
+
+      <h3 class="reveal">时序：嵌入式 Webview 双向交互</h3>
+      <div class="seq reveal">
+        <div class="actors"><div class="ac">插件 Webview</div><div class="ac r">插件 CLI 后端</div></div>
+        <div class="lane">
+          <div class="msg r"><div class="arr"><div class="line"></div><div class="head r"></div><div class="lab">① webview/ready</div></div></div>
+          <div class="msg note"><div class="nb">iframe 加载完成 → 应用通知 CLI</div></div>
+          <div class="msg l"><div class="arr"><div class="line"></div><div class="head l"></div><div class="lab">② webview/postMessage · init</div></div></div>
+          <div class="msg r"><div class="arr"><div class="line"></div><div class="head r"></div><div class="lab">③ invoke · search(q)</div></div></div>
+          <div class="msg note"><div class="nb">用户点「搜索」→ postMessage → 桥 → CLI</div></div>
+          <div class="msg l blue"><div class="arr"><div class="line"></div><div class="head l"></div><div class="lab">④ result · rows</div></div></div>
+          <div class="msg r"><div class="arr"><div class="line"></div><div class="head r"></div><div class="lab">⑤ fm/variable.get（权限校验）</div></div></div>
+          <div class="msg note"><div class="nb">宿主能力须经权限网关，CSP 禁止 Webview 直连网络</div></div>
+        </div>
+        <div class="seq-cap">Webview 永不直连网络；所有数据经 CLI 或宿主网关（权限校验后）</div>
+      </div>
+    </section>
+
+    <!-- 06 生命周期 -->
+    <section id="lifecycle">
+      <div class="sec-head reveal">
+        <div class="sec-num">06</div>
+        <div><span class="eyebrow">Lifecycle</span><h2>生命周期与策略</h2></div>
+      </div>
+
+      <div class="tri reveal">
+        <div class="t"><div class="rk">⤓</div><h4>安装</h4><div class="sub">install</div><p>来源：本地 / zip / URL（可选 checksum）。解压 → 校验 manifest（id/semver/权限白名单/入口/CSP 基线）→ 权限审查授权 → 落盘 + 登记 registry。</p></div>
+        <div class="t"><div class="rk">⟳</div><h4>启停 / 升级</h4><div class="sub">enable · upgrade</div><p>启停改 <code>enabled</code>；禁用优雅 shutdown 进程并卸载 Webview。升级新版本并存、切换指针；新增权限触发差量重新授权。</p></div>
+        <div class="t"><div class="rk">⊘</div><h4>进程管理</h4><div class="sub">runner</div><p>每启用插件最多 1 长驻进程，按需懒启动；空闲回收；崩溃指数退避重启；连续失败阈值 → 自动禁用并通知。</p></div>
+      </div>
+
+      <h3 class="reveal">失败策略 <span class="tag">onError</span></h3>
+      <table class="tbl reveal">
+        <thead><tr><th>策略</th><th>语义</th><th>适用</th></tr></thead>
+        <tbody>
+          <tr><td><span class="bg ok">continue</span></td><td>出错/超时记日志，继续后续链</td><td>默认；渲染/断言/普通钩子</td></tr>
+          <tr><td><span class="bg err">abort</span></td><td>失败即终止请求并在控制台报错</td><td>强校验插件（如签名必选）</td></tr>
+          <tr><td><span class="bg warn">warn</span></td><td>仅告警不记为错误</td><td>非关键副作用</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="reveal">执行顺序（仅可选钩子链）</h3>
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">脚本链 + 插件钩子统一编排</span></div>
+<pre><span class="c">前置链:</span>  工作区脚本 → 环境 → 父集合 → 子集合 → 接口脚本
+         → <span class="k">插件 beforeRequest</span>（按 priority 升序，默认 id 字母序）
+              <span class="em">[ 网络发送 ]</span>
+<span class="c">后置链:</span>  <span class="k">插件 afterResponse</span>（反向）→ 接口脚本 → … → 工作区脚本（反向）</pre>
+      </div>
+    </section>
+
+    <!-- 07 安全 -->
+    <section id="security">
+      <div class="sec-head reveal">
+        <div class="sec-num">07</div>
+        <div><span class="eyebrow">Security</span><h2>安全与权限</h2></div>
+      </div>
+
+      <h3 class="reveal">权限白名单 <span class="tag">permissions</span></h3>
+      <div class="badges reveal">
+        <span class="bg">fm.console.log</span><span class="bg">fm.toast</span>
+        <span class="bg">fm.variable.read/write</span><span class="bg">fm.context.read</span>
+        <span class="bg">fm.clipboard.write</span><span class="bg a">network.outbound</span>
+        <span class="bg a">fm.secret.read</span><span class="bg">fs.read/write（沙箱目录）</span>
+        <span class="bg b">webview.embed</span>
+      </div>
+
+      <h3 class="reveal">信任级别 <span class="tag">trust</span></h3>
+      <div class="seals reveal">
+        <div class="seal-stamp v"><div class="ring"></div><div class="ring2"></div><div><div class="core">Verified</div><div class="lbl">签名 + 校验</div></div></div>
+        <div class="seal-stamp t"><div class="ring"></div><div class="ring2"></div><div><div class="core">Trusted</div><div class="lbl">校验一致·未签名</div></div></div>
+        <div class="seal-stamp u"><div class="ring"></div><div class="ring2"></div><div><div class="core">Unverified</div><div class="lbl">来源未知·默认禁用</div></div></div>
+      </div>
+
+      <div class="callout reveal">
+        <div class="ico">!</div>
+        <div><p><b>诚实声明：</b>CLI 子进程在 OS 层不受权限硬约束（恶意插件理论上可直访文件/网络）。本模型实现「声明可见 + 安装授权 + 应用能力网关化 + Webview 沙箱 + 行为可观测」；所有 <code>fm/*</code> 反向调用与 Webview 宿主访问写入<b>插件审计日志</b>。OS 级硬沙箱列入路线图 P6。</p></div>
+      </div>
+
+      <h3 class="reveal">存储与发现</h3>
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">&lt;exe_dir&gt;/data/plugins/</span><span class="lang">tree</span></div>
+<pre>plugins/
+├── <span class="s">registry.json</span>          <span class="c"># 索引：启用态/权限/版本指针/优先级/信任</span>
+└── <span class="k">&lt;plugin_id&gt;/&lt;version&gt;/</span>   <span class="c"># plugin.json + backend + webview/ + 资源</span>
+    └── .fm/                 <span class="c"># 插件私有数据 + audit.log</span></pre>
+      </div>
+    </section>
+
+    <!-- 08 架构 -->
+    <section id="arch">
+      <div class="sec-head reveal">
+        <div class="sec-num">08</div>
+        <div><span class="eyebrow">Architecture</span><h2>架构落地（DDD 分层）</h2></div>
+      </div>
+      <p class="lead reveal">严格遵循现有分层与依赖方向（自上而下）。插件系统作为独立域 <code>plugin</code> 加入；核心流程仅在「调度点」插入分发，可选能力组在 P4 起才接线。</p>
+
+      <div class="arch reveal">
+        <div class="layer">
+          <div class="lh"><b>interface</b><span class="lr">commands/plugin.rs</span></div>
+          <div class="nodes"><span class="node acc">#[tauri::command]</span><span class="node">注册进 lib.rs invoke_handler!</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span></div>
+        <div class="layer">
+          <div class="lh"><b>application</b><span class="lr">plugin_service.rs</span></div>
+          <div class="nodes"><span class="node">协调 安装/启停/命令/视图</span><span class="node acc">PluginDispatcher</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span></div>
+        <div class="layer">
+          <div class="lh"><b>domain</b><span class="lr">纯逻辑 · 无基础设施依赖</span></div>
+          <div class="nodes"><span class="node">models/plugin.rs</span><span class="node">services/plugin_domain.rs</span><span class="node">repositories/plugin_repository.rs</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span></div>
+        <div class="layer be">
+          <div class="lh"><b>infrastructure</b><span class="lr">实现</span></div>
+          <div class="nodes"><span class="node acc">plugin_runner.rs</span><span class="node acc">plugin_webview_bridge.rs</span><span class="node">plugin_registry_repository.rs</span><span class="node">plugin_installer.rs</span></div>
+        </div>
+        <div class="arrow"><span class="wire"></span><span>可选接线（P4）</span><span class="wire"></span></div>
+        <div class="layer pl">
+          <div class="lh"><b>调度点</b><span class="lr">http_service · import_service · ai_tool_service</span></div>
+          <div class="nodes"><span class="node am">before/after request</span><span class="node am">import/export</span><span class="node am">AI tools</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 路线图 -->
+    <section id="roadmap">
+      <div class="sec-head reveal">
+        <div class="sec-num">09</div>
+        <div><span class="eyebrow">Roadmap</span><h2>分阶段路线图</h2></div>
+      </div>
+
+      <div class="timeline reveal">
+        <div class="tl"><div class="ph">P0</div><div class="bd"><b>骨架</b><p>协议 / manifest / 安装 / 启停 + 设置面板 + 审计。能装、能启停、能看日志。</p></div></div>
+        <div class="tl"><div class="ph">P1</div><div class="bd"><b>命令 + 声明式 UI</b><p><code>commands</code>（含 cli-once）+ JSON-UI / Markdown / HTML 渲染。命令面板 / 菜单 / 右键触发，返回声明式结果。</p></div></div>
+        <div class="tl"><div class="ph">P2</div><div class="bd"><b>嵌入式 Webview</b><p><code>webview</code> + asset 协议 + 沙箱 iframe + 消息桥。插件自带 HTML 页，沙箱内交互。</p></div></div>
+        <div class="tl"><div class="ph">P3</div><div class="bd"><b>常驻视图</b><p><code>views</code>（侧边栏 / 主区标签页）+ PluginViewHost。插件常驻工作面。</p></div></div>
+        <div class="tl"><div class="ph">P4</div><div class="bd"><b>可选能力组</b><p>hooks / importers / exporters / renderers / assertions。复用 API 测试扩展点。</p></div></div>
+        <div class="tl"><div class="ph">P5</div><div class="bd"><b>AI 工具</b><p><code>tools</code>（MCP 风格）接入 <code>ai_tool_service</code>，插件能力供 AI 调用。</p></div></div>
+        <div class="tl"><div class="ph">P6</div><div class="bd"><b>安全增强</b><p>签名校验、OS 级硬沙箱调研。提升信任与隔离。</p></div></div>
+        <div class="tl"><div class="ph">P7</div><div class="bd"><b>市场（可选）</b><p>在线 manifest 索引 + 一键安装。插件发现与分发。</p></div></div>
+      </div>
+    </section>
+
+    <!-- 10 UI 原型 -->
+    <section id="ui">
+      <div class="sec-head reveal">
+        <div class="sec-num">10</div>
+        <div><span class="eyebrow">UI Mockups</span><h2>界面原型</h2></div>
+      </div>
+      <p class="lead reveal">插件管理面板、视图宿主（声明式 / 沙箱 Webview）、命令面板与控制台。复用项目既有纯 CSS 风格。</p>
+
+      <div class="mock reveal">
+        <div class="tb"><span class="dt"><i></i><i></i><i></i></span><span class="tt">设置 · 插件</span><span class="cap">管理面板</span></div>
+        <div class="scr"><pre><span class="dim">┌─ 设置 ───────────────────────────────────────────────────┐</span>
+│  <span class="hl">插件</span>                                     <span class="dim">[×]</span>  │
+│  管理 CLI 插件，扩展 FM Tester（命令/视图/Webview）        │
+│ <span class="dim">┌─────────┐ ┌──────────────────────────────────┐</span> │
+│ <span class="dim">│ 通用    │ │</span> <span class="em">+ 安装插件</span>      ▾ 本地/URL/市场   <span class="dim">│</span> │
+│ <span class="dim">│ AI      │ │</span> 已安装 (3)    [全部启用][全部禁用]<span class="dim"> │</span> │
+│ <span class="dim">│ 插件 ▸  │ │</span> <span class="dim">┌──────────────────────────────┐</span><span class="dim"> │</span> │
+│ <span class="dim">│ 关于    │ │</span> <span class="dim">│</span>▣ JSON Explorer    <span class="ok">●运行中</span><span class="dim"> │</span><span class="dim"> │</span> │
+│ <span class="dim">└─────────┘ │</span> <span class="dim">│</span>  com.example.json-explorer <span class="dim">│</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">│</span>  交互式 JSON 树（Webview）<span class="dim"> │</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">│</span>  视图·命令   权限:上下文读 <span class="dim">│</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">└──────────────────────────────┘</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">┌──────────────────────────────┐</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">│</span>▣ Local Dashboard <span class="ok">●运行中</span><span class="dim"> │</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">│</span>  内部服务看板（侧边栏+标签）<span class="dim">│</span><span class="dim"> │</span> │
+│             │</span> <span class="dim">└──────────────────────────────┘</span><span class="dim"> │</span> │
+<span class="dim">└──────────────────────────────────────────────────────────┘</span></pre></div>
+      </div>
+
+      <div class="mock-grid reveal">
+        <div class="mock">
+          <div class="tb"><span class="dt"><i></i><i></i><i></i></span><span class="tt">命令面板</span><span class="cap">Ctrl+K</span></div>
+          <div class="scr"><pre><span class="dim">┌ 命令面板 (Ctrl+K) ──────────────┐</span>
+│ <span class="em">🔍 搜索或运行命令…</span>             │
+│ <span class="dim">─ 插件 ─</span>                       │
+│ ▣ 格式化 JSON   <span class="dim">(JSON Explorer)</span>│
+│ ▣ 看板:刷新所有 <span class="dim">(Dashboard)</span>  │
+│ ▣ 复制为内部SDK <span class="dim">(Signer)</span>     │
+│ <span class="dim">─ 内置 ─</span>                       │
+│ 发送请求 / 切换环境 …           │
+<span class="dim">└────────────────────────────────┘</span></pre></div>
+        </div>
+        <div class="mock">
+          <div class="tb"><span class="dt"><i></i><i></i><i></i></span><span class="tt">Console</span><span class="cap">插件日志</span></div>
+          <div class="scr"><pre>12:01:03 <span class="ok">ℹ</span>[JSON Explorer] 3 keys
+12:01:03 <span class="ok">ℹ</span>[dashboard] refreshing…
+12:01:04 <span class="em">⚠</span>[dashboard] svc-b timeout
+12:01:04 <span class="hl">✖</span>[req-signer] key revoked
+            <span class="dim">[ABORT]</span></pre></div>
+        </div>
+      </div>
+
+      <div class="mock reveal">
+        <div class="tb"><span class="dt"><i></i><i></i><i></i></span><span class="tt">主区标签页 · PluginViewHost</span><span class="cap">声明式 / 沙箱 Webview</span></div>
+        <div class="scr"><pre><span class="dim">┌ Tabs ──────────────────────────────────────────────────┐</span>
+│ [接口A] [▣ JSON Explorer <span class="dim">✕</span>]                            │
+<span class="dim">├────────────────────────────────────────────────────────┤</span>
+│  <span class="hl">PluginViewHost</span>  (渲染模式二选一，由视图声明)         │
+│  <span class="dim">┌──────────────────────────────────────────────────┐</span>  │
+│  <span class="dim">│</span> ① <span class="em">声明式 JSON-UI</span>：                              <span class="dim">│</span>  │
+│  <span class="dim">│</span>    ## JSON 树   ▸ root  ▸ users[3]            <span class="dim">│</span>  │
+│  <span class="dim">│</span>    [展开全部][复制路径]  → view/action 回调    <span class="dim">│</span>  │
+│  <span class="dim">│</span> ② <span class="em">嵌入式 Webview</span>（沙箱 iframe）：             <span class="dim">│</span>  │
+│  <span class="dim">│</span>    &lt;html&gt; 插件自带页面 [搜索][树][图表][表单]<span class="dim"> │</span>  │
+│  <span class="dim">│</span>     ↕ postMessage ↔ 主窗口桥 ↔ FMPP ↔ CLI     <span class="dim">│</span>  │
+│  <span class="dim">└──────────────────────────────────────────────────┘</span>  │
+<span class="dim">└────────────────────────────────────────────────────────┘</span></pre></div>
+      </div>
+    </section>
+
+    <!-- 11 Manifest -->
+    <section id="manifest">
+      <div class="sec-head reveal">
+        <div class="sec-num">11</div>
+        <div><span class="eyebrow">Manifest</span><h2>plugin.json 示例</h2></div>
+      </div>
+      <p class="lead reveal">manifest 是插件与应用之间的契约。命令 + Webview 视图（最全演示）：</p>
+
+      <div class="code reveal">
+        <div class="ch"><span class="dots"><i></i><i></i><i></i></span><span class="fn">com.example.json-explorer / plugin.json</span><span class="lang">json</span></div>
+<pre>{
+  <span class="k">"manifestVersion"</span>: <span class="n">1</span>,
+  <span class="k">"id"</span>: <span class="s">"com.example.json-explorer"</span>,
+  <span class="k">"name"</span>: <span class="s">"JSON Explorer"</span>,
+  <span class="k">"version"</span>: <span class="s">"1.0.0"</span>,
+  <span class="k">"engines"</span>: { <span class="k">"fmTester"</span>: <span class="s">"^0.9.0"</span> },
+
+  <span class="k">"entry"</span>: {
+    <span class="k">"command"</span>: { <span class="k">"windows"</span>: <span class="s">"${dir}/backend.exe"</span>, <span class="k">"macos"</span>: <span class="s">"${dir}/backend"</span> },
+    <span class="k">"transport"</span>: <span class="s">"stdio-ndjson"</span>,
+    <span class="k">"idleTimeoutMs"</span>: <span class="n">60000</span>,
+    <span class="k">"restartOnError"</span>: <span class="n">true</span>
+  },
+
+  <span class="k">"webview"</span>: {
+    <span class="k">"entry"</span>: <span class="s">"webview/index.html"</span>,
+    <span class="k">"csp"</span>: <span class="s">"default-src 'none'; script-src 'self'; connect-src 'none';"</span>
+  },
+
+  <span class="k">"capabilities"</span>: {
+    <span class="k">"commands"</span>: [{
+      <span class="k">"id"</span>: <span class="s">"format"</span>,
+      <span class="k">"title"</span>: { <span class="k">"zh-CN"</span>: <span class="s">"格式化 JSON"</span>, <span class="k">"en"</span>: <span class="s">"Format JSON"</span> },
+      <span class="k">"placement"</span>: [<span class="s">"commandPalette"</span>, <span class="s">"menu.tools"</span>],
+      <span class="k">"output"</span>: <span class="s">"markdown"</span>
+    }],
+    <span class="k">"views"</span>: [{
+      <span class="k">"id"</span>: <span class="s">"explorer"</span>,
+      <span class="k">"placement"</span>: [<span class="s">"sidebar"</span>, <span class="s">"tab"</span>],
+      <span class="k">"render"</span>: <span class="s">"webview"</span>
+    }]
+  },
+
+  <span class="k">"permissions"</span>: [<span class="s">"fm.console.log"</span>, <span class="s">"fm.context.read"</span>, <span class="s">"webview.embed"</span>],
+  <span class="k">"checksum"</span>: <span class="s">"sha256:9f86d081…"</span>
+}</pre>
+      </div>
+
+      <p class="reveal" style="font-size:13px; margin-top:14px;">退化模式（<code>cli-once</code>）适合轻量单脚本：每次 <code>backend &lt;method&gt; --input &lt;stdin-json&gt;</code>，stdout 读单行 JSON result 后退出，无状态、便于分发。</p>
+    </section>
+
+    <!-- 12 典型插件 -->
+    <section id="ideas">
+      <div class="sec-head reveal">
+        <div class="sec-num">12</div>
+        <div><span class="eyebrow">Plugin Ideas</span><h2>典型插件</h2></div>
+      </div>
+      <p class="lead reveal">验证通用性与可选能力覆盖。前三类与 API 测试<b>无直接关系</b>，体现「插件 = 通用应用扩展平台」。</p>
+
+      <div class="ideas reveal">
+        <div class="idea unrelated"><h4><span class="em">▦</span> JSON Explorer</h4><p>超大 JSON 交互浏览</p><div class="cap">命令 + Webview 视图</div></div>
+        <div class="idea unrelated"><h4><span class="em">▦</span> Local Dashboard</h4><p>内部服务实时看板</p><div class="cap">侧边栏/标签页 · network.outbound</div></div>
+        <div class="idea unrelated"><h4><span class="em">▦</span> Snippet / Notes</h4><p>代码片段与笔记管理</p><div class="cap">侧边栏 Webview · fs.write</div></div>
+        <div class="idea unrelated"><h4><span class="em">⌘</span> QR / Barcode</h4><p>选中文本生成码图</p><div class="cap">命令 · 声明式 json-ui</div></div>
+        <div class="idea"><h4><span class="em" style="color:var(--blue)">⌘</span> Internal Signer</h4><p>网关签名头注入</p><div class="cap">可选 · hooks(beforeRequest, abort)</div></div>
+        <div class="idea"><h4><span class="em" style="color:var(--blue)">▦</span> Protobuf Viewer</h4><p>私有协议解码</p><div class="cap">可选 · responseRenderers + hooks</div></div>
+        <div class="idea"><h4><span class="em" style="color:var(--blue)">⌘</span> HAR Importer</h4><p>补齐导入格式</p><div class="cap">可选 · importers</div></div>
+        <div class="idea"><h4><span class="em" style="color:var(--blue)">⌘</span> AI 知识库</h4><p>AI 调用插件查内部系统</p><div class="cap">可选 · tools（MCP 风格）</div></div>
+      </div>
+    </section>
+
+    <!-- 验收 -->
+    <section id="acceptance" style="border-bottom:none;">
+      <div class="sec-head reveal">
+        <div class="sec-num">§</div>
+        <div><span class="eyebrow">Acceptance</span><h2>验收标准（P0–P3）</h2></div>
+      </div>
+      <ul class="check reveal">
+        <li><code>plugin.json</code> 安装校验：非法 id / 版本 / 权限 / 入口 / CSP → 明确报错</li>
+        <li>长驻进程：握手 → 调用 → 空闲回收 → 崩溃重启 → 连续失败自禁用</li>
+        <li>设置面板：列表 / 启停 / 卸载 / 权限回收 / 审计日志</li>
+        <li>命令在命令面板 / 菜单 / 右键正确出现；JSON-UI / Markdown 正确渲染，button 回调生效</li>
+        <li>嵌入式 Webview：沙箱 iframe 加载、CSP 锁定、postMessage 双向、宿主能力经权限校验</li>
+        <li><code>views</code> 可挂载侧边栏 / 主区标签页，常驻且可交互</li>
+        <li>zh-CN / en 双语完整；<code>npm run lint</code> + <code>cargo clippy -D warnings</code> + <code>cargo test</code> 通过</li>
+      </ul>
+    </section>
+
+    <footer class="foot reveal">
+      <div class="mk">墨砚 Inkwell · FM Tester Plugin Specification</div>
+      <div style="margin-top:8px;">v2.0 草案 · 2026-06-29 · 配套文档 <code>docs/plugin-system-design.md</code> / <code>plugin-system-mockup.md</code></div>
+      <div style="margin-top:4px; opacity:.7;">纸(Paper) / 墨(Ink) 双主题 · 点击右下圆钮切换</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* 主题切换 */
+const root = document.documentElement;
+const saved = localStorage.getItem("fm-theme");
+if (saved) root.setAttribute("data-theme", saved);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const next = root.getAttribute("data-theme") === "ink" ? "paper" : "ink";
+  root.setAttribute("data-theme", next);
+  localStorage.setItem("fm-theme", next);
+});
+
+/* 滚动跟随目录 */
+const links = [...document.querySelectorAll(".toc a")];
+const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+const spy = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(a => a.classList.remove("active"));
+      const a = map.get(e.target.id);
+      if (a) a.classList.add("active");
+    }
+  });
+}, { rootMargin: "-30% 0px -60% 0px", threshold: 0 });
+document.querySelectorAll("section[id]").forEach(s => spy.observe(s));
+
+/* 滚动揭示 */
+const rev = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); rev.unobserve(e.target); } });
+}, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+document.querySelectorAll(".reveal").forEach(el => rev.observe(el));
+</script>
+</body>
+</html>

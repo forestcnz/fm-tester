@@ -1,0 +1,66 @@
+# =============================================================================
+# cargo-deny 配置
+#
+# 用途：Rust 依赖供应链安全审计——检测已知漏洞（RUSTSEC 公告）、许可证合规、
+# 重复依赖、可疑来源。由 CI 的 cargo-deny job（EmbarkStudios/cargo-deny-action）
+# 调用，命令等价于 `cargo deny check`。
+#
+# 阶段性策略：
+# - advisories（漏洞）：已知漏洞 / yanked 版本视为错误（deny），强制升级；
+# - licenses（许可证）：仅放行主流宽松许可证；未识别许可证先告警（unlicensed=warn），
+#   避免首次接入因个别 crate 许可证描述不规范而阻塞，后续逐步收紧；
+# - bans（禁用/重复）：重复依赖当前仅告警（项目存在 rustls / rand 等多版本，
+#   待后续统一升级），不致 CI 失败；
+# - sources（来源）：仅允许 crates.io 官方源，防止引入私有/镜像源依赖。
+# =============================================================================
+
+# 检查范围：覆盖本项目实际目标的三个主流平台
+[graph]
+targets = [
+    { triple = "x86_64-pc-windows-msvc" },
+    { triple = "x86_64-apple-darwin" },
+    { triple = "x86_64-unknown-linux-gnu" },
+]
+
+# -------------------- 漏洞公告 --------------------
+[advisories]
+db-urls = ["https://github.com/rustsec/advisory-db"]
+# 已被 yanked 的版本同样视为错误
+yanked = "deny"
+# 如需临时忽略某条公告（例如无可升级版本且评估可接受），在此填写 RUSTSEC-XXXX-NNNN
+ignore = []
+
+# -------------------- 许可证合规 --------------------
+[licenses]
+# 仅允许以下主流宽松许可证
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "Zlib",
+    "CC0-1.0",
+    "0BSD",
+    "MPL-2.0",
+]
+# 未识别/缺失许可证先告警，避免首次接入阻塞
+unlicensed = "warn"
+confidence-threshold = 0.8
+
+# -------------------- 禁用 / 重复依赖 --------------------
+[bans]
+# 重复版本暂仅告警（待后续统一 rustls / rand 等多版本后再收紧为 deny）
+multiple-versions = "warn"
+wildcards = "allow"
+deny = []
+
+# -------------------- 来源限制 --------------------
+[sources]
+# 仅允许官方 crates.io，禁止未知 registry / git 直链依赖
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

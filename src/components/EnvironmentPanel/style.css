@@ -1,0 +1,286 @@
+/* ============================================================
+   EnvironmentPanel · 墨砚 Inkwell 化
+   对齐 .page-head / .kv-table / .btn / .field / .card / .empty 原语
+   ============================================================ */
+
+/* ---------- 面板根 ---------- */
+.env-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel);
+}
+
+.env-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---------- 页头（对齐 .page-head） ---------- */
+.env-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.env-icon {
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+}
+
+.env-name {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 标签栏 ---------- */
+.env-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 18px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.tab-item {
+  position: relative;
+  padding: 10px 14px;
+  margin-bottom: -1px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.tab-item:hover {
+  color: var(--fg);
+}
+
+.tab-item.active {
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+
+/* ---------- 内容区 ---------- */
+.tab-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
+  position: relative;
+}
+
+.variables-panel,
+.headers-panel {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.scripts-panel {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ---------- 工具条 ---------- */
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* 添加按钮（对齐 preview .add-btn：虚线 ghost + hover primary） */
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  background: none;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease),
+    border-color var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
+}
+
+.add-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.panel-hint {
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+
+/* ---------- 键值表（对齐 .kv-table / .kv-head / .kv-row） ---------- */
+.params-list {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.params-header {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.col-check {
+  width: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.col-key,
+.col-value,
+.col-desc {
+  flex: 1;
+  min-width: 0;
+}
+
+.col-action {
+  width: 38px;
+  text-align: center;
+}
+
+/* 空状态 */
+.empty-params {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--fg-3);
+}
+
+/* 变量/请求头行（对齐 .kv-row） */
+.param-row {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 40px;
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.param-row:last-child {
+  border-bottom: none;
+}
+
+.param-row:hover {
+  background: var(--bg-sunk);
+}
+
+/* 行内输入（对齐 .field / .kv-row input） */
+.param-row input[type="text"] {
+  width: 100%;
+  height: 28px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  outline: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--fg);
+  box-sizing: border-box;
+  transition: border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+/* 等宽：变量名（key）使用 mono */
+.col-key input[type="text"] {
+  font-family: var(--font-mono);
+}
+
+.param-row input[type="text"]:hover {
+  background: var(--bg-panel);
+}
+
+.param-row input[type="text"]:focus {
+  background: var(--bg-panel);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--primary-line);
+}
+
+.param-row input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* 删除按钮（对齐 .btn.danger / ghost） */
+.remove-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--fg-3);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.remove-btn:hover {
+  color: var(--err);
+  background: rgba(220, 38, 38, 0.08);
+  border-color: var(--line);
+}
+
+/* ---------- 无选中环境（空状态） ---------- */
+.no-env-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 30px;
+  text-align: center;
+  color: var(--fg-3);
+  font-size: 13px;
+}

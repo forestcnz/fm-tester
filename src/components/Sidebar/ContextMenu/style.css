@@ -1,0 +1,37 @@
+/* 右键菜单 */
+.context-menu {
+  position: fixed;
+  background: var(--background-panel);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  padding: 4px 0;
+  min-width: 120px;
+  z-index: 2000;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.menu-item:hover {
+  background: var(--background-app);
+}
+
+.menu-item.delete {
+  color: var(--method-delete);
+}
+
+.menu-icon {
+  margin-right: 8px;
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}

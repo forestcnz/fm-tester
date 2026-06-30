@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM Tester — 主题设计稿</title>
+<style>
+/* ============================================================
+   10 套全新主题 CSS 变量
+   ============================================================ */
+
+/* 1. Carbon — 碳黑琥珀 */
+.theme-carbon {
+  --primary: #ffb454; --primary-hover: #ffc870; --primary-light: #1a1a1a; --primary-border: #ffb454;
+  --background-app: #0a0a0a; --background-panel: #141414; --background-card: #1c1c1c; --background-input: #262626;
+  --text-primary: #e8e8e8; --text-secondary: #b0b0b0; --text-muted: #666666;
+  --border-color: #2a2a2a; --border-light: #383838;
+  --method-get: #7ee787; --method-post: #ffb454; --method-put: #79c0ff; --method-delete: #ff7b72; --method-delete-bg: rgba(255,123,114,0.1);
+  --scrollbar-track: #0a0a0a; --scrollbar-thumb: #2a2a2a;
+  --shadow-color: rgba(0,0,0,0.4); --glow-color: 0 0 20px rgba(255,180,84,0.15);
+}
+
+/* 2. Sakura — 樱花 */
+.theme-sakura {
+  --primary: #ec4899; --primary-hover: #db2777; --primary-light: #fdf2f8; --primary-border: #f9a8d4;
+  --background-app: #fdf6f9; --background-panel: #ffffff; --background-card: #fce7f0; --background-input: #ffffff;
+  --text-primary: #500724; --text-secondary: #9d174d; --text-muted: #c084a0;
+  --border-color: #f3d4e0; --border-light: #e9b8cf;
+  --method-get: #10b981; --method-post: #f59e0b; --method-put: #3b82f6; --method-delete: #e11d48; --method-delete-bg: rgba(225,29,72,0.08);
+  --scrollbar-track: #fce7f0; --scrollbar-thumb: #e9b8cf;
+  --shadow-color: rgba(236,72,153,0.08); --glow-color: none;
+}
+
+/* 3. Cyberpunk — 赛博朋克 */
+.theme-cyberpunk {
+  --primary: #00ff9f; --primary-hover: #00e588; --primary-light: #0d0221; --primary-border: #00ff9f;
+  --background-app: #0a0014; --background-panel: #14001f; --background-card: #1e0a2e; --background-input: #2a1240;
+  --text-primary: #e0f7fa; --text-secondary: #00e5ff; --text-muted: #6a4c93;
+  --border-color: #3a1a5c; --border-light: #4a2a6c;
+  --method-get: #00ff9f; --method-post: #ff006e; --method-put: #00e5ff; --method-delete: #ff4081; --method-delete-bg: rgba(255,64,129,0.15);
+  --scrollbar-track: #0a0014; --scrollbar-thumb: #3a1a5c;
+  --shadow-color: rgba(0,255,159,0.1); --glow-color: 0 0 20px rgba(0,255,159,0.2);
+}
+
+/* 4. Sand Dune — 沙漠暖沙 */
+.theme-sand-dune {
+  --primary: #c2703d; --primary-hover: #a85d2e; --primary-light: #faf6f0; --primary-border: #d49262;
+  --background-app: #f9f5ef; --background-panel: #ffffff; --background-card: #f0e8da; --background-input: #ffffff;
+  --text-primary: #4a3422; --text-secondary: #7a5c3e; --text-muted: #b09878;
+  --border-color: #e0d4c0; --border-light: #d0c0a4;
+  --method-get: #558b2f; --method-post: #e65100; --method-put: #1565c0; --method-delete: #c62828; --method-delete-bg: rgba(198,40,40,0.08);
+  --scrollbar-track: #f0e8da; --scrollbar-thumb: #d0c0a4;
+  --shadow-color: rgba(122,92,62,0.1); --glow-color: none;
+}
+
+/* 5. Deep Ocean — 深海 */
+.theme-deep-ocean {
+  --primary: #06d6a0; --primary-hover: #04b88a; --primary-light: #001219; --primary-border: #06d6a0;
+  --background-app: #001219; --background-panel: #003049; --background-card: #003845; --background-input: #004558;
+  --text-primary: #e0fbfc; --text-secondary: #98c1d9; --text-muted: #3d5a80;
+  --border-color: #003845; --border-light: #293241;
+  --method-get: #06d6a0; --method-post: #ee9b00; --method-put: #48cae4; --method-delete: #ae2012; --method-delete-bg: rgba(174,32,18,0.15);
+  --scrollbar-track: #001219; --scrollbar-thumb: #003845;
+  --shadow-color: rgba(0,0,0,0.3); --glow-color: 0 0 15px rgba(6,214,160,0.1);
+}
+
+/* 6. Matcha — 抹茶 */
+.theme-matcha {
+  --primary: #a3c585; --primary-hover: #8db86a; --primary-light: #1a2014; --primary-border: #a3c585;
+  --background-app: #161b12; --background-panel: #1e2418; --background-card: #262d1e; --background-input: #2e3624;
+  --text-primary: #e8f0d8; --text-secondary: #c0d0a0; --text-muted: #6a7a50;
+  --border-color: #2e3624; --border-light: #3e4634;
+  --method-get: #aed581; --method-post: #ffd54f; --method-put: #4fc3f7; --method-delete: #ef5350; --method-delete-bg: rgba(239,83,80,0.12);
+  --scrollbar-track: #161b12; --scrollbar-thumb: #2e3624;
+  --shadow-color: rgba(0,0,0,0.25); --glow-color: 0 0 15px rgba(163,197,133,0.1);
+}
+
+/* 7. Twilight — 黄昏 */
+.theme-twilight {
+  --primary: #e94560; --primary-hover: #d63851; --primary-light: #0f0e17; --primary-border: #e94560;
+  --background-app: #0f0e17; --background-panel: #1a1726; --background-card: #241f36; --background-input: #2d2845;
+  --text-primary: #fffffe; --text-secondary: #c5b6e0; --text-muted: #7a6a96;
+  --border-color: #2d2845; --border-light: #3d3855;
+  --method-get: #2cb67d; --method-post: #f4a261; --method-put: #7f5af0; --method-delete: #e94560; --method-delete-bg: rgba(233,69,96,0.12);
+  --scrollbar-track: #0f0e17; --scrollbar-thumb: #2d2845;
+  --shadow-color: rgba(0,0,0,0.3); --glow-color: 0 0 20px rgba(233,69,96,0.1);
+}
+
+/* 8. Paper — 纸张 */
+.theme-paper {
+  --primary: #2563eb; --primary-hover: #1d4ed8; --primary-light: #eff6ff; --primary-border: #93c5fd;
+  --background-app: #faf9f6; --background-panel: #ffffff; --background-card: #f3f0e8; --background-input: #ffffff;
+  --text-primary: #1c1917; --text-secondary: #44403c; --text-muted: #a8a29e;
+  --border-color: #e7e5e4; --border-light: #d6d3d1;
+  --method-get: #16a34a; --method-post: #ea580c; --method-put: #2563eb; --method-delete: #dc2626; --method-delete-bg: rgba(220,38,38,0.07);
+  --scrollbar-track: #f3f0e8; --scrollbar-thumb: #d6d3d1;
+  --shadow-color: rgba(28,25,23,0.06); --glow-color: none;
+}
+
+/* 9. Obsidian — 黑曜石 */
+.theme-obsidian {
+  --primary: #22d3ee; --primary-hover: #06b6d4; --primary-light: #18181b; --primary-border: #22d3ee;
+  --background-app: #18181b; --background-panel: #1f1f23; --background-card: #27272a; --background-input: #2e2e33;
+  --text-primary: #f4f4f5; --text-secondary: #a1a1aa; --text-muted: #52525b;
+  --border-color: #27272a; --border-light: #3f3f46;
+  --method-get: #34d399; --method-post: #fbbf24; --method-put: #60a5fa; --method-delete: #f87171; --method-delete-bg: rgba(248,113,113,0.1);
+  --scrollbar-track: #18181b; --scrollbar-thumb: #27272a;
+  --shadow-color: rgba(0,0,0,0.35); --glow-color: 0 0 15px rgba(34,211,238,0.1);
+}
+
+/* 10. Mint Frost — 薄荷霜 */
+.theme-mint-frost {
+  --primary: #059669; --primary-hover: #047857; --primary-light: #ecfdf5; --primary-border: #6ee7b7;
+  --background-app: #f0fdf4; --background-panel: #ffffff; --background-card: #dcfce7; --background-input: #ffffff;
+  --text-primary: #064e3b; --text-secondary: #047857; --text-muted: #6ba388;
+  --border-color: #d1fae5; --border-light: #a7f3d0;
+  --method-get: #059669; --method-post: #d97706; --method-put: #2563eb; --method-delete: #dc2626; --method-delete-bg: rgba(220,38,38,0.07);
+  --scrollbar-track: #dcfce7; --scrollbar-thumb: #a7f3d0;
+  --shadow-color: rgba(5,150,105,0.08); --glow-color: none;
+}
+
+/* ============================================================
+   预览页面样式
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: var(--background-app);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+}
+
+/* 主题选择器 */
+.theme-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--background-panel);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.theme-bar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.theme-btn:hover { border-color: var(--primary-border); color: var(--text-primary); }
+
+.theme-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.theme-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 主预览区 */
+.preview-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.section { margin-bottom: 36px; }
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+/* 卡片 */
+.card {
+  background: var(--background-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.card-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 按钮预览 */
+.btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary { background: var(--primary); color: var(--background-app); font-weight: 600; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+.btn-outline:hover { border-color: var(--primary-border); }
+
+.btn-danger { background: var(--method-delete-bg); color: var(--method-delete); border: 1px solid var(--method-delete); }
+.btn-danger:hover { background: var(--method-delete); color: #fff; }
+
+/* 输入框 */
+.input {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--primary); }
+.input::placeholder { color: var(--text-muted); }
+
+/* HTTP Method 标签 */
+.method-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.method-tag {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* 色板 */
+.palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.swatch {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.swatch-color { height: 56px; }
+
+.swatch-label {
+  padding: 6px 8px;
+  background: var(--background-card);
+  font-size: 10px;
+}
+
+.swatch-name { color: var(--text-secondary); font-weight: 600; }
+.swatch-hex { color: var(--text-muted); font-size: 9px; margin-top: 2px; }
+
+/* 模拟 API 请求行 */
+.api-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+}
+
+.api-method {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 52px;
+  text-align: center;
+}
+
+.api-url {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.api-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.status-200 { background: var(--method-delete-bg); color: var(--method-get); }
+.status-404 { background: var(--method-delete-bg); color: var(--method-post); }
+.status-500 { background: var(--method-delete-bg); color: var(--method-delete); }
+
+/* 文本预览 */
+.text-preview { display: flex; flex-direction: column; gap: 6px; }
+.text-primary { color: var(--text-primary); font-size: 14px; font-weight: 500; }
+.text-secondary { color: var(--text-secondary); font-size: 13px; }
+.text-muted { color: var(--text-muted); font-size: 12px; }
+.text-primary-color { color: var(--primary); font-size: 14px; font-weight: 600; }
+
+/* 主题信息 */
+.theme-info {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.theme-info-name { font-size: 24px; font-weight: 800; color: var(--text-primary); }
+.theme-info-desc { font-size: 13px; color: var(--text-muted); }
+</style>
+</head>
+<body class="theme-carbon">
+
+<!-- 主题选择器 -->
+<div class="theme-bar">
+  <span class="theme-bar-title">主题预览</span>
+  <button class="theme-btn active" data-theme="carbon"><span class="theme-dot" style="background:#ffb454"></span>Carbon</button>
+  <button class="theme-btn" data-theme="sakura"><span class="theme-dot" style="background:#ec4899"></span>Sakura</button>
+  <button class="theme-btn" data-theme="cyberpunk"><span class="theme-dot" style="background:#00ff9f"></span>Cyberpunk</button>
+  <button class="theme-btn" data-theme="sand-dune"><span class="theme-dot" style="background:#c2703d"></span>Sand Dune</button>
+  <button class="theme-btn" data-theme="deep-ocean"><span class="theme-dot" style="background:#06d6a0"></span>Deep Ocean</button>
+  <button class="theme-btn" data-theme="matcha"><span class="theme-dot" style="background:#a3c585"></span>Matcha</button>
+  <button class="theme-btn" data-theme="twilight"><span class="theme-dot" style="background:#e94560"></span>Twilight</button>
+  <button class="theme-btn" data-theme="paper"><span class="theme-dot" style="background:#2563eb"></span>Paper</button>
+  <button class="theme-btn" data-theme="obsidian"><span class="theme-dot" style="background:#22d3ee"></span>Obsidian</button>
+  <button class="theme-btn" data-theme="mint-frost"><span class="theme-dot" style="background:#059669"></span>Mint Frost</button>
+</div>
+
+<div class="preview-container">
+
+  <!-- 主题信息 -->
+  <div class="theme-info">
+    <span class="theme-info-name" id="info-name">Carbon</span>
+    <span class="theme-info-desc" id="info-desc">碳黑琥珀 — 极致黑底配温暖琥珀强调</span>
+  </div>
+
+  <!-- 按钮 -->
+  <div class="section">
+    <div class="section-title">按钮</div>
+    <div class="card">
+      <div class="card-row">
+        <button class="btn btn-primary">发送请求</button>
+        <button class="btn btn-outline">取消</button>
+        <button class="btn btn-danger">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 输入 -->
+  <div class="section">
+    <div class="section-title">输入框</div>
+    <div class="card">
+      <div class="card-row">
+        <input class="input" placeholder="https://api.example.com/users" style="flex:1;min-width:280px">
+        <input class="input" placeholder="搜索..." style="width:160px">
+      </div>
+    </div>
+  </div>
+
+  <!-- HTTP 方法 -->
+  <div class="section">
+    <div class="section-title">HTTP 方法</div>
+    <div class="card">
+      <div class="method-tags">
+        <span class="method-tag" style="color:var(--method-get)">GET</span>
+        <span class="method-tag" style="color:var(--method-post)">POST</span>
+        <span class="method-tag" style="color:var(--method-put)">PUT</span>
+        <span class="method-tag" style="color:var(--method-delete)">DELETE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模拟 API 列表 -->
+  <div class="section">
+    <div class="section-title">接口列表</div>
+    <div class="card">
+      <div class="api-row">
+        <span class="api-method" style="background:var(--method-delete-bg);color:var(--method-get)">GET</span>
+        <span class="api-url">/api/v1/users</span>
+        <span class="api-status status-200">200</span>
+      </div>
+      <div class="api-row">
+        <span class="api-method" style="background:var(--method-delete-bg);color:var(--method-post)">POST</span>
+        <span class="api-url">/api/v1/auth/login</span>
+        <span class="api-status status-200">200</span>
+      </div>
+      <div class="api-row">
+        <span class="api-method" style="background:var(--method-delete-bg);color:var(--method-put)">PUT</span>
+        <span class="api-url">/api/v1/users/:id</span>
+        <span class="api-status status-404">404</span>
+      </div>
+      <div class="api-row">
+        <span class="api-method" style="background:var(--method-delete-bg);color:var(--method-delete)">DELETE</span>
+        <span class="api-url">/api/v1/sessions/:id</span>
+        <span class="api-status status-500">500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文本层级 -->
+  <div class="section">
+    <div class="section-title">文本层级</div>
+    <div class="card">
+      <div class="text-preview">
+        <span class="text-primary">主要文本 — 用户登录接口</span>
+        <span class="text-secondary">次要文本 — 用于身份验证</span>
+        <span class="text-muted">辅助文本 — 最后修改: 2024-01-15</span>
+        <span class="text-primary-color">主题强调色 — 选中状态</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 色板 -->
+  <div class="section">
+    <div class="section-title">配色方案</div>
+    <div class="palette" id="palette"></div>
+  </div>
+
+</div>
+
+<script>
+const THEME_INFO = {
+  'carbon':     { name: 'Carbon',     desc: '碳黑琥珀 — 极致黑底配温暖琥珀强调', type: 'dark' },
+  'sakura':     { name: 'Sakura',     desc: '樱花 — 柔粉白底配樱花粉强调', type: 'light' },
+  'cyberpunk':  { name: 'Cyberpunk',  desc: '赛博朋克 — 深紫底配霓虹绿', type: 'dark' },
+  'sand-dune':  { name: 'Sand Dune',  desc: '沙漠暖沙 — 暖沙底配沙漠橙', type: 'light' },
+  'deep-ocean': { name: 'Deep Ocean', desc: '深海 — 深蓝绿底配海绿色调', type: 'dark' },
+  'matcha':     { name: 'Matcha',     desc: '抹茶 — 深绿底配抹茶强调', type: 'dark' },
+  'twilight':   { name: 'Twilight',   desc: '黄昏 — 深紫底配黄昏红', type: 'dark' },
+  'paper':      { name: 'Paper',      desc: '纸张 — 米白底配墨蓝', type: 'light' },
+  'obsidian':   { name: 'Obsidian',   desc: '黑曜石 — 冷灰黑配青色', type: 'dark' },
+  'mint-frost': { name: 'Mint Frost', desc: '薄荷霜 — 清新薄荷绿浅色', type: 'light' },
+};
+
+const SWATCHES = [
+  ['primary','#ffb454'], ['primary-hover','#ffc870'], ['primary-border','#ffb454'],
+  ['background-app','#0a0a0a'], ['background-panel','#141414'], ['background-card','#1c1c1c'], ['background-input','#262626'],
+  ['text-primary','#e8e8e8'], ['text-secondary','#b0b0b0'], ['text-muted','#666666'],
+  ['border-color','#2a2a2a'], ['border-light','#383838'],
+  ['method-get','#7ee787'], ['method-post','#ffb454'], ['method-put','#79c0ff'], ['method-delete','#ff7b72'],
+];
+
+const THEMES = ['carbon','sakura','cyberpunk','sand-dune','deep-ocean','matcha','twilight','paper','obsidian','mint-frost'];
+
+function renderPalette() {
+  const root = getComputedStyle(document.body);
+  const palette = document.getElementById('palette');
+  palette.innerHTML = SWATCHES.map(([name]) => {
+    const val = root.getPropertyValue('--' + name).trim();
+    return `<div class="swatch">
+      <div class="swatch-color" style="background:${val}"></div>
+      <div class="swatch-label">
+        <div class="swatch-name">${name}</div>
+        <div class="swatch-hex">${val}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 主题切换
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const theme = btn.dataset.theme;
+    // 移除旧主题类
+    THEMES.forEach(t => document.body.classList.remove('theme-' + t));
+    // 添加新主题类
+    document.body.classList.add('theme-' + theme);
+    // 更新按钮状态
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // 更新信息
+    const info = THEME_INFO[theme];
+    document.getElementById('info-name').textContent = info.name;
+    document.getElementById('info-desc').textContent = info.desc;
+    // 更新色板
+    renderPalette();
+  });
+});
+
+renderPalette();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,440 @@
+.websocket-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--background-panel);
+}
+
+.ws-url-bar {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ws-method-tag {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--method-put);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  box-sizing: border-box;
+}
+
+.ws-connect-btn,
+.ws-save-btn {
+  height: 32px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.ws-connect-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+.ws-connect-btn:hover {
+  background: var(--primary-hover);
+}
+
+.ws-connect-btn.connected {
+  background: var(--method-delete);
+}
+
+.ws-connect-btn.connected:hover {
+  background: var(--method-delete);
+  filter: brightness(1.1);
+}
+
+.ws-save-btn {
+  background: var(--method-get);
+  color: #fff;
+  border: none;
+}
+
+.ws-save-btn:hover {
+  background: var(--method-get);
+  filter: brightness(1.1);
+}
+
+.ws-status-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--background-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ws-status-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ws-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.ws-status-indicator.ws-connecting {
+  background: var(--method-post);
+  animation: pulse 1s infinite;
+}
+
+.ws-status-indicator.ws-connected {
+  background: var(--method-get);
+}
+
+.ws-status-indicator.ws-disconnected {
+  background: var(--text-muted);
+}
+
+.ws-status-indicator.ws-error {
+  background: var(--method-delete);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.ws-status-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.ws-connected-time {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ws-error-detail {
+  font-size: 12px;
+  color: #f56c6c;
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-config-area {
+  padding: 12px 16px;
+  background: var(--background-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ws-config-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.ws-config-tab {
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.ws-config-tab:hover {
+  color: var(--primary);
+}
+
+.ws-config-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.ws-config-content {
+  /* content area */
+}
+
+.ws-config-toolbar {
+  margin-bottom: 12px;
+}
+
+.ws-add-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ws-add-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.ws-config-list {
+  border: none;
+  background: var(--background-panel);
+}
+
+.ws-config-table-header {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--background-card);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.ws-config-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ws-config-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 8px;
+  background: var(--background-card);
+  margin-bottom: 4px;
+  border-radius: 3px;
+}
+
+.ws-config-row:last-child {
+  margin-bottom: 0;
+}
+
+.ws-config-row:hover {
+  background: var(--background-input);
+}
+
+.ws-col-check {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.ws-col-check input {
+  width: 16px;
+  height: 16px;
+}
+
+.ws-col-key,
+.ws-col-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-col-key input,
+.ws-col-value input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  outline: none;
+  height: 28px;
+  box-sizing: border-box;
+  background: var(--background-input);
+  color: var(--text-primary);
+}
+
+.ws-col-key input:focus,
+.ws-col-value input:focus {
+  border-color: var(--primary);
+}
+
+.ws-col-action {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.ws-remove-btn {
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.ws-remove-btn:hover {
+  color: var(--method-delete);
+  background: var(--method-delete-bg);
+}
+
+.ws-main-area {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px;
+  overflow: hidden;
+}
+
+.ws-messages-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-messages-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ws-clear-btn {
+  font-size: 12px;
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.ws-messages-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--background-app);
+  padding: 8px;
+}
+
+.ws-messages-empty,
+.ws-logs-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ws-message-item {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  background: var(--background-panel);
+  border: 1px solid var(--border-color);
+}
+
+.ws-message-item.sent {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+}
+
+.ws-message-item.received {
+  background: rgba(78, 201, 176, 0.1);
+  border-color: var(--method-get);
+}
+
+.ws-message-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.ws-message-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ws-message-direction {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ws-message-item.sent .ws-message-direction {
+  color: var(--primary);
+}
+
+.ws-message-item.received .ws-message-direction {
+  color: var(--method-get);
+}
+
+.ws-message-type {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  background: var(--background-card);
+  border-radius: 2px;
+}
+
+.ws-message-content {
+  font-size: 13px;
+  color: var(--text-primary);
+  word-break: break-word;
+  font-family: var(--font-mono);
+}
+
+.ws-send-area {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.ws-type-select {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--background-input);
+  color: var(--text-primary);
+}
+
+.ws-send-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--background-input);
+  color: var(--text-primary);
+}
+
+.ws-send-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ws-send-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.ws-send-btn:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+}
