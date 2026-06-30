@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSettingsCenter } from "./index.js";
+import { THEMES as allThemes } from "../../composables/useTheme.js";
 import appIcon from "../../assets/app-icon.png";
 
 const props = defineProps({
@@ -370,36 +371,20 @@ const version = "v0.1.0";
                 <h3 class="s-grp-title">{{ t("settings.theme") }}</h3>
                 <div class="theme-cards">
                   <div
+                    v-for="theme in allThemes"
+                    :key="theme.id"
                     class="theme-card"
-                    :class="{ on: c.themeId.value === 'paper' }"
-                    @click="c.previewTheme('paper')"
+                    :class="{ on: c.themeId.value === theme.id }"
+                    @click="c.previewTheme(theme.id)"
                   >
-                    <div class="tc-preview tc-paper">
+                    <div class="tc-preview" :class="'tc-' + theme.id">
                       <div class="tc-bar"><i></i><i></i><i></i></div>
                       <div class="tc-dot"></div>
                       <div class="tc-line"></div>
                       <div class="tc-line"></div>
                     </div>
                     <div class="tc-foot">
-                      <span>Paper</span>
-                      <span class="tick">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9" /></svg>
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    class="theme-card"
-                    :class="{ on: c.themeId.value === 'dark' }"
-                    @click="c.previewTheme('dark')"
-                  >
-                    <div class="tc-preview tc-dark">
-                      <div class="tc-bar"><i></i><i></i><i></i></div>
-                      <div class="tc-dot"></div>
-                      <div class="tc-line"></div>
-                      <div class="tc-line"></div>
-                    </div>
-                    <div class="tc-foot">
-                      <span>Dark</span>
+                      <span>{{ theme.label }}</span>
                       <span class="tick">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9" /></svg>
                       </span>

@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS cookies (
     PRIMARY KEY (name, domain)
 );
 
+CREATE INDEX IF NOT EXISTS idx_cookie_domain ON cookies(domain);
+
 -- 集合项（params/headers/form_fields/variables/common_headers 存为 JSON）
 CREATE TABLE IF NOT EXISTS collection_items (
     id TEXT PRIMARY KEY,
@@ -99,6 +101,7 @@ CREATE TABLE IF NOT EXISTS history_entries (
 CREATE INDEX IF NOT EXISTS idx_history_date ON history_entries(date);
 CREATE INDEX IF NOT EXISTS idx_history_api ON history_entries(api_id);
 CREATE INDEX IF NOT EXISTS idx_history_created ON history_entries(created_at);
+CREATE INDEX IF NOT EXISTS idx_history_url ON history_entries(url);
 
 -- 脚本
 CREATE TABLE IF NOT EXISTS scripts (
@@ -208,6 +211,7 @@ CREATE TABLE IF NOT EXISTS stress_results (
 
 CREATE INDEX IF NOT EXISTS idx_stress_res_api ON stress_results(api_id);
 CREATE INDEX IF NOT EXISTS idx_stress_res_time ON stress_results(start_time);
+CREATE INDEX IF NOT EXISTS idx_stress_res_api_time ON stress_results(api_id, start_time);
 
 -- 压测失败请求详情（拆分自原 failed_request_details 列，支持分页查询）
 CREATE TABLE IF NOT EXISTS stress_result_details (

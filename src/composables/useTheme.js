@@ -5,27 +5,6 @@ import { useMonacoTheme, MONACO_THEMES } from "./useMonacoTheme";
  * 主题定义
  */
 export const THEMES = [
-  // {
-  //   id: "vscode-dark",
-  //   name: "VS Code Dark+",
-  //   label: "VS Code Dark+",
-  //   description: "经典深蓝风格 - VS Code 默认深色主题",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "nord",
-  //   name: "Nord",
-  //   label: "Nord",
-  //   description: "北欧冷色调 - 清新优雅的配色方案",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "dracula",
-  //   name: "Dracula",
-  //   label: "Dracula",
-  //   description: "紫色高对比 - 经典紫色主题",
-  //   type: "dark",
-  // },
   {
     id: "dark",
     name: "Dark",
@@ -33,48 +12,6 @@ export const THEMES = [
     description: "One Dark Pro 风格 - 柔和舒适的墨砚深色",
     type: "dark",
   },
-  // {
-  //   id: "material-darker",
-  //   name: "Material Darker",
-  //   label: "Material Darker",
-  //   description: "Material Design 深色版 - 极致深色",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "monokai-pro",
-  //   name: "Monokai Pro",
-  //   label: "Monokai Pro",
-  //   description: "经典 Monokai 升级版 - 程序员熟悉",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "github-dark",
-  //   name: "GitHub Dark",
-  //   label: "GitHub Dark",
-  //   description: "GitHub 官方深色 - 简洁专业的开发者风格",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "tokyo-night",
-  //   name: "Tokyo Night",
-  //   label: "Tokyo Night",
-  //   description: "东京夜色 - 神秘深邃的日系美学",
-  //   type: "dark",
-  // },
-  // {
-  //   id: "arctic-ice",
-  //   name: "Arctic Ice",
-  //   label: "Arctic Ice",
-  //   description: "冰雪白色系 - 冷峻简约的浅色主题",
-  //   type: "light",
-  // },
-  // {
-  //   id: "storm-gray",
-  //   name: "Storm Gray",
-  //   label: "Storm Gray",
-  //   description: "风暴灰色系 - 专业沉稳的浅色主题",
-  //   type: "light",
-  // },
   {
     id: "paper",
     name: "Paper",

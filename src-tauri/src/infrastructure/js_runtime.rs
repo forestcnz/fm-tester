@@ -285,6 +285,20 @@ impl JsRuntimeExecutor {
             )
             .map_err(|e| format!("Failed to set env.remove: {}", e))?;
 
+        // getAll 返回所有环境变量（JSON 字符串，用户可通过 JSON.parse 解析）
+        env_obj
+            .set(
+                "getAll",
+                Function::new(ctx.clone(), {
+                    let vars = env_vars.clone();
+                    move || {
+                        let map = vars.lock().unwrap().clone();
+                        serde_json::to_string(&map).unwrap_or_else(|_| "{}".to_string())
+                    }
+                }),
+            )
+            .map_err(|e| format!("Failed to set env.getAll: {}", e))?;
+
         fm.set("environment", env_obj)
             .map_err(|e| format!("Failed to set environment: {}", e))?;
 
@@ -338,6 +352,20 @@ impl JsRuntimeExecutor {
                 }),
             )
             .map_err(|e| format!("Failed to set coll.remove: {}", e))?;
+
+        // getAll 返回所有集合变量（JSON 字符串，用户可通过 JSON.parse 解析）
+        coll_obj
+            .set(
+                "getAll",
+                Function::new(ctx.clone(), {
+                    let vars = coll_vars.clone();
+                    move || {
+                        let map = vars.lock().unwrap().clone();
+                        serde_json::to_string(&map).unwrap_or_else(|_| "{}".to_string())
+                    }
+                }),
+            )
+            .map_err(|e| format!("Failed to set coll.getAll: {}", e))?;
 
         fm.set("collection", coll_obj)
             .map_err(|e| format!("Failed to set collection: {}", e))?;
@@ -499,6 +527,32 @@ impl JsRuntimeExecutor {
             )
             .map_err(|e| format!("Failed to set removeHeader: {}", e))?;
 
+        // getHeaders 返回所有启用的请求头（JSON 字符串，用户可通过 JSON.parse 解析）
+        req_obj
+            .set(
+                "getHeaders",
+                Function::new(ctx.clone(), {
+                    let req = request_state.clone();
+                    move || {
+                        let headers: Vec<serde_json::Value> = req
+                            .lock()
+                            .unwrap()
+                            .headers
+                            .iter()
+                            .filter(|h| h.enabled)
+                            .map(|h| {
+                                serde_json::json!({
+                                    "key": h.key.clone(),
+                                    "value": h.value.clone()
+                                })
+                            })
+                            .collect();
+                        serde_json::to_string(&headers).unwrap_or_else(|_| "[]".to_string())
+                    }
+                }),
+            )
+            .map_err(|e| format!("Failed to set getHeaders: {}", e))?;
+
         req_obj
             .set(
                 "getBody",
@@ -646,6 +700,17 @@ impl JsRuntimeExecutor {
                     }),
                 )
                 .map_err(|e| format!("Failed to set response.getHeader: {}", e))?;
+
+            // getHeaders 返回所有响应头（JSON 字符串，用户可通过 JSON.parse 解析）
+            resp_obj
+                .set(
+                    "getHeaders",
+                    Function::new(ctx.clone(), {
+                        let headers = resp_headers.clone();
+                        move || serde_json::to_string(&headers).unwrap_or_else(|_| "{}".to_string())
+                    }),
+                )
+                .map_err(|e| format!("Failed to set response.getHeaders: {}", e))?;
 
             let time = resp.time;
             resp_obj
