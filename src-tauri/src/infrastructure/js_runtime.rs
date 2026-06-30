@@ -2,7 +2,12 @@
 //!
 //! 使用 rquickjs 提供沙箱化的 JavaScript 执行环境。
 
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
+use chrono::Utc;
+use hmac::{Hmac, Mac};
+use md5;
 use rquickjs::{CaughtError, Context, Ctx, Function, Object, Runtime};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -742,6 +747,225 @@ impl JsRuntimeExecutor {
                 .map_err(|e| format!("Failed to set response: {}", e))?;
         }
 
+        // ===== crypto API =====
+        let crypto_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create crypto_obj: {}", e))?;
+
+        // md5(str) -> hex string
+        crypto_obj
+            .set(
+                "md5",
+                Function::new(ctx.clone(), |input: String| {
+                    let result = md5::compute(input.as_bytes());
+                    hex_encode(&result.0)
+                }),
+            )
+            .map_err(|e| format!("Failed to set crypto.md5: {}", e))?;
+
+        // sha256(str) -> hex string
+        crypto_obj
+            .set(
+                "sha256",
+                Function::new(ctx.clone(), |input: String| {
+                    let mut hasher = Sha256::new();
+                    hasher.update(input.as_bytes());
+                    let result = hasher.finalize();
+                    hex_encode(&result)
+                }),
+            )
+            .map_err(|e| format!("Failed to set crypto.sha256: {}", e))?;
+
+        // hmac(algorithm, key, data) -> hex string
+        // algorithm: "md5" | "sha256"
+        crypto_obj
+            .set(
+                "hmac",
+                Function::new(ctx.clone(), |algo: String, key: String, data: String| {
+                    match algo.to_lowercase().as_str() {
+                        "md5" => {
+                            let result = hmac_md5(key.as_bytes(), data.as_bytes());
+                            hex_encode(&result)
+                        }
+                        "sha256" => {
+                            let mut mac = Hmac::<Sha256>::new_from_slice(key.as_bytes())
+                                .expect("HMAC can take key of any size");
+                            mac.update(data.as_bytes());
+                            let result = mac.finalize();
+                            hex_encode(&result.into_bytes())
+                        }
+                        _ => format!("Unsupported algorithm: {}", algo),
+                    }
+                }),
+            )
+            .map_err(|e| format!("Failed to set crypto.hmac: {}", e))?;
+
+        fm.set("crypto", crypto_obj)
+            .map_err(|e| format!("Failed to set crypto: {}", e))?;
+
+        // ===== base64 API =====
+        let base64_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create base64_obj: {}", e))?;
+
+        base64_obj
+            .set(
+                "encode",
+                Function::new(ctx.clone(), |input: String| BASE64.encode(input.as_bytes())),
+            )
+            .map_err(|e| format!("Failed to set base64.encode: {}", e))?;
+
+        base64_obj
+            .set(
+                "decode",
+                Function::new(ctx.clone(), |input: String| {
+                    match BASE64.decode(&input) {
+                        Ok(v) => String::from_utf8_lossy(&v).into_owned(),
+                        Err(e) => format!("Base64 decode error: {}", e),
+                    }
+                }),
+            )
+            .map_err(|e| format!("Failed to set base64.decode: {}", e))?;
+
+        fm.set("base64", base64_obj)
+            .map_err(|e| format!("Failed to set base64: {}", e))?;
+
+        // ===== uuid API =====
+        fm.set("uuid", Function::new(ctx.clone(), generate_uuid_v4))
+            .map_err(|e| format!("Failed to set uuid: {}", e))?;
+
+        // ===== timestamp API =====
+        fm.set(
+            "timestamp",
+            Function::new(ctx.clone(), || Utc::now().timestamp_millis()),
+        )
+        .map_err(|e| format!("Failed to set timestamp: {}", e))?;
+
+        // ===== url API =====
+        let url_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create url_obj: {}", e))?;
+
+        url_obj
+            .set(
+                "encode",
+                Function::new(ctx.clone(), |input: String| {
+                    urlencoding::encode(&input).into_owned()
+                }),
+            )
+            .map_err(|e| format!("Failed to set url.encode: {}", e))?;
+
+        url_obj
+            .set(
+                "decode",
+                Function::new(ctx.clone(), |input: String| {
+                    urlencoding::decode(&input)
+                        .map(|c| c.into_owned())
+                        .unwrap_or_else(|e| format!("URL decode error: {}", e))
+                }),
+            )
+            .map_err(|e| format!("Failed to set url.decode: {}", e))?;
+
+        fm.set("url", url_obj)
+            .map_err(|e| format!("Failed to set url: {}", e))?;
+
+        // ===== time API =====
+        let time_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create time_obj: {}", e))?;
+
+        time_obj
+            .set(
+                "format",
+                Function::new(ctx.clone(), |format: String| {
+                    Utc::now().format(&format).to_string()
+                }),
+            )
+            .map_err(|e| format!("Failed to set time.format: {}", e))?;
+
+        fm.set("time", time_obj)
+            .map_err(|e| format!("Failed to set time: {}", e))?;
+
+        // ===== random API =====
+        let random_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create random_obj: {}", e))?;
+
+        random_obj
+            .set(
+                "int",
+                Function::new(ctx.clone(), |min: i64, max: i64| {
+                    use rand::Rng;
+                    let mut rng = rand::thread_rng();
+                    rng.gen_range(min..=max)
+                }),
+            )
+            .map_err(|e| format!("Failed to set random.int: {}", e))?;
+
+        random_obj
+            .set(
+                "float",
+                Function::new(ctx.clone(), |min: f64, max: f64| {
+                    use rand::Rng;
+                    let mut rng = rand::thread_rng();
+                    rng.gen_range(min..max)
+                }),
+            )
+            .map_err(|e| format!("Failed to set random.float: {}", e))?;
+
+        random_obj
+            .set(
+                "string",
+                Function::new(ctx.clone(), |length: i32, charset: Option<String>| {
+                    let chars = charset.unwrap_or_else(|| {
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".to_string()
+                    });
+                    use rand::Rng;
+                    let mut rng = rand::thread_rng();
+                    (0..length)
+                        .map(|_| chars.chars().nth(rng.gen_range(0..chars.len())).unwrap())
+                        .collect::<String>()
+                }),
+            )
+            .map_err(|e| format!("Failed to set random.string: {}", e))?;
+
+        fm.set("random", random_obj)
+            .map_err(|e| format!("Failed to set random: {}", e))?;
+
+        // ===== sendRequest API =====
+        fm.set(
+            "sendRequest",
+            Function::new(ctx.clone(), |options: String| {
+                sync_send_request(&options)
+            }),
+        )
+        .map_err(|e| format!("Failed to set sendRequest: {}", e))?;
+
+        // ===== schema API =====
+        let schema_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create schema_obj: {}", e))?;
+
+        schema_obj
+            .set(
+                "validate",
+                Function::new(ctx.clone(), |data: String, schema: String| {
+                    jsonschema_validate(&data, &schema)
+                }),
+            )
+            .map_err(|e| format!("Failed to set schema.validate: {}", e))?;
+
+        fm.set("schema", schema_obj)
+            .map_err(|e| format!("Failed to set schema: {}", e))?;
+
+        // ===== xml API =====
+        let xml_obj =
+            Object::new(ctx.clone()).map_err(|e| format!("Failed to create xml_obj: {}", e))?;
+
+        xml_obj
+            .set(
+                "parse",
+                Function::new(ctx.clone(), |input: String| xml_parse_to_json(&input)),
+            )
+            .map_err(|e| format!("Failed to set xml.parse: {}", e))?;
+
+        fm.set("xml", xml_obj)
+            .map_err(|e| format!("Failed to set xml: {}", e))?;
+
         // ===== log API =====
         // 支持 null/undefined，自动转换为字符串
         fm.set(
@@ -911,5 +1135,228 @@ impl JsRuntimeExecutor {
             format!("/{}", path)
         };
         format!("{}{}", base, path)
+    }
+}
+
+fn hex_encode(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+fn generate_uuid_v4() -> String {
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+    let mut bytes = [0u8; 16];
+    rng.fill(&mut bytes);
+    // UUID v4: version bits (0100) and variant bits (10xx)
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    format!(
+        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+        bytes[0], bytes[1], bytes[2], bytes[3],
+        bytes[4], bytes[5],
+        bytes[6], bytes[7],
+        bytes[8], bytes[9],
+        bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
+    )
+}
+
+fn hmac_md5(key: &[u8], data: &[u8]) -> [u8; 16] {
+    let block_size = 64;
+    let key_padded: Vec<u8> = if key.len() > block_size {
+        let hash = md5::compute(key);
+        let mut padded = vec![0u8; block_size];
+        padded[..16].copy_from_slice(&hash.0);
+        padded
+    } else {
+        let mut padded = vec![0u8; block_size];
+        padded[..key.len()].copy_from_slice(key);
+        padded
+    };
+
+    let ipad: Vec<u8> = key_padded.iter().map(|b| b ^ 0x36).collect();
+    let opad: Vec<u8> = key_padded.iter().map(|b| b ^ 0x5c).collect();
+
+    let mut inner_input = ipad;
+    inner_input.extend_from_slice(data);
+    let inner_hash = md5::compute(&inner_input);
+
+    let mut outer_input = opad;
+    outer_input.extend_from_slice(&inner_hash.0);
+    let outer_hash = md5::compute(&outer_input);
+
+    outer_hash.0
+}
+
+fn sync_send_request(options: &str) -> String {
+    let opts: serde_json::Value = match serde_json::from_str(options) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({ "error": format!("Invalid JSON options: {}", e) }).to_string(),
+    };
+
+    let url = opts["url"].as_str().unwrap_or("");
+    let method = opts["method"].as_str().unwrap_or("GET").to_uppercase();
+    let headers = opts["headers"].as_object();
+    let body = opts["body"].as_str();
+
+    if url.is_empty() {
+        return serde_json::json!({ "error": "Missing url" }).to_string();
+    }
+
+    let client = reqwest::blocking::Client::new();
+    let mut req = match method.as_str() {
+        "GET" => client.get(url),
+        "POST" => client.post(url),
+        "PUT" => client.put(url),
+        "DELETE" => client.delete(url),
+        "PATCH" => client.patch(url),
+        "HEAD" => client.head(url),
+        "OPTIONS" => client.request(reqwest::Method::OPTIONS, url),
+        _ => client.request(reqwest::Method::from_bytes(method.as_bytes()).unwrap_or(reqwest::Method::GET), url),
+    };
+
+    if let Some(h) = headers {
+        for (k, v) in h {
+            if let Some(val) = v.as_str() {
+                req = req.header(k, val);
+            }
+        }
+    }
+
+    if let Some(b) = body {
+        req = req.body(b.to_string());
+    }
+
+    match req.send() {
+        Ok(resp) => {
+            let status = resp.status().as_u16();
+            let headers: HashMap<String, String> = resp
+                .headers()
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
+                .collect();
+            let body = resp.text().unwrap_or_else(|e| format!("Read body error: {}", e));
+            serde_json::json!({
+                "status": status,
+                "headers": headers,
+                "body": body
+            })
+            .to_string()
+        }
+        Err(e) => serde_json::json!({ "error": format!("Request failed: {}", e) }).to_string(),
+    }
+}
+
+fn jsonschema_validate(data: &str, schema: &str) -> String {
+    let data_val: serde_json::Value = match serde_json::from_str(data) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({ "valid": false, "error": format!("Invalid data JSON: {}", e) }).to_string(),
+    };
+
+    let schema_val: serde_json::Value = match serde_json::from_str(schema) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({ "valid": false, "error": format!("Invalid schema JSON: {}", e) }).to_string(),
+    };
+
+    let compiled = match jsonschema::JSONSchema::compile(&schema_val) {
+        Ok(c) => c,
+        Err(e) => return serde_json::json!({ "valid": false, "error": format!("Schema compile error: {}", e) }).to_string(),
+    };
+
+    let result = compiled.validate(&data_val);
+    match result {
+        Ok(_) => serde_json::json!({ "valid": true }).to_string(),
+        Err(errors) => {
+            let error_msgs: Vec<String> = errors.map(|e| e.to_string()).collect();
+            serde_json::json!({ "valid": false, "errors": error_msgs }).to_string()
+        }
+    }
+}
+
+fn xml_parse_to_json(xml: &str) -> String {
+    use quick_xml::events::Event;
+    use quick_xml::Reader;
+
+    let mut reader = Reader::from_str(xml);
+    reader.trim_text(true);
+
+    let mut result: serde_json::Value = serde_json::Value::Null;
+    let mut stack: Vec<(String, serde_json::Map<String, serde_json::Value>)> = Vec::new();
+    let mut current_text = String::new();
+
+    loop {
+        match reader.read_event() {
+            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
+                let name = String::from_utf8_lossy(e.name().local_name().as_ref()).into_owned();
+                let attrs: serde_json::Map<String, serde_json::Value> = e
+                    .attributes()
+                    .filter_map(|a| a.ok())
+                    .map(|a| {
+                        (
+                            String::from_utf8_lossy(a.key.local_name().as_ref()).into_owned(),
+                            serde_json::Value::String(
+                                String::from_utf8_lossy(&a.value).into_owned(),
+                            ),
+                        )
+                    })
+                    .collect();
+
+                let mut node = serde_json::Map::new();
+                if !attrs.is_empty() {
+                    node.insert("@attributes".to_string(), serde_json::Value::Object(attrs));
+                }
+                stack.push((name, node));
+                current_text.clear();
+
+                if matches!(reader.read_event(), Ok(Event::Empty(_))) {
+                    let (tag_name, node) = stack.pop().unwrap();
+                    if let Some(parent) = stack.last_mut() {
+                        add_child_to_parent(&mut parent.1, &tag_name, serde_json::Value::Object(node));
+                    } else {
+                        result = serde_json::json!({ tag_name: node });
+                    }
+                }
+            }
+            Ok(Event::Text(t)) => {
+                current_text = String::from_utf8_lossy(t.as_ref()).into_owned();
+            }
+            Ok(Event::End(e)) => {
+                let name = String::from_utf8_lossy(e.name().local_name().as_ref()).into_owned();
+                if let Some((tag_name, mut node)) = stack.pop() {
+                    if tag_name == name {
+                        if !current_text.trim().is_empty() {
+                            node.insert("#text".to_string(), serde_json::Value::String(current_text.trim().to_string()));
+                        }
+                        if let Some(parent) = stack.last_mut() {
+                            add_child_to_parent(&mut parent.1, &tag_name, serde_json::Value::Object(node));
+                        } else {
+                            result = serde_json::json!({ tag_name: node });
+                        }
+                    }
+                }
+                current_text.clear();
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return serde_json::json!({ "error": format!("XML parse error: {}", e) }).to_string(),
+            _ => {}
+        }
+    }
+
+    result.to_string()
+}
+
+fn add_child_to_parent(
+    parent: &mut serde_json::Map<String, serde_json::Value>,
+    child_name: &str,
+    child_value: serde_json::Value,
+) {
+    if let Some(existing) = parent.get_mut(child_name) {
+        if let serde_json::Value::Array(arr) = existing {
+            arr.push(child_value);
+        } else {
+            let old = existing.clone();
+            parent.insert(child_name.to_string(), serde_json::Value::Array(vec![old, child_value]));
+        }
+    } else {
+        parent.insert(child_name.to_string(), child_value);
     }
 }

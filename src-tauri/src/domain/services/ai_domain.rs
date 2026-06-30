@@ -23,6 +23,16 @@ impl AiDomainService {
 - fm.request.getMethod() / fm.request.setMethod(method) - 获取/设置请求方法
 - fm.request.getHeader(key) / fm.request.setHeader(key, value) / fm.request.removeHeader(key) / fm.request.getHeaders() - 请求头操作
 - fm.request.getBody() / fm.request.setBody(body) - 获取/设置请求体
+- fm.crypto.md5(str) / fm.crypto.sha256(str) / fm.crypto.hmac(algo, key, data) - 加密哈希（返回小写十六进制字符串）
+- fm.base64.encode(str) / fm.base64.decode(str) - Base64 编解码
+- fm.url.encode(str) / fm.url.decode(str) - URL 编解码
+- fm.time.format(format) - 时间格式化，如 fm.time.format(\"YYYY-MM-DD HH:mm:ss\")
+- fm.random.int(min, max) / fm.random.float(min, max) / fm.random.string(length, charset) - 随机数生成
+- fm.uuid() - 生成 UUID v4
+- fm.timestamp() - 获取当前 Unix 时间戳（毫秒）
+- fm.sendRequest(options) - 同步发送额外请求，options 为 JSON 字符串 {url, method, headers, body}
+- fm.schema.validate(data, schema) - JSON Schema 校验，返回 {valid: true/false, errors: []}
+- fm.xml.parse(str) - XML 解析为 JSON 字符串
 - fm.log(message) - 输出日志到Console
 - fm.assert(condition, message) - 断言检查
 - fm.sleep(ms) - 异步等待（毫秒）
@@ -42,6 +52,16 @@ impl AiDomainService {
 - fm.response.getSize() - 获取响应大小（bytes）
 - fm.environment.get(key) / fm.environment.set(key, value) / fm.environment.getAll() - 环境变量操作
 - fm.collection.get(key) / fm.collection.set(key, value) / fm.collection.getAll() - 集合变量操作
+- fm.crypto.md5(str) / fm.crypto.sha256(str) / fm.crypto.hmac(algo, key, data) - 加密哈希（返回小写十六进制字符串）
+- fm.base64.encode(str) / fm.base64.decode(str) - Base64 编解码
+- fm.url.encode(str) / fm.url.decode(str) - URL 编解码
+- fm.time.format(format) - 时间格式化，如 fm.time.format(\"YYYY-MM-DD HH:mm:ss\")
+- fm.random.int(min, max) / fm.random.float(min, max) / fm.random.string(length, charset) - 随机数生成
+- fm.uuid() - 生成 UUID v4
+- fm.timestamp() - 获取当前 Unix 时间戳（毫秒）
+- fm.sendRequest(options) - 同步发送额外请求，options 为 JSON 字符串 {url, method, headers, body}
+- fm.schema.validate(data, schema) - JSON Schema 校验，返回 {valid: true/false, errors: []}
+- fm.xml.parse(str) - XML 解析为 JSON 字符串
 - fm.log(message) - 输出日志到Console
 - fm.assert(condition, message) - 断言检查
 - fm.sleep(ms) - 异步等待（毫秒）
