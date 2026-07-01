@@ -10,7 +10,7 @@ use crate::domain::models::{
 use crate::domain::repositories::AiHttpClientService;
 use futures_util::StreamExt;
 use reqwest;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter};
 
 // 全局复用 AI HTTP Client（连接池 / TLS 会话复用）
@@ -194,6 +194,7 @@ impl AiHttpClientService for ReqwestAiHttpClientService {
         }
 
         // 处理流式响应
+        let start = Instant::now();
         let mut stream = response.bytes_stream();
         let mut full_content = String::new();
         let mut buffer = String::new();
@@ -234,6 +235,9 @@ impl AiHttpClientService for ReqwestAiHttpClientService {
                 }
             }
         }
+
+        let elapsed = start.elapsed();
+        app.emit("ai-chat-duration", elapsed.as_millis() as u64).ok();
 
         Ok(full_content)
     }

@@ -227,6 +227,7 @@ impl AiApplicationService {
         let tools = AiDomainService::get_workspace_tools();
         let client = get_ai_http_client();
         const MAX_ITERATIONS: usize = 8;
+        let agent_start = Instant::now();
 
         for _ in 0..MAX_ITERATIONS {
             let result = client
@@ -245,6 +246,8 @@ impl AiApplicationService {
 
             // 无工具调用：纯文本答案，已通过事件流式输出
             if !result.has_tool_calls() {
+                let elapsed = agent_start.elapsed();
+                app.emit("ai-chat-duration", elapsed.as_millis() as u64).ok();
                 return Ok(result.content);
             }
 
@@ -278,6 +281,8 @@ impl AiApplicationService {
             // 继续下一轮，让 AI 基于工具结果继续生成
         }
 
+        let elapsed = agent_start.elapsed();
+        app.emit("ai-chat-duration", elapsed.as_millis() as u64).ok();
         Ok("（工具调用轮次已达上限，请缩小问题范围后重试）".to_string())
     }
 

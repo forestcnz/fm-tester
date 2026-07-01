@@ -26,6 +26,7 @@ const {
   stopSending,
   renderMarkdown,
   formatTime,
+  formatDuration,
 } = useChatSetup(props);
 </script>
 
@@ -154,6 +155,13 @@ const {
               <template v-else>
                 <div class="user-text">{{ msg.content }}</div>
               </template>
+            </div>
+
+            <div
+              v-if="msg.role === 'assistant' && streamingDone[index] && msg.durationMs"
+              class="msg-duration"
+            >
+              {{ formatDuration(msg.durationMs) }}
             </div>
           </div>
         </div>

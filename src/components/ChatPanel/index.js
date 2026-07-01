@@ -199,6 +199,13 @@ export function useChatSetup(props) {
     }
   };
 
+  const formatDuration = (ms) => {
+    if (!ms) return "";
+    if (ms < 1000) return `${ms}ms`;
+    if (ms < 10000) return `${(ms / 1000).toFixed(1)}s`;
+    return `${(ms / 1000).toFixed(0)}s`;
+  };
+
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
@@ -226,6 +233,7 @@ export function useChatSetup(props) {
   let streamUnlisten = null;
   let reasoningUnlisten = null;
   let toolUnlisten = null;
+  let durationUnlisten = null;
   const reasoningExpanded = ref({});
 
   // 输入 @fm 时启用工作区上下文（Agent 模式）
@@ -295,6 +303,26 @@ export function useChatSetup(props) {
       }
     });
 
+    durationUnlisten = await listen("ai-chat-duration", (event) => {
+      if (messages.value.length > 0) {
+        const lastIndex = messages.value.length - 1;
+        if (messages.value[lastIndex].role === "assistant") {
+          messages.value[lastIndex] = {
+            ...messages.value[lastIndex],
+            durationMs: event.payload,
+          };
+          setTimeout(() => {
+            if (messages.value[lastIndex]) {
+              messages.value[lastIndex] = {
+                ...messages.value[lastIndex],
+                durationMs: null,
+              };
+            }
+          }, 3000);
+        }
+      }
+    });
+
     toolUnlisten = await listen("ai-chat-tool", (event) => {
       if (messages.value.length > 0) {
         const lastIndex = messages.value.length - 1;
@@ -313,6 +341,7 @@ export function useChatSetup(props) {
     if (streamUnlisten) streamUnlisten();
     if (reasoningUnlisten) reasoningUnlisten();
     if (toolUnlisten) toolUnlisten();
+    if (durationUnlisten) durationUnlisten();
   });
 
   const renderMarkdownContent = (content) => renderMarkdown(content);
@@ -337,5 +366,6 @@ export function useChatSetup(props) {
     renderMarkdown: renderMarkdownContent,
     toggleReasoning,
     formatTime,
+    formatDuration,
   };
 }

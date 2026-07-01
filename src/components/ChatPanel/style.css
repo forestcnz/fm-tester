@@ -331,6 +331,27 @@
   font-family: var(--font-mono);
 }
 
+.chat-panel .msg-duration {
+  position: absolute;
+  bottom: 10px;
+  right: 16px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  pointer-events: none;
+  animation: durationFadeIn 0.2s ease, durationFadeOut 0.5s ease 2.5s forwards;
+}
+
+@keyframes durationFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes durationFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 /* ========== 思考过程（chip / sunk 风格） ========== */
 .chat-panel .reasoning-paper {
   background: var(--bg-sunk);
