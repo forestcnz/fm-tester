@@ -135,7 +135,12 @@ async fn send_once(
     let port = parsed
         .port_or_known_default()
         .ok_or_else(|| "无法确定端口".to_string())?;
-    let authority = format!("{}:{}", host, port);
+    let is_default_port = (is_https && port == 443) || (!is_https && port == 80);
+    let authority = if is_default_port {
+        host.to_string()
+    } else {
+        format!("{}:{}", host, port)
+    };
 
     let path = parsed.path();
     let path = if path.is_empty() { "/" } else { path };
