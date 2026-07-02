@@ -24,7 +24,7 @@ const categories = computed(() => [
 ]);
 
 const monoFontOptions = ["IBM Plex Mono", "JetBrains Mono", "Fira Code", "SFMono-Regular", "Consolas"];
-const version = "v0.1.0";
+const version = "v0.1.1";
 </script>
 
 <template>
