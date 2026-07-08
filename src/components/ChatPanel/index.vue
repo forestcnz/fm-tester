@@ -148,7 +148,10 @@ const {
               <!-- Markdown渲染 -->
               <template v-else-if="msg.role === 'assistant'">
                 <!-- eslint-disable-next-line vue/no-v-html -->
-                <div class="markdown-content" v-html="renderMarkdown(msg.content)"></div>
+                <div
+                  class="markdown-content"
+                  v-html="renderMarkdown(msg.content)"
+                ></div>
               </template>
 
               <!-- 用户消息 -->
@@ -158,7 +161,11 @@ const {
             </div>
 
             <div
-              v-if="msg.role === 'assistant' && streamingDone[index] && msg.durationMs"
+              v-if="
+                msg.role === 'assistant' &&
+                streamingDone[index] &&
+                msg.durationMs
+              "
               class="msg-duration"
             >
               {{ formatDuration(msg.durationMs) }}

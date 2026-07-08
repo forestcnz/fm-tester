@@ -585,7 +585,9 @@ export function useRequest(
           try {
             const parsed = JSON.parse(modifiedRequest.body);
             bodyToSend = JSON.stringify(parsed);
-          } catch { /* ignore */ }
+          } catch {
+            /* ignore */
+          }
         }
       }
 

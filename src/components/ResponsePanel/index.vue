@@ -200,39 +200,39 @@ const {
         class="timing-content"
       >
         <template v-if="timingStages.length">
-        <div class="timing-bar-title">{{ t("timing.barTitle") }}</div>
-        <div class="timing-bar">
-          <div
-            v-for="stage in timingStages"
-            :key="stage.key"
-            class="timing-bar-segment"
-            :style="{ width: stage.percent + '%', background: stage.color }"
-            :title="`${stage.label}: ${formatTime(stage.ms)}`"
-          ></div>
-        </div>
-        <div class="timing-list">
-          <div
-            v-for="stage in timingStages"
-            :key="stage.key"
-            class="timing-row"
-          >
-            <span
-              class="timing-dot"
-              :style="{ background: stage.color }"
-            ></span>
-            <span class="timing-label">{{ stage.label }}</span>
-            <span class="timing-value">{{ formatTime(stage.ms) }}</span>
-            <span class="timing-percent">{{ stage.percent }}%</span>
+          <div class="timing-bar-title">{{ t("timing.barTitle") }}</div>
+          <div class="timing-bar">
+            <div
+              v-for="stage in timingStages"
+              :key="stage.key"
+              class="timing-bar-segment"
+              :style="{ width: stage.percent + '%', background: stage.color }"
+              :title="`${stage.label}: ${formatTime(stage.ms)}`"
+            ></div>
           </div>
-          <div class="timing-row timing-total">
-            <span class="timing-dot"></span>
-            <span class="timing-label">{{ t("timing.total") }}</span>
-            <span class="timing-value">{{
-              formatTime(response?.timing?.total_ms)
-            }}</span>
-            <span class="timing-percent">100%</span>
+          <div class="timing-list">
+            <div
+              v-for="stage in timingStages"
+              :key="stage.key"
+              class="timing-row"
+            >
+              <span
+                class="timing-dot"
+                :style="{ background: stage.color }"
+              ></span>
+              <span class="timing-label">{{ stage.label }}</span>
+              <span class="timing-value">{{ formatTime(stage.ms) }}</span>
+              <span class="timing-percent">{{ stage.percent }}%</span>
+            </div>
+            <div class="timing-row timing-total">
+              <span class="timing-dot"></span>
+              <span class="timing-label">{{ t("timing.total") }}</span>
+              <span class="timing-value">{{
+                formatTime(response?.timing?.total_ms)
+              }}</span>
+              <span class="timing-percent">100%</span>
+            </div>
           </div>
-        </div>
         </template>
         <div v-else class="timing-empty">{{ t("timing.noData") }}</div>
       </div>

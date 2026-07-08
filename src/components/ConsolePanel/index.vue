@@ -75,7 +75,9 @@ const parseMessage = (message) => {
     if (typeof parsed === "object" && parsed !== null) {
       return { type: "object", data: parsed };
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { type: "text", data: message };
 };
 
@@ -89,7 +91,9 @@ const deepParseJson = (obj) => {
       if (typeof parsed === "object") {
         return deepParseJson(parsed);
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return obj;
   }
 

@@ -351,7 +351,9 @@ export function useOrchestrationEditorSetup(props, emit) {
         try {
           const parsed = JSON5.parse(modifiedRequest.body);
           bodyToSend = JSON.stringify(parsed);
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
 
       const collectionVariablesArray = Object.entries(modifiedCollVars).map(

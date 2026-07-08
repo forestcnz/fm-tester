@@ -237,7 +237,8 @@ impl AiHttpClientService for ReqwestAiHttpClientService {
         }
 
         let elapsed = start.elapsed();
-        app.emit("ai-chat-duration", elapsed.as_millis() as u64).ok();
+        app.emit("ai-chat-duration", elapsed.as_millis() as u64)
+            .ok();
 
         Ok(full_content)
     }

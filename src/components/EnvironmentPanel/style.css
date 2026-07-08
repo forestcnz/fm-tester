@@ -65,7 +65,8 @@
   color: var(--fg-3);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: color var(--dur-fast) var(--ease),
+  transition:
+    color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }
 
@@ -121,7 +122,8 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--dur-base) var(--ease),
+  transition:
+    background var(--dur-base) var(--ease),
     border-color var(--dur-base) var(--ease),
     color var(--dur-base) var(--ease);
 }
@@ -220,7 +222,8 @@
   font-size: 12px;
   color: var(--fg);
   box-sizing: border-box;
-  transition: border-color var(--dur-fast) var(--ease),
+  transition:
+    border-color var(--dur-fast) var(--ease),
     box-shadow var(--dur-fast) var(--ease),
     background var(--dur-fast) var(--ease);
 }
@@ -261,7 +264,8 @@
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
-  transition: color var(--dur-fast) var(--ease),
+  transition:
+    color var(--dur-fast) var(--ease),
     background var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }

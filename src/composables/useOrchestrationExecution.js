@@ -315,7 +315,9 @@ async function executeStepGlobal(
     try {
       const parsed = JSON5.parse(modifiedRequest.body);
       bodyToSend = JSON.stringify(parsed);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   // 发送请求

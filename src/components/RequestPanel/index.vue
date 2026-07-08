@@ -152,7 +152,16 @@ const {
         <!-- 参数 -->
         <div v-show="activeTab === 'params'" class="params-panel">
           <div class="params-toolbar">
-            <button class="add-btn" @click="addParam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <button class="add-btn" @click="addParam">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               {{ t("buttons.addParam") }}
             </button>
           </div>
@@ -208,7 +217,16 @@ const {
         <!-- 请求头 -->
         <div v-show="activeTab === 'headers'" class="headers-panel">
           <div class="params-toolbar">
-            <button class="add-btn" @click="addHeader"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <button class="add-btn" @click="addHeader">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               {{ t("buttons.addHeader") }}
             </button>
           </div>
@@ -338,7 +356,16 @@ const {
             class="form-data-panel"
           >
             <div class="form-toolbar">
-              <button class="add-btn" @click="addFormField"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <button class="add-btn" @click="addFormField">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
                 {{ t("buttons.addField") }}
               </button>
             </div>
@@ -429,7 +456,16 @@ const {
             class="form-urlencoded-panel"
           >
             <div class="form-toolbar">
-              <button class="add-btn" @click="addFormUrlField"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <button class="add-btn" @click="addFormUrlField">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
                 {{ t("buttons.addField") }}
               </button>
             </div>

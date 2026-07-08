@@ -27,7 +27,9 @@ export function useImportDialogSetup(props, emit) {
       if (json.openapi || json.swagger) {
         return "openapi";
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     if (filename.endsWith(".yaml") || filename.endsWith(".yml")) {
       return "openapi";
     }

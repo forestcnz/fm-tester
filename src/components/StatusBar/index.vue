@@ -2,7 +2,7 @@
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const version = "v0.1.1";
+const version = "v0.1.2";
 
 defineProps({
   workspaceName: {
@@ -43,7 +43,13 @@ defineEmits(["open-cookie-panel", "open-console-panel"]);
           />
           <circle cx="9" cy="10" r="0.9" fill="currentColor" stroke="none" />
           <circle cx="13.5" cy="14" r="0.9" fill="currentColor" stroke="none" />
-          <circle cx="8.5" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
+          <circle
+            cx="8.5"
+            cy="14.5"
+            r="0.9"
+            fill="currentColor"
+            stroke="none"
+          />
         </svg>
       </div>
       <div

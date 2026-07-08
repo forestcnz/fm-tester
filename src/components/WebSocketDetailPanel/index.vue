@@ -412,19 +412,34 @@ onUnmounted(async () => {
             :class="{ active: wsConfigTab === 'params' }"
             @click="wsConfigTab = 'params'"
           >
-            {{ t("tabs.params") }}<span v-if="wsParams.length" class="ws-tab-cnt">{{ wsParams.length }}</span>
+            {{ t("tabs.params")
+            }}<span v-if="wsParams.length" class="ws-tab-cnt">{{
+              wsParams.length
+            }}</span>
           </button>
           <button
             class="ws-config-tab"
             :class="{ active: wsConfigTab === 'headers' }"
             @click="wsConfigTab = 'headers'"
           >
-            {{ t("tabs.headers") }}<span v-if="wsHeaders.length" class="ws-tab-cnt">{{ wsHeaders.length }}</span>
+            {{ t("tabs.headers")
+            }}<span v-if="wsHeaders.length" class="ws-tab-cnt">{{
+              wsHeaders.length
+            }}</span>
           </button>
         </div>
         <div v-show="wsConfigTab === 'params'" class="ws-config-content">
           <div class="ws-config-toolbar">
-            <button class="ws-add-btn" @click="addParam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <button class="ws-add-btn" @click="addParam">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               {{ t("buttons.addParam") }}
             </button>
           </div>
@@ -470,7 +485,16 @@ onUnmounted(async () => {
         </div>
         <div v-show="wsConfigTab === 'headers'" class="ws-config-content">
           <div class="ws-config-toolbar">
-            <button class="ws-add-btn" @click="addHeader"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <button class="ws-add-btn" @click="addHeader">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               {{ t("buttons.addHeader") }}
             </button>
           </div>

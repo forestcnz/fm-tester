@@ -197,9 +197,7 @@ export function useTabs(
           if (currentTab?.id) {
             currentRequestTab.value =
               requestTabs.value[currentTab.id] ||
-              (currentTab.method?.toUpperCase() === "POST"
-                ? "body"
-                : "params");
+              (currentTab.method?.toUpperCase() === "POST" ? "body" : "params");
           }
         }
       }

@@ -1,6 +1,6 @@
 [package]
 name = "fm-tester"
-version = "0.1.1"
+version = "0.1.2"
 description = "FM Tester - A Tauri-based API testing tool"
 authors = ["forestcnz"]
 edition = "2021"

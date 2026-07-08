@@ -139,11 +139,7 @@ onMounted(async () => {
           />
         </svg>
       </button>
-      <button
-        class="control-btn close"
-        @click.stop="closeWindow"
-        title="关闭"
-      >
+      <button class="control-btn close" @click.stop="closeWindow" title="关闭">
         <svg
           width="12"
           height="12"

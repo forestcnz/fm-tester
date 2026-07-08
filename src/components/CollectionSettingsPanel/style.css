@@ -83,7 +83,8 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: color var(--dur-fast) var(--ease),
+  transition:
+    color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }
 
@@ -249,7 +250,8 @@
   outline: none;
   height: 28px;
   box-sizing: border-box;
-  transition: border-color var(--dur-fast) var(--ease),
+  transition:
+    border-color var(--dur-fast) var(--ease),
     box-shadow var(--dur-fast) var(--ease);
 }
 

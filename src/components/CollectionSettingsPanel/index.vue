@@ -80,7 +80,18 @@ const {
       <!-- 请求头 -->
       <div v-show="activeTab === 'headers'" class="headers-panel">
         <div class="panel-toolbar">
-          <button class="add-btn" @click="addHeader"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <button class="add-btn" @click="addHeader">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
             {{ t("buttons.addHeader") }}
           </button>
           <span class="panel-hint">{{

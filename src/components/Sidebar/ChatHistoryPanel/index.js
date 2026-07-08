@@ -178,9 +178,12 @@ export function useChatHistorySetup(props, emit) {
     });
 
     // 监听会话标题自动更新事件，刷新列表显示
-    titleUpdatedUnlisten = await listen("chat-session-title-updated", async () => {
-      await loadSessions();
-    });
+    titleUpdatedUnlisten = await listen(
+      "chat-session-title-updated",
+      async () => {
+        await loadSessions();
+      },
+    );
 
     // 监听全局点击关闭右键菜单
     document.addEventListener("click", closeContextMenu);

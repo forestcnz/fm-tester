@@ -780,8 +780,9 @@ impl JsRuntimeExecutor {
         crypto_obj
             .set(
                 "hmac",
-                Function::new(ctx.clone(), |algo: String, key: String, data: String| {
-                    match algo.to_lowercase().as_str() {
+                Function::new(
+                    ctx.clone(),
+                    |algo: String, key: String, data: String| match algo.to_lowercase().as_str() {
                         "md5" => {
                             let result = hmac_md5(key.as_bytes(), data.as_bytes());
                             hex_encode(&result)
@@ -794,8 +795,8 @@ impl JsRuntimeExecutor {
                             hex_encode(&result.into_bytes())
                         }
                         _ => format!("Unsupported algorithm: {}", algo),
-                    }
-                }),
+                    },
+                ),
             )
             .map_err(|e| format!("Failed to set crypto.hmac: {}", e))?;
 
@@ -816,11 +817,9 @@ impl JsRuntimeExecutor {
         base64_obj
             .set(
                 "decode",
-                Function::new(ctx.clone(), |input: String| {
-                    match BASE64.decode(&input) {
-                        Ok(v) => String::from_utf8_lossy(&v).into_owned(),
-                        Err(e) => format!("Base64 decode error: {}", e),
-                    }
+                Function::new(ctx.clone(), |input: String| match BASE64.decode(&input) {
+                    Ok(v) => String::from_utf8_lossy(&v).into_owned(),
+                    Err(e) => format!("Base64 decode error: {}", e),
                 }),
             )
             .map_err(|e| format!("Failed to set base64.decode: {}", e))?;
@@ -930,9 +929,7 @@ impl JsRuntimeExecutor {
         // ===== sendRequest API =====
         fm.set(
             "sendRequest",
-            Function::new(ctx.clone(), |options: String| {
-                sync_send_request(&options)
-            }),
+            Function::new(ctx.clone(), |options: String| sync_send_request(&options)),
         )
         .map_err(|e| format!("Failed to set sendRequest: {}", e))?;
 
@@ -1190,7 +1187,10 @@ fn hmac_md5(key: &[u8], data: &[u8]) -> [u8; 16] {
 fn sync_send_request(options: &str) -> String {
     let opts: serde_json::Value = match serde_json::from_str(options) {
         Ok(v) => v,
-        Err(e) => return serde_json::json!({ "error": format!("Invalid JSON options: {}", e) }).to_string(),
+        Err(e) => {
+            return serde_json::json!({ "error": format!("Invalid JSON options: {}", e) })
+                .to_string()
+        }
     };
 
     let url = opts["url"].as_str().unwrap_or("");
@@ -1211,7 +1211,10 @@ fn sync_send_request(options: &str) -> String {
         "PATCH" => client.patch(url),
         "HEAD" => client.head(url),
         "OPTIONS" => client.request(reqwest::Method::OPTIONS, url),
-        _ => client.request(reqwest::Method::from_bytes(method.as_bytes()).unwrap_or(reqwest::Method::GET), url),
+        _ => client.request(
+            reqwest::Method::from_bytes(method.as_bytes()).unwrap_or(reqwest::Method::GET),
+            url,
+        ),
     };
 
     if let Some(h) = headers {
@@ -1234,7 +1237,9 @@ fn sync_send_request(options: &str) -> String {
                 .iter()
                 .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
                 .collect();
-            let body = resp.text().unwrap_or_else(|e| format!("Read body error: {}", e));
+            let body = resp
+                .text()
+                .unwrap_or_else(|e| format!("Read body error: {}", e));
             serde_json::json!({
                 "status": status,
                 "headers": headers,
@@ -1310,7 +1315,11 @@ fn xml_parse_to_json(xml: &str) -> String {
                 if matches!(reader.read_event(), Ok(Event::Empty(_))) {
                     let (tag_name, node) = stack.pop().unwrap();
                     if let Some(parent) = stack.last_mut() {
-                        add_child_to_parent(&mut parent.1, &tag_name, serde_json::Value::Object(node));
+                        add_child_to_parent(
+                            &mut parent.1,
+                            &tag_name,
+                            serde_json::Value::Object(node),
+                        );
                     } else {
                         result = serde_json::json!({ tag_name: node });
                     }
@@ -1324,10 +1333,17 @@ fn xml_parse_to_json(xml: &str) -> String {
                 if let Some((tag_name, mut node)) = stack.pop() {
                     if tag_name == name {
                         if !current_text.trim().is_empty() {
-                            node.insert("#text".to_string(), serde_json::Value::String(current_text.trim().to_string()));
+                            node.insert(
+                                "#text".to_string(),
+                                serde_json::Value::String(current_text.trim().to_string()),
+                            );
                         }
                         if let Some(parent) = stack.last_mut() {
-                            add_child_to_parent(&mut parent.1, &tag_name, serde_json::Value::Object(node));
+                            add_child_to_parent(
+                                &mut parent.1,
+                                &tag_name,
+                                serde_json::Value::Object(node),
+                            );
                         } else {
                             result = serde_json::json!({ tag_name: node });
                         }
@@ -1336,7 +1352,10 @@ fn xml_parse_to_json(xml: &str) -> String {
                 current_text.clear();
             }
             Ok(Event::Eof) => break,
-            Err(e) => return serde_json::json!({ "error": format!("XML parse error: {}", e) }).to_string(),
+            Err(e) => {
+                return serde_json::json!({ "error": format!("XML parse error: {}", e) })
+                    .to_string()
+            }
             _ => {}
         }
     }
@@ -1354,7 +1373,10 @@ fn add_child_to_parent(
             arr.push(child_value);
         } else {
             let old = existing.clone();
-            parent.insert(child_name.to_string(), serde_json::Value::Array(vec![old, child_value]));
+            parent.insert(
+                child_name.to_string(),
+                serde_json::Value::Array(vec![old, child_value]),
+            );
         }
     } else {
         parent.insert(child_name.to_string(), child_value);

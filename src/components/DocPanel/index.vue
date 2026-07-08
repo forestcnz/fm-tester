@@ -77,7 +77,11 @@ const {
     <!-- 展示模式 -->
     <div v-if="docMode === 'view'" class="doc-view-container">
       <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-if="renderedDocHtml" class="doc-content" v-html="renderedDocHtml"></div>
+      <div
+        v-if="renderedDocHtml"
+        class="doc-content"
+        v-html="renderedDocHtml"
+      ></div>
       <div v-else class="doc-empty">
         <span class="empty-icon"><Icon name="file" :size="48" /></span>
         <p>{{ t("empty.noDoc") }}</p>

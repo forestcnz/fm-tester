@@ -105,7 +105,8 @@
   font-family: var(--font-mono);
   background: var(--bg-panel);
   color: var(--fg);
-  transition: border-color var(--dur-base) var(--ease),
+  transition:
+    border-color var(--dur-base) var(--ease),
     box-shadow var(--dur-base) var(--ease);
 }
 
@@ -333,8 +334,10 @@
   font-size: 15px;
   border-radius: var(--radius-sm);
   opacity: 0.5;
-  transition: opacity var(--dur-fast) var(--ease),
-    background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .history-item:hover .delete-btn {
@@ -687,7 +690,8 @@
   font-size: 12px;
   background: var(--bg-panel);
   color: var(--fg);
-  transition: border-color var(--dur-base) var(--ease),
+  transition:
+    border-color var(--dur-base) var(--ease),
     box-shadow var(--dur-base) var(--ease);
 }
 

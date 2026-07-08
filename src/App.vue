@@ -285,7 +285,10 @@ onUnmounted(() => {
       <!-- 主内容列：TabsBar + 面板（位于 Sidebar 右侧，不跨到集合列表上方） -->
       <div class="main-column">
         <TabsBar
-          v-if="(showRequestResponse || showCollectionSettings) && !showSavedResponseDoc"
+          v-if="
+            (showRequestResponse || showCollectionSettings) &&
+            !showSavedResponseDoc
+          "
           :tabs="displayTabs"
           :active-tab="activeTab"
           :workspace="currentWorkspace"
@@ -297,155 +300,155 @@ onUnmounted(() => {
           @select-api="selectApi"
         />
 
-      <!-- 保存响应 MD 文档面板（优先级高于 showRequestResponse） -->
-      <div class="content-area" v-if="showSavedResponseDoc">
-        <SavedResponseDocPanel
-          :saved-response="selectedSavedResponse"
-          :workspace-id="currentWorkspace?.id || ''"
-          @close="closeSavedResponseDoc"
-        />
-      </div>
-
-      <!-- WebSocket 导航时显示详情面板 -->
-      <div class="content-area" v-else-if="showWebSocketPanel">
-        <WebSocketDetailPanel
-          :workspace-id="currentWorkspace?.id || ''"
-          :ws-config="selectedWsConfig"
-        />
-      </div>
-
-      <!-- 中间内容区 -->
-      <div class="content-area" v-else-if="showRequestResponse">
-        <!-- 请求区 -->
-        <div
-          class="request-area"
-          :style="{
-            height:
-              currentRequestTab === 'scripts' ||
-              currentRequestTab === 'docs' ||
-              currentRequestTab === 'stress'
-                ? '100%'
-                : requestPanelHeight + '%',
-          }"
-        >
-          <RequestPanel
-            :request="currentRequest"
-            :has-active-tab="tabs.length > 0"
-            :variables="availableVariables"
-            :request-tab="currentRequestTab"
+        <!-- 保存响应 MD 文档面板（优先级高于 showRequestResponse） -->
+        <div class="content-area" v-if="showSavedResponseDoc">
+          <SavedResponseDocPanel
+            :saved-response="selectedSavedResponse"
             :workspace-id="currentWorkspace?.id || ''"
-            :api-id="displayTabs[activeTab]?.id || ''"
-            @update:request="updateRequest($event)"
-            @send="sendRequest"
-            @save="saveRequest"
-            @update-tab="onUpdateRequestTab"
+            @close="closeSavedResponseDoc"
           />
         </div>
 
-        <!-- 请求/响应分割线 -->
-        <div
-          class="panel-resizer"
-          :class="{ resizing: isResizing }"
-          @mousedown="startResize"
-          v-if="
-            currentRequestTab !== 'scripts' &&
-            currentRequestTab !== 'docs' &&
-            currentRequestTab !== 'stress'
-          "
-        ></div>
+        <!-- WebSocket 导航时显示详情面板 -->
+        <div class="content-area" v-else-if="showWebSocketPanel">
+          <WebSocketDetailPanel
+            :workspace-id="currentWorkspace?.id || ''"
+            :ws-config="selectedWsConfig"
+          />
+        </div>
 
-        <!-- 响应区 - 脚本/文档/压测tab时不显示 -->
+        <!-- 中间内容区 -->
+        <div class="content-area" v-else-if="showRequestResponse">
+          <!-- 请求区 -->
+          <div
+            class="request-area"
+            :style="{
+              height:
+                currentRequestTab === 'scripts' ||
+                currentRequestTab === 'docs' ||
+                currentRequestTab === 'stress'
+                  ? '100%'
+                  : requestPanelHeight + '%',
+            }"
+          >
+            <RequestPanel
+              :request="currentRequest"
+              :has-active-tab="tabs.length > 0"
+              :variables="availableVariables"
+              :request-tab="currentRequestTab"
+              :workspace-id="currentWorkspace?.id || ''"
+              :api-id="displayTabs[activeTab]?.id || ''"
+              @update:request="updateRequest($event)"
+              @send="sendRequest"
+              @save="saveRequest"
+              @update-tab="onUpdateRequestTab"
+            />
+          </div>
+
+          <!-- 请求/响应分割线 -->
+          <div
+            class="panel-resizer"
+            :class="{ resizing: isResizing }"
+            @mousedown="startResize"
+            v-if="
+              currentRequestTab !== 'scripts' &&
+              currentRequestTab !== 'docs' &&
+              currentRequestTab !== 'stress'
+            "
+          ></div>
+
+          <!-- 响应区 - 脚本/文档/压测tab时不显示 -->
+          <div
+            class="response-area"
+            v-if="
+              showRequestResponse &&
+              currentNavKey === 'collection' &&
+              currentRequestTab !== 'stress'
+            "
+            :style="{ height: 100 - requestPanelHeight + '%' }"
+          >
+            <ResponsePanel
+              :response="response"
+              :loading="loading"
+              :test-results="testResults"
+              :sse-events="sseEvents"
+              @save-response="onSaveResponse"
+            />
+          </div>
+        </div>
+
+        <!-- 集合设置面板 -->
+        <div class="content-area" v-else-if="showCollectionSettings">
+          <CollectionSettingsPanel
+            :collection="selectedCollection"
+            :workspace-id="currentWorkspace?.id || ''"
+            :variables="availableVariables"
+            @save="onCollectionSettingsSaved"
+          />
+        </div>
+
+        <!-- 历史详情面板 -->
+        <div class="content-area" v-else-if="showHistoryDetail">
+          <HistoryDetailPanel :entry="selectedHistoryEntry" />
+        </div>
+
+        <!-- 工作区设置面板 -->
+        <div class="content-area" v-else-if="showWorkspaceInfo">
+          <WorkspaceSettingsPanel
+            :workspace="selectedWorkspace"
+            :workspace-id="selectedWorkspace?.id || ''"
+          />
+        </div>
+
+        <!-- 环境信息面板 -->
+        <div class="content-area" v-else-if="showEnvironmentInfo">
+          <EnvironmentPanel
+            :active-environment="selectedEnvironment"
+            :workspace-id="currentWorkspace?.id || ''"
+            @save-variables="saveEnvVariables"
+          />
+        </div>
+
+        <!-- Chat 面板 -->
+        <div class="content-area" v-else-if="showChatPanel">
+          <ChatPanel
+            :workspace-id="currentWorkspace?.id || ''"
+            :session-id="chatSessionId"
+          />
+        </div>
+
+        <!-- 编排面板 -->
         <div
-          class="response-area"
-          v-if="
-            showRequestResponse &&
-            currentNavKey === 'collection' &&
-            currentRequestTab !== 'stress'
-          "
-          :style="{ height: 100 - requestPanelHeight + '%' }"
+          class="content-area"
+          v-else-if="showOrchestrationPanel && selectedOrchestration"
         >
-          <ResponsePanel
-            :response="response"
-            :loading="loading"
-            :test-results="testResults"
-            :sse-events="sseEvents"
-            @save-response="onSaveResponse"
+          <OrchestrationEditor
+            :workspace-id="currentWorkspace?.id || ''"
+            :orchestration-id="selectedOrchestration?.id || ''"
+            @steps-changed="onOrchestrationStepsChanged"
           />
         </div>
-      </div>
 
-      <!-- 集合设置面板 -->
-      <div class="content-area" v-else-if="showCollectionSettings">
-        <CollectionSettingsPanel
-          :collection="selectedCollection"
-          :workspace-id="currentWorkspace?.id || ''"
-          :variables="availableVariables"
-          @save="onCollectionSettingsSaved"
-        />
-      </div>
-
-      <!-- 历史详情面板 -->
-      <div class="content-area" v-else-if="showHistoryDetail">
-        <HistoryDetailPanel :entry="selectedHistoryEntry" />
-      </div>
-
-      <!-- 工作区设置面板 -->
-      <div class="content-area" v-else-if="showWorkspaceInfo">
-        <WorkspaceSettingsPanel
-          :workspace="selectedWorkspace"
-          :workspace-id="selectedWorkspace?.id || ''"
-        />
-      </div>
-
-      <!-- 环境信息面板 -->
-      <div class="content-area" v-else-if="showEnvironmentInfo">
-        <EnvironmentPanel
-          :active-environment="selectedEnvironment"
-          :workspace-id="currentWorkspace?.id || ''"
-          @save-variables="saveEnvVariables"
-        />
-      </div>
-
-      <!-- Chat 面板 -->
-      <div class="content-area" v-else-if="showChatPanel">
-        <ChatPanel
-          :workspace-id="currentWorkspace?.id || ''"
-          :session-id="chatSessionId"
-        />
-      </div>
-
-      <!-- 编排面板 -->
-      <div
-        class="content-area"
-        v-else-if="showOrchestrationPanel && selectedOrchestration"
-      >
-        <OrchestrationEditor
-          :workspace-id="currentWorkspace?.id || ''"
-          :orchestration-id="selectedOrchestration?.id || ''"
-          @steps-changed="onOrchestrationStepsChanged"
-        />
-      </div>
-
-      <!-- 编排空状态 -->
-      <div
-        class="content-area"
-        v-else-if="showOrchestrationPanel && !selectedOrchestration"
-      >
-        <div class="orchestration-placeholder">
-          <div class="placeholder-hint">{{ t("empty.selectApiHint") }}</div>
+        <!-- 编排空状态 -->
+        <div
+          class="content-area"
+          v-else-if="showOrchestrationPanel && !selectedOrchestration"
+        >
+          <div class="orchestration-placeholder">
+            <div class="placeholder-hint">{{ t("empty.selectApiHint") }}</div>
+          </div>
         </div>
-      </div>
 
-      <!-- 空状态提示 -->
-      <div class="empty-content" v-else>
-        <div class="empty-message">
-          {{
-            currentWorkspace
-              ? t("empty.selectApiHint")
-              : t("empty.selectWorkspace")
-          }}
+        <!-- 空状态提示 -->
+        <div class="empty-content" v-else>
+          <div class="empty-message">
+            {{
+              currentWorkspace
+                ? t("empty.selectApiHint")
+                : t("empty.selectWorkspace")
+            }}
+          </div>
         </div>
-      </div>
       </div>
     </div>
 

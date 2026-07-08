@@ -18,10 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const { renderedDocHtml } = useSavedResponseDocPanelSetup(
-  props,
-  emit,
-);
+const { renderedDocHtml } = useSavedResponseDocPanelSetup(props, emit);
 </script>
 
 <template>
@@ -39,7 +36,11 @@ const { renderedDocHtml } = useSavedResponseDocPanelSetup(
     <!-- 文档展示 -->
     <div class="doc-view-container">
       <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-if="renderedDocHtml" class="doc-content" v-html="renderedDocHtml"></div>
+      <div
+        v-if="renderedDocHtml"
+        class="doc-content"
+        v-html="renderedDocHtml"
+      ></div>
       <div v-else class="doc-empty">
         <span class="empty-icon"><Icon name="file" :size="48" /></span>
         <p class="empty-text">{{ t("empty.noDocContent") }}</p>

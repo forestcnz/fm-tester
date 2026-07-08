@@ -23,8 +23,14 @@ const categories = computed(() => [
   { key: "about", label: t("settings.about") },
 ]);
 
-const monoFontOptions = ["IBM Plex Mono", "JetBrains Mono", "Fira Code", "SFMono-Regular", "Consolas"];
-const version = "v0.1.1";
+const monoFontOptions = [
+  "IBM Plex Mono",
+  "JetBrains Mono",
+  "Fira Code",
+  "SFMono-Regular",
+  "Consolas",
+];
+const version = "v0.1.2";
 </script>
 
 <template>
@@ -35,9 +41,18 @@ const version = "v0.1.1";
         <header class="sc-header">
           <div class="sh-info">
             <span class="sh-ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
               </svg>
             </span>
             <div>
@@ -68,7 +83,10 @@ const version = "v0.1.1";
           <!-- 右主区 -->
           <main class="sc-main">
             <!-- ============ 通用 ============ -->
-            <section v-show="c.activeCategory.value === 'general'" class="sc-page">
+            <section
+              v-show="c.activeCategory.value === 'general'"
+              class="sc-page"
+            >
               <div class="s-grp">
                 <h3 class="s-grp-title">{{ t("settings.request") }}</h3>
                 <div class="s-row">
@@ -97,13 +115,19 @@ const version = "v0.1.1";
                 </h3>
                 <div class="s-row s-row-switch">
                   <div class="s-row-t">
-                    <span class="s-row-name">{{ t("settings.restoreWs") }}</span>
-                    <span class="s-row-desc">{{ t("settings.restoreWsDesc") }}</span>
+                    <span class="s-row-name">{{
+                      t("settings.restoreWs")
+                    }}</span>
+                    <span class="s-row-desc">{{
+                      t("settings.restoreWsDesc")
+                    }}</span>
                   </div>
                   <button
                     class="switch"
                     :class="{ on: c.restoreWorkspace.value }"
-                    @click="c.restoreWorkspace.value = !c.restoreWorkspace.value"
+                    @click="
+                      c.restoreWorkspace.value = !c.restoreWorkspace.value
+                    "
                   ></button>
                 </div>
                 <div class="s-row s-row-switch">
@@ -111,7 +135,9 @@ const version = "v0.1.1";
                     <span class="s-row-name">
                       {{ t("settings.autoSave") }}
                     </span>
-                    <span class="s-row-desc">{{ t("settings.autoSaveDesc") }}</span>
+                    <span class="s-row-desc">{{
+                      t("settings.autoSaveDesc")
+                    }}</span>
                   </div>
                   <button
                     class="switch"
@@ -129,7 +155,10 @@ const version = "v0.1.1";
                 <div class="s-row">
                   <label class="s-lab">{{ t("settings.aiEndpoint") }}</label>
                   <div class="field s-field">
-                    <input v-model="c.aiEndpoint.value" placeholder="https://api.openai.com/v1" />
+                    <input
+                      v-model="c.aiEndpoint.value"
+                      placeholder="https://api.openai.com/v1"
+                    />
                   </div>
                 </div>
                 <div class="s-row">
@@ -145,16 +174,35 @@ const version = "v0.1.1";
                       :class="c.hasApiKey.value ? 'set' : 'unset'"
                     >
                       <span class="d"></span>
-                      {{ c.hasApiKey.value ? t("settings.keySet") : t("settings.keyUnset") }}
+                      {{
+                        c.hasApiKey.value
+                          ? t("settings.keySet")
+                          : t("settings.keyUnset")
+                      }}
                     </span>
                   </div>
                 </div>
                 <div class="s-row">
                   <label class="s-lab">{{ t("settings.model") }}</label>
                   <div class="field s-field model-input-container">
-                    <input v-model="c.aiModel.value" :placeholder="t('settings.modelPh')" />
-                    <button class="model-dd-btn" @click="c.toggleModelDropdown()">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+                    <input
+                      v-model="c.aiModel.value"
+                      :placeholder="t('settings.modelPh')"
+                    />
+                    <button
+                      class="model-dd-btn"
+                      @click="c.toggleModelDropdown()"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
                     </button>
                     <div v-if="c.showModelDropdown.value" class="model-menu">
                       <div v-if="c.loadingModels.value" class="model-opt muted">
@@ -169,7 +217,10 @@ const version = "v0.1.1";
                         >
                           {{ m }}
                         </div>
-                        <div v-if="!c.aiModels.value.length" class="model-opt muted">
+                        <div
+                          v-if="!c.aiModels.value.length"
+                          class="model-opt muted"
+                        >
                           {{ t("settings.noModels") }}
                         </div>
                       </template>
@@ -179,7 +230,11 @@ const version = "v0.1.1";
                 <div class="s-row">
                   <label class="s-lab">{{ t("settings.timeout") }}</label>
                   <div class="field s-field">
-                    <input v-model.number="c.aiTimeout.value" type="number" min="1" />
+                    <input
+                      v-model.number="c.aiTimeout.value"
+                      type="number"
+                      min="1"
+                    />
                     <span class="s-suffix">{{ t("settings.seconds") }}</span>
                   </div>
                 </div>
@@ -188,7 +243,9 @@ const version = "v0.1.1";
               <div class="s-grp">
                 <div class="s-grp-head">
                   <h3 class="s-grp-title">{{ t("settings.customHeaders") }}</h3>
-                  <button class="ahd-add" @click="c.addHeader()">+ {{ t("settings.addHeader") }}</button>
+                  <button class="ahd-add" @click="c.addHeader()">
+                    + {{ t("settings.addHeader") }}
+                  </button>
                 </div>
                 <div class="ahd-table">
                   <div class="ahd-h">
@@ -198,14 +255,32 @@ const version = "v0.1.1";
                     <span class="ahd-d">{{ t("settings.headerDesc") }}</span>
                     <span class="ahd-x"></span>
                   </div>
-                  <div v-for="(h, i) in c.customHeaders.value" :key="i" class="ahd-r">
+                  <div
+                    v-for="(h, i) in c.customHeaders.value"
+                    :key="i"
+                    class="ahd-r"
+                  >
                     <span class="ahd-cb">
                       <input v-model="h.enabled" type="checkbox" />
                     </span>
-                    <input v-model="h.key" class="ahd-k" :placeholder="t('settings.headerKey')" />
-                    <input v-model="h.value" class="ahd-v" :placeholder="t('settings.headerValue')" />
-                    <input v-model="h.description" class="ahd-d" :placeholder="t('settings.headerDesc')" />
-                    <button class="ahd-del" @click="c.removeHeader(i)">×</button>
+                    <input
+                      v-model="h.key"
+                      class="ahd-k"
+                      :placeholder="t('settings.headerKey')"
+                    />
+                    <input
+                      v-model="h.value"
+                      class="ahd-v"
+                      :placeholder="t('settings.headerValue')"
+                    />
+                    <input
+                      v-model="h.description"
+                      class="ahd-d"
+                      :placeholder="t('settings.headerDesc')"
+                    />
+                    <button class="ahd-del" @click="c.removeHeader(i)">
+                      ×
+                    </button>
                   </div>
                   <div v-if="!c.customHeaders.value.length" class="ahd-empty">
                     {{ t("settings.noHeaders") }}
@@ -221,7 +296,10 @@ const version = "v0.1.1";
                 <div class="s-row">
                   <label class="s-lab">{{ t("settings.repoUrl") }}</label>
                   <div class="field s-field">
-                    <input v-model="c.repoUrl.value" placeholder="https://github.com/user/repo.git" />
+                    <input
+                      v-model="c.repoUrl.value"
+                      placeholder="https://github.com/user/repo.git"
+                    />
                   </div>
                 </div>
                 <div class="s-row">
@@ -242,14 +320,26 @@ const version = "v0.1.1";
                     <input
                       v-model="c.password.value"
                       type="password"
-                      :placeholder="c.hasPassword.value ? t('gitBackup.passwordKeepPlaceholder') : t('git.passwordPlaceholder')"
+                      :placeholder="
+                        c.hasPassword.value
+                          ? t('gitBackup.passwordKeepPlaceholder')
+                          : t('git.passwordPlaceholder')
+                      "
                       @blur="c.savePassword()"
                     />
                   </div>
                 </div>
                 <div class="s-row-actions">
-                  <button class="btn sm" :disabled="c.gitTesting.value" @click="c.testGitConnection()">
-                    {{ c.gitTesting.value ? t("settings.testing") : t("settings.testConn") }}
+                  <button
+                    class="btn sm"
+                    :disabled="c.gitTesting.value"
+                    @click="c.testGitConnection()"
+                  >
+                    {{
+                      c.gitTesting.value
+                        ? t("settings.testing")
+                        : t("settings.testConn")
+                    }}
                   </button>
                 </div>
               </div>
@@ -258,7 +348,9 @@ const version = "v0.1.1";
                 <h3 class="s-grp-title">{{ t("settings.autoBackup") }}</h3>
                 <div class="s-row s-row-switch">
                   <div class="s-row-t">
-                    <span class="s-row-name">{{ t("settings.autoBackup") }}</span>
+                    <span class="s-row-name">{{
+                      t("settings.autoBackup")
+                    }}</span>
                     <span class="s-row-desc">{{
                       c.repoUrl.value.trim()
                         ? t("settings.autoBackupDesc")
@@ -269,11 +361,15 @@ const version = "v0.1.1";
                     class="switch"
                     :class="{ on: c.autoBackupEnabled.value }"
                     :disabled="!c.repoUrl.value.trim()"
-                    @click="c.autoBackupEnabled.value = !c.autoBackupEnabled.value"
+                    @click="
+                      c.autoBackupEnabled.value = !c.autoBackupEnabled.value
+                    "
                   ></button>
                 </div>
                 <div class="s-row">
-                  <label class="s-lab">{{ t("settings.autoBackupTime") }}</label>
+                  <label class="s-lab">{{
+                    t("settings.autoBackupTime")
+                  }}</label>
                   <div class="field s-field">
                     <input
                       type="time"
@@ -286,7 +382,8 @@ const version = "v0.1.1";
                   <label
                     class="s-lab"
                     :title="t('settings.autoBackupWorkspacesDesc')"
-                  >{{ t("settings.autoBackupWorkspaces") }}</label>
+                    >{{ t("settings.autoBackupWorkspaces") }}</label
+                  >
                   <div class="ab-ws-dd">
                     <button
                       type="button"
@@ -302,19 +399,26 @@ const version = "v0.1.1";
                       <span
                         class="ab-dd-text"
                         :class="{
-                          'has-value': c.autoBackupWorkspaceIds.value.length > 0,
+                          'has-value':
+                            c.autoBackupWorkspaceIds.value.length > 0,
                         }"
-                      >{{ c.backupWsSummary.value }}</span>
+                        >{{ c.backupWsSummary.value }}</span
+                      >
                       <span class="ab-dd-caret"></span>
                     </button>
-                    <div v-if="c.showBackupWsDropdown.value" class="ab-dd-panel">
+                    <div
+                      v-if="c.showBackupWsDropdown.value"
+                      class="ab-dd-panel"
+                    >
                       <div class="ab-dd-toolbar">
                         <button
                           type="button"
                           class="ab-dd-op"
                           :disabled="!c.autoBackupWorkspaceIds.value.length"
                           @click="c.clearBackupWorkspaces()"
-                        >{{ t("common.clear") }}</button>
+                        >
+                          {{ t("common.clear") }}
+                        </button>
                       </div>
                       <div class="ab-dd-list">
                         <div
@@ -336,12 +440,16 @@ const version = "v0.1.1";
                             stroke-width="3"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                          ><path d="M20 6 9 17 4 12" /></svg>
+                          >
+                            <path d="M20 6 9 17 4 12" />
+                          </svg>
                         </div>
                         <div
                           v-if="!c.workspaces.value.length"
                           class="ab-dd-empty"
-                        >{{ t("settings.noWorkspaces") }}</div>
+                        >
+                          {{ t("settings.noWorkspaces") }}
+                        </div>
                       </div>
                     </div>
                     <div
@@ -351,7 +459,9 @@ const version = "v0.1.1";
                         !c.autoBackupWorkspaceIds.value.length
                       "
                       class="ab-ws-warn"
-                    >{{ t("settings.autoBackupNoneSelected") }}</div>
+                    >
+                      {{ t("settings.autoBackupNoneSelected") }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -366,7 +476,10 @@ const version = "v0.1.1";
             </section>
 
             <!-- ============ 外观 ============ -->
-            <section v-show="c.activeCategory.value === 'appearance'" class="sc-page">
+            <section
+              v-show="c.activeCategory.value === 'appearance'"
+              class="sc-page"
+            >
               <div class="s-grp">
                 <h3 class="s-grp-title">{{ t("settings.theme") }}</h3>
                 <div class="theme-cards">
@@ -386,7 +499,16 @@ const version = "v0.1.1";
                     <div class="tc-foot">
                       <span>{{ theme.label }}</span>
                       <span class="tick">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-9" /></svg>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M5 12l5 5 9-9" />
+                        </svg>
                       </span>
                     </div>
                   </div>
@@ -398,13 +520,19 @@ const version = "v0.1.1";
                 <div class="s-row">
                   <label class="s-lab">{{ t("settings.monoFont") }}</label>
                   <select v-model="c.monoFont.value" class="sel">
-                    <option v-for="f in monoFontOptions" :key="f" :value="f">{{ f }}</option>
+                    <option v-for="f in monoFontOptions" :key="f" :value="f">
+                      {{ f }}
+                    </option>
                   </select>
                 </div>
                 <div class="s-row s-row-switch">
                   <div class="s-row-t">
-                    <span class="s-row-name">{{ t("settings.animations") }}</span>
-                    <span class="s-row-desc">{{ t("settings.animationsDesc") }}</span>
+                    <span class="s-row-name">{{
+                      t("settings.animations")
+                    }}</span>
+                    <span class="s-row-desc">{{
+                      t("settings.animationsDesc")
+                    }}</span>
                   </div>
                   <button
                     class="switch"
@@ -416,7 +544,10 @@ const version = "v0.1.1";
             </section>
 
             <!-- ============ 关于 ============ -->
-            <section v-show="c.activeCategory.value === 'about'" class="sc-page">
+            <section
+              v-show="c.activeCategory.value === 'about'"
+              class="sc-page"
+            >
               <div class="about-hero">
                 <span class="about-mark">
                   <img :src="appIcon" alt="FM Tester" />
@@ -441,7 +572,12 @@ const version = "v0.1.1";
                 </div>
                 <div class="info-row">
                   <span class="info-k">{{ t("settings.repo") }}</span>
-                  <a class="info-v link" href="https://github.com/forestcnz/fm-tester" target="_blank">github.com/forestcnz/fm-tester</a>
+                  <a
+                    class="info-v link"
+                    href="https://github.com/forestcnz/fm-tester"
+                    target="_blank"
+                    >github.com/forestcnz/fm-tester</a
+                  >
                 </div>
               </div>
               <div class="license-box">

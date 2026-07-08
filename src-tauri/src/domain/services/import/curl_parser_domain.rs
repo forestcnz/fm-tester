@@ -338,20 +338,33 @@ fn parse_args(args: &[String]) -> Result<ParsedCurl, String> {
 }
 
 fn parse_header(header_str: &str) -> Result<Header, String> {
-    let parts: Vec<&str> = header_str.splitn(2, ':').collect();
-    if parts.len() != 2 {
-        return Err(format!("无效的 header 格式: {}", header_str));
+    let trimmed = header_str.trim();
+
+    if let Some(pos) = trimmed.find(':') {
+        let key = trimmed[..pos].trim().to_string();
+        let value = trimmed[pos + 1..].trim().to_string();
+        return Ok(Header {
+            key,
+            value,
+            enabled: true,
+            description: None,
+        });
     }
 
-    let key = parts[0].trim().to_string();
-    let value = parts[1].trim().to_string();
+    // 处理 curl -H "HeaderName;" 无值 header（Chrome DevTools 会导出 Authorization;）
+    if let Some(stripped) = trimmed.strip_suffix(';') {
+        let key = stripped.trim().to_string();
+        if !key.is_empty() {
+            return Ok(Header {
+                key,
+                value: String::new(),
+                enabled: true,
+                description: None,
+            });
+        }
+    }
 
-    Ok(Header {
-        key,
-        value,
-        enabled: true,
-        description: None,
-    })
+    Err(format!("无效的 header 格式: {}", header_str))
 }
 
 fn parse_form_field(form_str: &str) -> Result<FormField, String> {

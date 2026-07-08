@@ -85,8 +85,12 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M9 4 C 6.5 4 6.5 7 6.5 9 C 6.5 11 5 12 4 12 C 5 12 6.5 13 6.5 15 C 6.5 17 6.5 20 9 20" />
-      <path d="M15 4 C 17.5 4 17.5 7 17.5 9 C 17.5 11 19 12 20 12 C 19 12 17.5 13 17.5 15 C 17.5 17 17.5 20 15 20" />
+      <path
+        d="M9 4 C 6.5 4 6.5 7 6.5 9 C 6.5 11 5 12 4 12 C 5 12 6.5 13 6.5 15 C 6.5 17 6.5 20 9 20"
+      />
+      <path
+        d="M15 4 C 17.5 4 17.5 7 17.5 9 C 17.5 11 19 12 20 12 C 19 12 17.5 13 17.5 15 C 17.5 17 17.5 20 15 20"
+      />
       <circle cx="10.3" cy="10.3" r="1.1" fill="currentColor" stroke="none" />
       <circle cx="13.7" cy="13.7" r="1.1" fill="currentColor" stroke="none" />
     </svg>
@@ -121,7 +125,15 @@ defineProps({
       <rect x="3" y="3" width="18" height="18" rx="2.5" />
       <line x1="3" y1="9" x2="21" y2="9" />
       <line x1="9" y1="9" x2="9" y2="21" />
-      <rect x="4.3" y="4.3" width="3.4" height="3.4" rx="1" fill="currentColor" stroke="none" />
+      <rect
+        x="4.3"
+        y="4.3"
+        width="3.4"
+        height="3.4"
+        rx="1"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
 
     <svg
@@ -135,7 +147,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M4 5 H 18 a2 2 0 0 1 2 2 V 14 a2 2 0 0 1-2 2 H 11 L 6.5 20.2 V 16 H 4 a2 2 0 0 1-2-2 V 7 a2 2 0 0 1 2-2 Z" />
+      <path
+        d="M4 5 H 18 a2 2 0 0 1 2 2 V 14 a2 2 0 0 1-2 2 H 11 L 6.5 20.2 V 16 H 4 a2 2 0 0 1-2-2 V 7 a2 2 0 0 1 2-2 Z"
+      />
       <circle cx="8" cy="10.5" r="1.1" fill="currentColor" stroke="none" />
       <circle cx="12" cy="10.5" r="1.1" fill="currentColor" stroke="none" />
       <circle cx="16" cy="10.5" r="1.1" fill="currentColor" stroke="none" />
@@ -152,7 +166,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M3 7.5 V 18 a1.5 1.5 0 0 0 1.5 1.5 H 19.5 a1.5 1.5 0 0 0 1.5-1.5 V 9.5 a1.5 1.5 0 0 0-1.5-1.5 H 11 L 9 6 H 4.5 A1.5 1.5 0 0 0 3 7.5 Z" />
+      <path
+        d="M3 7.5 V 18 a1.5 1.5 0 0 0 1.5 1.5 H 19.5 a1.5 1.5 0 0 0 1.5-1.5 V 9.5 a1.5 1.5 0 0 0-1.5-1.5 H 11 L 9 6 H 4.5 A1.5 1.5 0 0 0 3 7.5 Z"
+      />
       <circle cx="17.5" cy="13" r="1.2" fill="currentColor" stroke="none" />
     </svg>
 
@@ -167,7 +183,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M3 8 V 18.5 A1.5 1.5 0 0 0 4.5 20 H 17 A1.5 1.5 0 0 0 18.5 19 L 21 9.5 A1 1 0 0 0 20 8 H 6 L 4.5 6 H 3" />
+      <path
+        d="M3 8 V 18.5 A1.5 1.5 0 0 0 4.5 20 H 17 A1.5 1.5 0 0 0 18.5 19 L 21 9.5 A1 1 0 0 0 20 8 H 6 L 4.5 6 H 3"
+      />
       <circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none" />
     </svg>
 
@@ -182,7 +200,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M5 3 H 14 L 19 8 V 20 A1 1 0 0 1 18 21 H 6 A1 1 0 0 1 5 20 V 4 A1 1 0 0 1 6 3 Z" />
+      <path
+        d="M5 3 H 14 L 19 8 V 20 A1 1 0 0 1 18 21 H 6 A1 1 0 0 1 5 20 V 4 A1 1 0 0 1 6 3 Z"
+      />
       <path d="M14 3 V 7 A1 1 0 0 0 15 8 H 19" />
       <line x1="8" y1="12" x2="15" y2="12" stroke-opacity="0.5" />
       <line x1="8" y1="15" x2="15" y2="15" stroke-opacity="0.5" />
@@ -200,7 +220,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M6 3 H 14 L 19 8 V 20 A1 1 0 0 1 18 21 H 6 A1 1 0 0 1 5 20 V 4 A1 1 0 0 1 6 3 Z" />
+      <path
+        d="M6 3 H 14 L 19 8 V 20 A1 1 0 0 1 18 21 H 6 A1 1 0 0 1 5 20 V 4 A1 1 0 0 1 6 3 Z"
+      />
       <path d="M14 3 V 7 A1 1 0 0 0 15 8 H 19" />
     </svg>
 
@@ -234,8 +256,18 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M3 7 V 18 a1.5 1.5 0 0 0 1.5 1.5 H 19.5 a1.5 1.5 0 0 0 1.5-1.5 V 9 a1.5 1.5 0 0 0-1.5-1.5 H 11 L 9 6 H 4.5 A1.5 1.5 0 0 0 3 7.5 Z" />
-      <rect x="9" y="11" width="2.6" height="2.6" rx="0.5" fill="currentColor" stroke="none" />
+      <path
+        d="M3 7 V 18 a1.5 1.5 0 0 0 1.5 1.5 H 19.5 a1.5 1.5 0 0 0 1.5-1.5 V 9 a1.5 1.5 0 0 0-1.5-1.5 H 11 L 9 6 H 4.5 A1.5 1.5 0 0 0 3 7.5 Z"
+      />
+      <rect
+        x="9"
+        y="11"
+        width="2.6"
+        height="2.6"
+        rx="0.5"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
 
     <svg
@@ -264,7 +296,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M5 3 H 16 L 21 8 V 19 A2 2 0 0 1 19 21 H 5 A2 2 0 0 1 3 19 V 5 A2 2 0 0 1 5 3 Z" />
+      <path
+        d="M5 3 H 16 L 21 8 V 19 A2 2 0 0 1 19 21 H 5 A2 2 0 0 1 3 19 V 5 A2 2 0 0 1 5 3 Z"
+      />
       <rect x="8" y="13" width="8" height="6" rx="0.5" />
       <circle cx="12" cy="16" r="1.1" fill="currentColor" stroke="none" />
     </svg>
@@ -361,7 +395,15 @@ defineProps({
       stroke-linejoin="round"
     >
       <rect x="6" y="6" width="12" height="12" rx="2.5" />
-      <rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor" stroke="none" />
+      <rect
+        x="9.5"
+        y="9.5"
+        width="5"
+        height="5"
+        rx="1"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
 
     <svg
@@ -540,7 +582,9 @@ defineProps({
       stroke-linejoin="round"
     >
       <circle cx="12" cy="12" r="3.5" />
-      <path d="M12 2 V 5 M 12 19 V 22 M 2 12 H 5 M 19 12 H 22 M 5 5 L 7 7 M 17 17 L 19 19 M 19 5 L 17 7 M 7 17 L 5 19" />
+      <path
+        d="M12 2 V 5 M 12 19 V 22 M 2 12 H 5 M 19 12 H 22 M 5 5 L 7 7 M 17 17 L 19 19 M 19 5 L 17 7 M 7 17 L 5 19"
+      />
       <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
     </svg>
 
@@ -587,7 +631,9 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M2 12 C 4 7, 8 5, 12 5 C 16 5, 20 7, 22 12 C 20 17, 16 19, 12 19 C 8 19, 4 17, 2 12 Z" />
+      <path
+        d="M2 12 C 4 7, 8 5, 12 5 C 16 5, 20 7, 22 12 C 20 17, 16 19, 12 19 C 8 19, 4 17, 2 12 Z"
+      />
       <circle cx="12" cy="12" r="3" />
       <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" />
     </svg>
@@ -603,8 +649,14 @@ defineProps({
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M11 4 L 12.5 8.5 L 17 10 L 12.5 11.5 L 11 16 L 9.5 11.5 L 5 10 L 9.5 8.5 Z" />
-      <path d="M17.5 14 L 18 15.5 L 19.5 16 L 18 16.5 L 17.5 18 L 17 16.5 L 15.5 16 L 17 15.5 Z" fill="currentColor" stroke="none" />
+      <path
+        d="M11 4 L 12.5 8.5 L 17 10 L 12.5 11.5 L 11 16 L 9.5 11.5 L 5 10 L 9.5 8.5 Z"
+      />
+      <path
+        d="M17.5 14 L 18 15.5 L 19.5 16 L 18 16.5 L 17.5 18 L 17 16.5 L 15.5 16 L 17 15.5 Z"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
 
     <svg

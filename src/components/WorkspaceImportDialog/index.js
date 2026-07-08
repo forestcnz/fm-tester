@@ -5,8 +5,7 @@ import { useDialogEscape } from "../../composables/useDialogStack.js";
 
 export function useWorkspaceImportSetup(props, emit) {
   const { t } = useI18n();
-  const { importWorkspace, previewImport, executeImport } =
-    useWorkspaceIO();
+  const { importWorkspace, previewImport, executeImport } = useWorkspaceIO();
 
   const selectedFile = ref(null);
   const fileContent = ref(null);

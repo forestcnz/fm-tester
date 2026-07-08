@@ -195,7 +195,8 @@
   justify-content: center;
   cursor: pointer;
   color: var(--fg-3);
-  transition: transform var(--dur-base) var(--ease),
+  transition:
+    transform var(--dur-base) var(--ease),
     color var(--dur-fast) var(--ease);
   flex-shrink: 0;
   margin-left: auto;
@@ -231,7 +232,8 @@
   cursor: pointer;
   padding: 2px;
   border-radius: var(--radius-sm);
-  transition: color var(--dur-fast) var(--ease),
+  transition:
+    color var(--dur-fast) var(--ease),
     background var(--dur-fast) var(--ease);
 }
 
@@ -574,7 +576,8 @@
   font-size: 12.5px;
   color: var(--fg);
   border-radius: var(--radius-sm);
-  transition: background var(--dur-fast) var(--ease),
+  transition:
+    background var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
 }
 

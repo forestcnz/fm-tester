@@ -443,9 +443,18 @@ export function useSettingsCenter(props, emit) {
 
   watch(
     [
-      requestTimeout, language, restoreWorkspace, autoSaveOnSend,
-      aiEndpoint, aiApiKey, aiModel, aiTimeout, customHeaders,
-      themeId, monoFont, animations,
+      requestTimeout,
+      language,
+      restoreWorkspace,
+      autoSaveOnSend,
+      aiEndpoint,
+      aiApiKey,
+      aiModel,
+      aiTimeout,
+      customHeaders,
+      themeId,
+      monoFont,
+      animations,
     ],
     scheduleMainSave,
     { deep: true },
