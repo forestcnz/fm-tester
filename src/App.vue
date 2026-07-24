@@ -22,7 +22,15 @@ import OrchestrationEditor from "./components/OrchestrationEditor/index.vue";
 import SavedResponseDocPanel from "./components/SavedResponseDocPanel/index.vue";
 import WebSocketDetailPanel from "./components/WebSocketDetailPanel/index.vue";
 import Toast from "./components/Toast/index.vue";
-import { ref, onMounted, onUnmounted } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  provide,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import { useKeyboardShortcuts } from "./composables/useKeyboardShortcuts.js";
 
 // 使用 composable
@@ -124,6 +132,9 @@ const {
   onWorkspaceImported,
 } = useAppSetup();
 
+// 向子组件提供 tabs 数据（供 CollectionPanel 导出 curl 时获取实时编辑数据）
+provide("appTabs", tabs);
+
 // 全局键盘快捷键
 useKeyboardShortcuts({
   onSave: () => {
@@ -135,6 +146,45 @@ useKeyboardShortcuts({
     }
   },
 });
+
+// 主内容区面板缓存：activePanel 按优先级确定当前唯一可见面板；
+// visitedPanels 记录已访问过的面板，配合模板中的 v-if(visited)+v-show(active)
+// 实现"切换后保持存活、切回不重建"的缓存效果（等价于 keep-alive，适配现有条件渲染结构）
+const activePanel = computed(() => {
+  if (showSavedResponseDoc.value) return "savedResponseDoc";
+  if (showWebSocketPanel.value) return "webSocket";
+  if (showRequestResponse.value) return "requestResponse";
+  if (showCollectionSettings.value) return "collectionSettings";
+  if (showHistoryDetail.value) return "historyDetail";
+  if (showWorkspaceInfo.value) return "workspaceInfo";
+  if (showEnvironmentInfo.value) return "environmentInfo";
+  if (showChatPanel.value) return "chat";
+  if (showOrchestrationPanel.value) return "orchestration";
+  return "empty";
+});
+
+// 记录每个面板是否被访问过（首次激活后永久保留挂载，切换时仅隐藏不销毁）
+const visitedPanels = reactive({
+  savedResponseDoc: false,
+  webSocket: false,
+  requestResponse: false,
+  collectionSettings: false,
+  historyDetail: false,
+  workspaceInfo: false,
+  environmentInfo: false,
+  chat: false,
+  orchestration: false,
+});
+
+watch(
+  activePanel,
+  (key) => {
+    if (Object.prototype.hasOwnProperty.call(visitedPanels, key)) {
+      visitedPanels[key] = true;
+    }
+  },
+  { immediate: true },
+);
 
 // 侧边栏宽度拖拽
 const sidebarWidth = ref(262);
@@ -301,7 +351,11 @@ onUnmounted(() => {
         />
 
         <!-- 保存响应 MD 文档面板（优先级高于 showRequestResponse） -->
-        <div class="content-area" v-if="showSavedResponseDoc">
+        <div
+          class="content-area"
+          v-if="visitedPanels.savedResponseDoc"
+          v-show="activePanel === 'savedResponseDoc'"
+        >
           <SavedResponseDocPanel
             :saved-response="selectedSavedResponse"
             :workspace-id="currentWorkspace?.id || ''"
@@ -310,7 +364,11 @@ onUnmounted(() => {
         </div>
 
         <!-- WebSocket 导航时显示详情面板 -->
-        <div class="content-area" v-else-if="showWebSocketPanel">
+        <div
+          class="content-area"
+          v-if="visitedPanels.webSocket"
+          v-show="activePanel === 'webSocket'"
+        >
           <WebSocketDetailPanel
             :workspace-id="currentWorkspace?.id || ''"
             :ws-config="selectedWsConfig"
@@ -318,7 +376,11 @@ onUnmounted(() => {
         </div>
 
         <!-- 中间内容区 -->
-        <div class="content-area" v-else-if="showRequestResponse">
+        <div
+          class="content-area"
+          v-if="visitedPanels.requestResponse"
+          v-show="activePanel === 'requestResponse'"
+        >
           <!-- 请求区 -->
           <div
             class="request-area"
@@ -378,7 +440,11 @@ onUnmounted(() => {
         </div>
 
         <!-- 集合设置面板 -->
-        <div class="content-area" v-else-if="showCollectionSettings">
+        <div
+          class="content-area"
+          v-if="visitedPanels.collectionSettings"
+          v-show="activePanel === 'collectionSettings'"
+        >
           <CollectionSettingsPanel
             :collection="selectedCollection"
             :workspace-id="currentWorkspace?.id || ''"
@@ -388,12 +454,20 @@ onUnmounted(() => {
         </div>
 
         <!-- 历史详情面板 -->
-        <div class="content-area" v-else-if="showHistoryDetail">
+        <div
+          class="content-area"
+          v-if="visitedPanels.historyDetail"
+          v-show="activePanel === 'historyDetail'"
+        >
           <HistoryDetailPanel :entry="selectedHistoryEntry" />
         </div>
 
         <!-- 工作区设置面板 -->
-        <div class="content-area" v-else-if="showWorkspaceInfo">
+        <div
+          class="content-area"
+          v-if="visitedPanels.workspaceInfo"
+          v-show="activePanel === 'workspaceInfo'"
+        >
           <WorkspaceSettingsPanel
             :workspace="selectedWorkspace"
             :workspace-id="selectedWorkspace?.id || ''"
@@ -401,7 +475,11 @@ onUnmounted(() => {
         </div>
 
         <!-- 环境信息面板 -->
-        <div class="content-area" v-else-if="showEnvironmentInfo">
+        <div
+          class="content-area"
+          v-if="visitedPanels.environmentInfo"
+          v-show="activePanel === 'environmentInfo'"
+        >
           <EnvironmentPanel
             :active-environment="selectedEnvironment"
             :workspace-id="currentWorkspace?.id || ''"
@@ -410,7 +488,11 @@ onUnmounted(() => {
         </div>
 
         <!-- Chat 面板 -->
-        <div class="content-area" v-else-if="showChatPanel">
+        <div
+          class="content-area"
+          v-if="visitedPanels.chat"
+          v-show="activePanel === 'chat'"
+        >
           <ChatPanel
             :workspace-id="currentWorkspace?.id || ''"
             :session-id="chatSessionId"
@@ -420,7 +502,8 @@ onUnmounted(() => {
         <!-- 编排面板 -->
         <div
           class="content-area"
-          v-else-if="showOrchestrationPanel && selectedOrchestration"
+          v-if="visitedPanels.orchestration"
+          v-show="activePanel === 'orchestration' && selectedOrchestration"
         >
           <OrchestrationEditor
             :workspace-id="currentWorkspace?.id || ''"
@@ -432,7 +515,7 @@ onUnmounted(() => {
         <!-- 编排空状态 -->
         <div
           class="content-area"
-          v-else-if="showOrchestrationPanel && !selectedOrchestration"
+          v-show="activePanel === 'orchestration' && !selectedOrchestration"
         >
           <div class="orchestration-placeholder">
             <div class="placeholder-hint">{{ t("empty.selectApiHint") }}</div>
@@ -440,7 +523,7 @@ onUnmounted(() => {
         </div>
 
         <!-- 空状态提示 -->
-        <div class="empty-content" v-else>
+        <div class="empty-content" v-show="activePanel === 'empty'">
           <div class="empty-message">
             {{
               currentWorkspace

@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, inject, onMounted, onUnmounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { useI18n } from "vue-i18n";
 import { showToast } from "../../../composables/useToast";
@@ -9,6 +9,9 @@ import JSON5 from "json5";
 // 导出 composable 函数
 export function useCollectionPanelSetup(props, emit) {
   const { t } = useI18n();
+
+  // 从父组件注入 tabs 数据（用于 curl 导出时获取实时编辑数据）
+  const appTabs = inject("appTabs", ref([]));
 
   // 集合数据
   const collections = ref([]);
@@ -402,18 +405,37 @@ export function useCollectionPanelSetup(props, emit) {
     const apiId = api.id;
 
     try {
-      // 加载完整的 API 详情
-      const itemsWithAncestors = await invoke("get_items_by_ids", {
-        workspaceId,
-        itemIds: [apiId],
-      });
+      // 优先使用当前打开 tab 的实时数据（包含用户未保存的编辑），
+      // 避免导出数据库中的旧数据导致请求头等内容缺失
+      const currentTab = appTabs.value.find(
+        (t) => t.id === apiId && t.tabType === "api",
+      );
 
-      if (!itemsWithAncestors || itemsWithAncestors.length === 0) {
-        showToast(t("toast.apiNotFound"), "error");
-        return;
+      let fullApi;
+      if (currentTab) {
+        // 从 tab 实时数据构建（字段名映射 tab → Collection 结构）
+        fullApi = {
+          url: currentTab.url || "",
+          method: currentTab.method || "GET",
+          headers: currentTab.headers || [],
+          body: currentTab.body || "",
+          body_type: currentTab.bodyType,
+          form_fields: currentTab.formData,
+        };
+      } else {
+        // API 未在 tab 中打开，从数据库获取完整数据
+        const itemsWithAncestors = await invoke("get_items_by_ids", {
+          workspaceId,
+          itemIds: [apiId],
+        });
+
+        if (!itemsWithAncestors || itemsWithAncestors.length === 0) {
+          showToast(t("toast.apiNotFound"), "error");
+          return;
+        }
+
+        fullApi = itemsWithAncestors[0].item;
       }
-
-      const fullApi = itemsWithAncestors[0].item;
 
       // 获取集合数据
       const collectionsData = await invoke("get_collections", {

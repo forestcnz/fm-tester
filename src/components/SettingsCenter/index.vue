@@ -30,7 +30,7 @@ const monoFontOptions = [
   "SFMono-Regular",
   "Consolas",
 ];
-const version = "v0.1.2";
+const version = "v0.1.3";
 </script>
 
 <template>

@@ -48,7 +48,18 @@ use tauri::Manager;
 pub fn run() {
     infrastructure::logging::init();
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default();
+
+    // 应用单例：阻止启动第二个实例，并将已有窗口置顶聚焦（仅桌面端，移动端不支持）
+    #[cfg(desktop)]
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+        let _ = app
+            .get_webview_window("main")
+            .expect("找不到主窗口")
+            .set_focus();
+    }));
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
